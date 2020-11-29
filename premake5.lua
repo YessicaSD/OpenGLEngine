@@ -3,6 +3,11 @@ workspace "Shadow"
    configurations { "Debug", "Release", "Dist"}
 
    outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+
+   IncludeDir = {}
+   IncludeDir["GLFW"] = "Shadow/vendor/GLFW/include"
+
+   include "Shadow/vendor/GLFW"
 project "Shadow"
     location "Shadow"
     kind "sharedLib"
@@ -24,12 +29,16 @@ project "Shadow"
    {
         "%{prj.name}/src",
         "%{prj.name}/vendor/spdlog/include",
+        IncludeDir.GLFW,
    }
-
+   links{
+       "GLFW",
+       "opengl32.lib"
+   }
     filter "system:windows"
         cppdialect "C++17"
         staticruntime "On"
-        systemversion "10.0.18362.0"
+        systemversion "latest"
         defines 
         { 
             "SW_PLATFORM_WINDOWS",
@@ -82,7 +91,7 @@ project "Shadow"
     filter "system:windows"
         cppdialect "C++17"
         staticruntime "On"
-        systemversion "10.0.18362.0"
+        systemversion "latest"
         defines 
         { 
             "SW_PLATFORM_WINDOWS" 

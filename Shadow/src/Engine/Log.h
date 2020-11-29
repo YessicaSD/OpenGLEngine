@@ -6,8 +6,7 @@
 #include "spdlog/spdlog.h"
 
 
-namespace Shadow
-{
+NAMESPACE_BEGAN
 	class SHADOW_API Log
 	{
 		public:
@@ -21,7 +20,8 @@ namespace Shadow
 		static std::shared_ptr<spdlog::logger> clientLogger;
 			
 	};
-}
+
+NAMESPACE_END
 
 #define SW_CORE_ERROR(...)	::Shadow::Log::GetCoreLogger()->error(__VA_ARGS__);
 #define SW_CORE_WARN(...)	::Shadow::Log::GetCoreLogger()->warn(__VA_ARGS__);

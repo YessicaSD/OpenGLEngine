@@ -18,6 +18,9 @@
     <ClInclude Include="src\Engine\Log.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Window.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
     <ClInclude Include="src\Shadow.h" />
     <ClInclude Include="src\swpch.h" />
   </ItemGroup>
@@ -26,6 +29,9 @@
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Log.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Window.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="src\swpch.cpp" />
