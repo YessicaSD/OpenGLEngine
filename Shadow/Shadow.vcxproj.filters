@@ -19,6 +19,7 @@
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow.h" />
+    <ClInclude Include="src\swpch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp">
@@ -27,5 +28,6 @@
     <ClCompile Include="src\Engine\Log.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="src\swpch.cpp" />
   </ItemGroup>
 </Project>

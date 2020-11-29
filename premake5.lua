@@ -11,6 +11,9 @@ project "Shadow"
    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
    objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
    
+   pchheader "swpch.h"
+   pchsource "Shadow/src/swpch.cpp"
+
    files 
    { 
        "%{prj.name}/src/**.h",
@@ -19,6 +22,7 @@ project "Shadow"
 
    includedirs
    {
+        "%{prj.name}/src",
         "%{prj.name}/vendor/spdlog/include",
    }
 

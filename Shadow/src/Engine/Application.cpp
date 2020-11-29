@@ -1,3 +1,4 @@
+#include "swpch.h"
 #include "Application.h"
 
 namespace Shadow
