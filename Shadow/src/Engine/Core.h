@@ -3,15 +3,26 @@
 #define NAMESPACE_BEGAN namespace Shadow {
 #define NAMESPACE_END }
 
+
+// THIS DEFINES ARE FOR WINDOWS 
 #ifdef SW_PLATFORM_WINDOWS
+	
+	// IF ENGINE EXPORT DLL
 	#ifdef SW_BUILD_DLL
 		#define SHADOW_API __declspec(dllexport)
+
+	// IF GAME IMPORT
 	#else 
 		#define SHADOW_API __declspec(dllimport)
-	#endif // SW_BUILD_DLL
+	#endif
+
+
 #else
 	#error Hazel only supports Windows!
-#endif // SW_PLATFORM_WINDOWS
+#endif
+
+#define BIT(x) (1 << x)	
+
 #define SW_ENABLE_ASSERTS
 
 //#ifdef SW_ENABLE_ASSERTS
