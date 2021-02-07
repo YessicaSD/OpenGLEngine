@@ -149,12 +149,12 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Engine\Event\Event.h" />
-    <ClInclude Include="src\Engine\Event\EventApplication.h" />
-    <ClInclude Include="src\Engine\Event\EventKey.h" />
     <ClInclude Include="src\Engine\Application.h" />
     <ClInclude Include="src\Engine\Core.h" />
     <ClInclude Include="src\Engine\EntryPoint.h" />
+    <ClInclude Include="src\Engine\Event\Event.h" />
+    <ClInclude Include="src\Engine\Event\EventApplication.h" />
+    <ClInclude Include="src\Engine\Event\EventKey.h" />
     <ClInclude Include="src\Engine\Event\EventMouse.h" />
     <ClInclude Include="src\Engine\Log.h" />
     <ClInclude Include="src\Engine\Window.h" />

@@ -4,8 +4,8 @@
     <Filter Include="Engine">
       <UniqueIdentifier>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Events">
-      <UniqueIdentifier>{949f49af-6ee3-4167-9908-486625abfbaf}</UniqueIdentifier>
+    <Filter Include="Engine\Event">
+      <UniqueIdentifier>{6C812495-58E4-B339-016A-ECEFEDAB7FBC}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -18,6 +18,18 @@
     <ClInclude Include="src\Engine\EntryPoint.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Event\Event.h">
+      <Filter>Engine\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Event\EventApplication.h">
+      <Filter>Engine\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Event\EventKey.h">
+      <Filter>Engine\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Event\EventMouse.h">
+      <Filter>Engine\Event</Filter>
+    </ClInclude>
     <ClInclude Include="src\Engine\Log.h">
       <Filter>Engine</Filter>
     </ClInclude>
@@ -26,16 +38,6 @@
     </ClInclude>
     <ClInclude Include="src\Shadow.h" />
     <ClInclude Include="src\swpch.h" />
-    <ClInclude Include="src\Engine\Event\Event.h">
-      <Filter>Engine\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Engine\Event\EventApplication.h">
-      <Filter>Engine\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Engine\Event\EventKey.h">
-      <Filter>Engine\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Engine\Event\EventMouse.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp">
