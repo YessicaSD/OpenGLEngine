@@ -1,16 +1,23 @@
 workspace "Shadow"
     architecture "x64"
-   configurations { "Debug", "Release", "Dist"}
+   configurations 
+    {
+        "Debug",
+        "Release",
+        "Dist"
+    }
 
    outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
-   IncludeDir = {}
-   IncludeDir["GLFW"] = "Shadow/vendor/GLFW/include"
 
-   include "Shadow/vendor/GLFW"
+IncludeDir = {}
+IncludeDir["GLFW"] = "Shadow/vendor/GLFW/include"
+
+include "Shadow/vendor/GLFW"
+
 project "Shadow"
     location "Shadow"
-    kind "sharedLib"
+    kind "SharedLib"
     language "C++"
 
    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
@@ -29,7 +36,7 @@ project "Shadow"
    {
         "%{prj.name}/src",
         "%{prj.name}/vendor/spdlog/include",
-        IncludeDir.GLFW,
+        "%{IncludeDir.GLFW}"
    }
    links{
        "GLFW",
