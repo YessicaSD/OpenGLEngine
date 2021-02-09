@@ -25,16 +25,26 @@
 
 #define SW_ENABLE_ASSERTS
 
-//#ifdef SW_ENABLE_ASSERTS
-//	// Currently accepts at least the condition and one additional parameter (the message) being optional
-//	#define SW_ASSERT(x, ...)							\
-//	{													\
-//		if(!(x))										\
-//		{ SW_ERROR("Assertion Fail: {0}", _VA_ARGS_);   \
-//		_debugbreak()}									\
-//	} 
-//	#define SW_CORE_ASSERT(...) SW_EXPAND_MACRO( SW_INTERNAL_ASSERT_GET_MACRO(__VA_ARGS__)(_CORE_, __VA_ARGS__) )
-//#else
-//	#define SW_ASSERT(...)
-//	#define SW_CORE_ASSERT(...)
-//#endif
+#ifdef SW_ENABLE_ASSERTS
+	// Currently accepts at least the condition and one additional parameter (the message) being optional
+	#define SW_ASSERT(x, ...)							\
+	{													\
+		if(!(x))										\
+		{												\
+			SW_ERROR("Assertion Fail: {0}", __VA_ARGS__); \
+			__debugbreak();								\
+		}												\
+	} 
+
+	#define SW_CORE_ASSERT(x,...)							 \
+	{														 \
+		if (!(x))											 \
+		{													 \
+			SW_CORE_ERROR("Assertion Fail: {0}", __VA_ARGS__); \
+			__debugbreak();									 \
+		}													 \
+	}
+#else
+	#define SW_ASSERT(x, ...)
+	#define SW_CORE_ASSERT(x, ...)
+#endif

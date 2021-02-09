@@ -12,8 +12,10 @@ workspace "Shadow"
 
 IncludeDir = {}
 IncludeDir["GLFW"] = "Shadow/vendor/GLFW/include"
+IncludeDir["Glad"] = "Shadow/vendor/Glad/include"
 
 include "Shadow/vendor/GLFW"
+include "Shadow/vendor/Glad"
 
 project "Shadow"
     location "Shadow"
@@ -36,10 +38,13 @@ project "Shadow"
    {
         "%{prj.name}/src",
         "%{prj.name}/vendor/spdlog/include",
-        "%{IncludeDir.GLFW}"
+        "%{IncludeDir.GLFW}",
+        "%{IncludeDir.Glad}"
    }
-   links{
+   links
+   {
        "GLFW",
+       "Glad",
        "opengl32.lib"
    }
     filter "system:windows"
@@ -49,7 +54,9 @@ project "Shadow"
         defines 
         { 
             "SW_PLATFORM_WINDOWS",
-            "SW_BUILD_DLL"
+            "SW_BUILD_DLL",
+            "GLFW_INCLUDE_NONE"
+            
         }
     
     postbuildcommands
@@ -101,7 +108,7 @@ project "Shadow"
         systemversion "latest"
         defines 
         { 
-            "SW_PLATFORM_WINDOWS" 
+            "SW_PLATFORM_WINDOWS"
         }
     
    filter "configurations:Debug"
