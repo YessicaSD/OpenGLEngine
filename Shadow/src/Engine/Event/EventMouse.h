@@ -8,27 +8,27 @@ namespace Shadow {
 	{
 		public:
 			// resive mouse position
-			MouseMovedEvent(const float x, const float y) : m_MouseX(x), m_MouseY(y) {}
+			MouseMovedEvent(const float x, const float y) : mouseX(x), mouseY(y) {}
 
-			float GetX() const { return m_MouseX; }
-			float GetY() const { return m_MouseY; }
+			float GetX() const { return mouseX; }
+			float GetY() const { return mouseY; }
 
 			// return mouse position in string
 			std::string ToString() const override
 			{
 				std::stringstream ss;
-				ss << "MouseMovedEvent: " << m_MouseX << ", " << m_MouseY;
+				ss << "MouseMovedEvent: " << mouseX << ", " << mouseY;
 				return ss.str();
 			}
 		
 			//Define event type
-			EVENT_CLASS_TYPE(MOUSE_MOVED)
+			EVENT_CLASS_TYPE(MOUSE_MOVE)
 
 			//Define category
 			EVENT_CLASS_CATEGORY(EVENTCATEGORY_MOUSE | EVENTCATEGORY_INPUT)
 
 		private:
-			float m_MouseX, m_MouseY;
+			float mouseX, mouseY;
 	};
 
 

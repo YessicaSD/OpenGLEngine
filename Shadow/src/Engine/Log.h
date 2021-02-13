@@ -4,6 +4,7 @@
 
 #include "Core.h"
 #include "spdlog/spdlog.h"
+#include "spdlog/fmt/ostr.h" //in order to log custom types
 
 
 NAMESPACE_BEGAN

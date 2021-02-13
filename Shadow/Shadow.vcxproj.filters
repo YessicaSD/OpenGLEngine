@@ -33,11 +33,14 @@
     <ClInclude Include="src\Engine\Log.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Window.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="src\Shadow.h" />
     <ClInclude Include="src\swpch.h" />
+    <ClInclude Include="src\Engine\LayerManager.h" />
+    <ClInclude Include="src\Engine\Layer.h" />
+    <ClInclude Include="src\Engine\Platform\Window\WindowWindows.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp">
@@ -46,9 +49,11 @@
     <ClCompile Include="src\Engine\Log.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\Window.cpp">
+    <ClCompile Include="src\swpch.cpp" />
+    <ClCompile Include="src\Engine\LayerManager.cpp" />
+    <ClCompile Include="src\Engine\Layer.cpp" />
+    <ClCompile Include="src\Engine\Platform\Window\WindowWindows.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\swpch.cpp" />
   </ItemGroup>
 </Project>

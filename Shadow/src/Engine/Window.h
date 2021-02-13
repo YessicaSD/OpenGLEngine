@@ -1,39 +1,44 @@
 #pragma once
-#include "swpch.h"
-#include "Core.h"
+#include "Event/Event.h"
+#include <functional>
 
-struct GLFWwindow;
+NAMESPACE_BEGAN
 
-namespace Shadow {
+struct WindowProp
+{
+	std::string title;
+	uint32_t width;
+	uint32_t height;
+	bool vsync = false;
 
-	class SHADOW_API Window
+	WindowProp(const std::string& title = "Shadow Engine",
+		uint32_t width = 1600,
+		uint32_t height = 900)
+		: title(title), width(width), height(height)
 	{
-		struct WindowProp
-		{
-			std::string title;
-			uint32_t width;
-			uint32_t height;
-			bool vsync = false;
 
-			WindowProp(const std::string& title = "Shadow Engine",
-				uint32_t width = 1600,
-				uint32_t height = 900)
-				: title(title), width(width), height(height)
-			{
-			}
-		};
+	}
+};
 
-	public:
-		Window() {};
-		static std::unique_ptr<Window> Create(WindowProp prop = WindowProp());
-		void OnUpdate();
-		void SetVSync(bool enabled);
+// This is just an interface
+class SHADOW_API Window
+{
+public:
+	using EventCallbackFn = std::function<void(Event&)>;
 
-		virtual ~Window() {}
-	private:
-		WindowProp data;
-		GLFWwindow* windowGLFW;
+	virtual ~Window(){}
+	virtual void OnUpdate() = 0;
 
-	};
+	virtual unsigned int GetWidth() const = 0;
+	virtual unsigned int GetHeight() const = 0;
 
-}
+	virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
+	virtual void SetVSync(bool enabled) = 0;
+	virtual bool IsVSync() const = 0;
+
+
+	static Window* Create(const WindowProp& props = WindowProp());
+
+};
+
+NAMESPACE_END

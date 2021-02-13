@@ -13,7 +13,7 @@ namespace Shadow
 		WINDOW_CLOSE, WINDOW_RESIZE, WINDOW_FOCUS, WNDOW_LOSTFOCUS, WINDOW_MOVE,
 		APP_TICK, APP_UPDATE, APP_RENDER,
 		KEY_PRESSED, KEY_RELEASED, KEY_TYPED,
-		MOUSE_BUTTON_PRESSED, MOUSE_BUTTON_RELEASED, MOUSE_MOVED, MOUSE_SCROLLED,
+		MOUSE_BUTTON_PRESSED, MOUSE_BUTTON_RELEASED, MOUSE_MOVE, MOUSE_SCROLLED,
 	};
 
 	// BTI MASK
@@ -53,22 +53,25 @@ namespace Shadow
 
 	class EventDispatcher
 	{
+		template<typename T>
+		using EventFn = std::function<bool (T&)>;
+
 	public:
-		EventDispatcher(Event& event) : m_Event(event) {}
+		EventDispatcher(Event& event) : myEvent(event) {}
 
 		// F will be deduced by the compiler
 		template<typename T, typename F>
 		bool Dispatch(const F& func)
 		{
-			if (m_Event.GetEventType() == T::GetStaticType())
+			if (myEvent.GetEventType() == T::GetStaticType())
 			{
-				m_Event.Handled |= func(static_cast<T&>(m_Event));
+				myEvent.handled |= func(*(T*)&myEvent);
 				return true;
 			}
 			return false;
 		}
 	private:
-		Event& m_Event;
+		Event& myEvent;
 	};
 
 	inline std::ostream& operator<<(std::ostream& os, const Event& e)
