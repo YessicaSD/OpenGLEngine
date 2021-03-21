@@ -4,12 +4,16 @@
 class Sandbox : public Shadow::Application
 {
 public:
-	Sandbox() {};
+	Sandbox() 
+	{
+		PushLayer(new Shadow::LayerImGui());
+	};
 	~Sandbox() {};
 
 private:
 
 };
+
 Shadow::Application* Shadow::CreateApplication()
 {
 	return new Sandbox();

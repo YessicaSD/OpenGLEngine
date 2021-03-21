@@ -15,6 +15,8 @@ namespace Shadow
 
 		virtual void OnEvent(Event& event) {};
 		virtual void OnUpdate() {};
+		virtual void OnAttach() {};
+		virtual void OnDetach() {};
 
 		const std::string& GetName() const { return debugName; };
 

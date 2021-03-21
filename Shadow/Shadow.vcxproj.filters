@@ -7,6 +7,12 @@
     <Filter Include="Engine\Event">
       <UniqueIdentifier>{6C812495-58E4-B339-016A-ECEFEDAB7FBC}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Platform">
+      <UniqueIdentifier>{8F0ABC95-FB95-295A-04A7-AC4E70B1855A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Platform\Window">
+      <UniqueIdentifier>{96C0DEC9-82BA-071C-6B27-9E2C57C06D88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Engine\Application.h">
@@ -30,30 +36,48 @@
     <ClInclude Include="src\Engine\Event\EventMouse.h">
       <Filter>Engine\Event</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Layer.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\LayerImGui.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\LayerManager.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
     <ClInclude Include="src\Engine\Log.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Platform\Window\WindowWindows.h">
+      <Filter>Engine\Platform\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Window.h">
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow.h" />
     <ClInclude Include="src\swpch.h" />
-    <ClInclude Include="src\Engine\LayerManager.h" />
-    <ClInclude Include="src\Engine\Layer.h" />
-    <ClInclude Include="src\Engine\Platform\Window\WindowWindows.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Engine\Window.h" />
+    <ClInclude Include="src\Engine\Platform\OpenGL\ImGuiOpenGLRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Layer.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\LayerImGui.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\LayerManager.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
     <ClCompile Include="src\Engine\Log.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\swpch.cpp" />
-    <ClCompile Include="src\Engine\LayerManager.cpp" />
-    <ClCompile Include="src\Engine\Layer.cpp" />
     <ClCompile Include="src\Engine\Platform\Window\WindowWindows.cpp">
-      <Filter>Engine</Filter>
+      <Filter>Engine\Platform\Window</Filter>
     </ClCompile>
+    <ClCompile Include="src\swpch.cpp" />
+    <ClCompile Include="src\Engine\Platform\OpenGL\ImGuiOpenGLRenderer.cpp" />
   </ItemGroup>
 </Project>

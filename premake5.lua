@@ -13,7 +13,7 @@ workspace "Shadow"
 IncludeDir = {}
 IncludeDir["GLFW"] = "Shadow/vendor/GLFW/include"
 IncludeDir["Glad"] = "Shadow/vendor/Glad/include"
-IncludeDir["imgui"] = "Shadow/vendor/imgui/include"
+IncludeDir["imgui"] = "Shadow/vendor/imgui"
 
 include "Shadow/vendor/GLFW"
 include "Shadow/vendor/Glad"

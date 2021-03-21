@@ -5,8 +5,7 @@
 
 struct GLFWwindow;
 
-namespace Shadow {
-
+NAMESPACE_BEGAN
 
 	class SHADOW_API WindowWindows : public Window
 	{
@@ -44,4 +43,4 @@ namespace Shadow {
 
 	};
 
-}
+NAMESPACE_END
