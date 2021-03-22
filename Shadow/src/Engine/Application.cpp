@@ -5,6 +5,7 @@
 
 #include "glad/glad.h"
 
+#include "Core.h"
 
 NAMESPACE_BEGAN
 
@@ -14,6 +15,7 @@ Application::Application()
 	SW_CORE_ASSERT(app == nullptr, "Application already exists!");
 	app = this;
 	window = std::unique_ptr<Window>(Window::Create());
+	window->SetEventCallback(SW_BIND_FN(Application::OnEvent));
 }
 Application::~Application()
 {
@@ -31,10 +33,22 @@ void Application::Run()
 		window->OnUpdate();
 	}
 }
+
+bool Application::OnWindowClosed(WindowCloseEvent& e)
+{
+	running = false;
+	return true;
+}
+
 void Application::OnEvent(Event& e)
 {
+	EventDispatcher dispatcher(e);
+	dispatcher.Dispatch<WindowCloseEvent>(SW_BIND_FN(Application::OnWindowClosed));
+
 	for (auto it = layerManager.end(); it != layerManager.begin(); )
 	{
+		//SW_INFO(e.ToString());
+		
 		(*--it)->OnEvent(e);
 		//if (e.Handled)
 			//break;
@@ -50,4 +64,5 @@ void Application::PushOverlay(Layer* layer)
 	layerManager.PushOverlay(layer);
 	layer->OnAttach();
 }
+
 NAMESPACE_END

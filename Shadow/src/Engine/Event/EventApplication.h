@@ -4,10 +4,10 @@
 
 namespace Shadow {
 
-	class WindowResizeEvent : public Event
+	class WindowResizedEvent : public Event
 	{
 	public:
-		WindowResizeEvent(unsigned int width, unsigned int height)
+		WindowResizedEvent(unsigned int width, unsigned int height)
 			: m_Width(width), m_Height(height) {}
 
 		unsigned int GetWidth() const { return m_Width; }

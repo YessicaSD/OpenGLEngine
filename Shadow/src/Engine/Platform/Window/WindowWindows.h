@@ -27,6 +27,7 @@ NAMESPACE_BEGAN
 
 	private:
 		virtual void Init(const WindowProp& props);
+		void SetCallbacks();
 		virtual void ShutDown();
 
 		GLFWwindow* windowGLFW;

@@ -48,3 +48,5 @@
 	#define SW_ASSERT(x, ...)
 	#define SW_CORE_ASSERT(x, ...)
 #endif
+
+#define SW_BIND_FN(fn) std::bind(&fn, this, std::placeholders::_1)

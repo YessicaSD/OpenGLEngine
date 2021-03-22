@@ -36,13 +36,13 @@
     <ClInclude Include="src\Engine\Event\EventMouse.h">
       <Filter>Engine\Event</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Layer.h">
+    <ClInclude Include="src\Engine\Layers\Layer.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\LayerImGui.h">
+    <ClInclude Include="src\Engine\Layers\LayerImGui.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\LayerManager.h">
+    <ClInclude Include="src\Engine\Layers\LayerManager.h">
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Log.h">
@@ -62,13 +62,13 @@
     <ClCompile Include="src\Engine\Application.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\Layer.cpp">
+    <ClCompile Include="src\Engine\Layers\Layer.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\LayerImGui.cpp">
+    <ClCompile Include="src\Engine\Layers\LayerImGui.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\LayerManager.cpp">
+    <ClCompile Include="src\Engine\Layers\LayerManager.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Log.cpp">

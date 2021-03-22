@@ -54,6 +54,7 @@ namespace Shadow {
 		EVENT_CLASS_TYPE(KEY_RELEASED)
 	};
 
+
 	class KeyTypedEvent : public KeyEvent
 	{
 	public:

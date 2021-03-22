@@ -3,9 +3,10 @@
 #include "Core.h"
 #include "swpch.h"
 #include "Window.h"
-#include "LayerManager.h"
+#include "Layers/LayerManager.h"
 #include "Event/Event.h"
 
+#include "Event/EventApplication.h"
 
 NAMESPACE_BEGAN
 
@@ -24,6 +25,10 @@ class SHADOW_API Application
 		
 		inline static Application& Get() { return *app; }
 		inline Window& GetWindow() { return *window; }
+
+	private:
+		bool OnWindowClosed(WindowCloseEvent& e);
+
 	private:
 		bool running = true;
 		std::unique_ptr<Window> window;
