@@ -1,7 +1,7 @@
 #pragma once
 #include "swpch.h"
-#include "Engine/Core.h"
-#include "Engine/Window.h"
+#include "Shadow/Core.h"
+#include "Shadow/Window.h"
 
 struct GLFWwindow;
 

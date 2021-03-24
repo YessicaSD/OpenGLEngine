@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Engine/Application.h"
-#include "Engine/Layers/Layer.h"
-#include "Engine/Log.h"
+#include "Shadow/Application.h"
+#include "Shadow/Layers/Layer.h"
+#include "Shadow/Log.h"
 
-#include "Engine/Layers/LayerImGui.h"
+#include "Shadow/Layers/LayerImGui.h"
 
-#include "Engine/EntryPoint.h"
+#include "Shadow/EntryPoint.h"

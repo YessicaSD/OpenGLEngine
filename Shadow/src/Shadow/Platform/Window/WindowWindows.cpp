@@ -1,12 +1,12 @@
 #include "swpch.h"
 
 #include "WindowWindows.h"
-#include "Engine/Log.h"
-#include  "Engine/Core.h"
+#include "Shadow/Log.h"
+#include "Shadow/Core.h"
 
-#include "Engine/Event/EventApplication.h"
-#include "Engine/Event/EventMouse.h"
-#include "Engine/Event/EventKey.h"
+#include "Shadow/Event/EventApplication.h"
+#include "Shadow/Event/EventMouse.h"
+#include "Shadow/Event/EventKey.h"
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Engine/Core.h"
-#include "Engine/Event/Event.h"
+#include "Shadow/Core.h"
+#include "Shadow/Event/Event.h"
 
 #include <string>
 

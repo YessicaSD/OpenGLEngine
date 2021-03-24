@@ -149,31 +149,34 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Engine\Application.h" />
-    <ClInclude Include="src\Engine\Core.h" />
-    <ClInclude Include="src\Engine\EntryPoint.h" />
-    <ClInclude Include="src\Engine\Event\Event.h" />
-    <ClInclude Include="src\Engine\Event\EventApplication.h" />
-    <ClInclude Include="src\Engine\Event\EventKey.h" />
-    <ClInclude Include="src\Engine\Event\EventMouse.h" />
-    <ClInclude Include="src\Engine\Layers\Layer.h" />
-    <ClInclude Include="src\Engine\Layers\LayerImGui.h" />
-    <ClInclude Include="src\Engine\Layers\LayerManager.h" />
-    <ClInclude Include="src\Engine\Log.h" />
-    <ClInclude Include="src\Engine\Platform\OpenGL\ImGuiOpenGLRenderer.h" />
-    <ClInclude Include="src\Engine\Platform\Window\WindowWindows.h" />
-    <ClInclude Include="src\Engine\Window.h" />
+    <ClInclude Include="src\Shadow\Application.h" />
+    <ClInclude Include="src\Shadow\Core.h" />
+    <ClInclude Include="src\Shadow\EntryPoint.h" />
+    <ClInclude Include="src\Shadow\Event\Event.h" />
+    <ClInclude Include="src\Shadow\Event\EventApplication.h" />
+    <ClInclude Include="src\Shadow\Event\EventKey.h" />
+    <ClInclude Include="src\Shadow\Event\EventMouse.h" />
+    <ClInclude Include="src\Shadow\Input.h" />
+    <ClInclude Include="src\Shadow\Layers\Layer.h" />
+    <ClInclude Include="src\Shadow\Layers\LayerImGui.h" />
+    <ClInclude Include="src\Shadow\Layers\LayerManager.h" />
+    <ClInclude Include="src\Shadow\Log.h" />
+    <ClInclude Include="src\Shadow\Platform\OpenGL\ImGuiOpenGLRenderer.h" />
+    <ClInclude Include="src\Shadow\Platform\Window\WindowsInput.h" />
+    <ClInclude Include="src\Shadow\Platform\Window\WindowWindows.h" />
+    <ClInclude Include="src\Shadow\Window.h" />
     <ClInclude Include="src\Shadow.h" />
     <ClInclude Include="src\swpch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Engine\Application.cpp" />
-    <ClCompile Include="src\Engine\Layers\Layer.cpp" />
-    <ClCompile Include="src\Engine\Layers\LayerImGui.cpp" />
-    <ClCompile Include="src\Engine\Layers\LayerManager.cpp" />
-    <ClCompile Include="src\Engine\Log.cpp" />
-    <ClCompile Include="src\Engine\Platform\OpenGL\ImGuiOpenGLRenderer.cpp" />
-    <ClCompile Include="src\Engine\Platform\Window\WindowWindows.cpp" />
+    <ClCompile Include="src\Shadow\Application.cpp" />
+    <ClCompile Include="src\Shadow\Layers\Layer.cpp" />
+    <ClCompile Include="src\Shadow\Layers\LayerImGui.cpp" />
+    <ClCompile Include="src\Shadow\Layers\LayerManager.cpp" />
+    <ClCompile Include="src\Shadow\Log.cpp" />
+    <ClCompile Include="src\Shadow\Platform\OpenGL\ImGuiOpenGLRenderer.cpp" />
+    <ClCompile Include="src\Shadow\Platform\Window\WindowsInput.cpp" />
+    <ClCompile Include="src\Shadow\Platform\Window\WindowWindows.cpp" />
     <ClCompile Include="src\swpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

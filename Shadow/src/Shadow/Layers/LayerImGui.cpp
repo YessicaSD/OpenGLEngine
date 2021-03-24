@@ -2,10 +2,10 @@
 #include "LayerImGui.h"
 
 #include "imgui.h"
-#include "Engine/Platform/OpenGL/ImGuiOpenGLRenderer.h"
+#include "Shadow/Platform/OpenGL/ImGuiOpenGLRenderer.h"
 
 
-#include "Engine/Application.h"
+#include "Shadow/Application.h"
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
