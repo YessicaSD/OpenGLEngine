@@ -6,10 +6,12 @@
 #include "glad/glad.h"
 
 #include "Core.h"
+#include "Input.h"
 
 NAMESPACE_BEGAN
 
 Application* Application::app = nullptr;
+
 Application::Application()
 {
 	SW_CORE_ASSERT(app == nullptr, "Application already exists!");
@@ -27,9 +29,10 @@ void Application::Run()
 		glClearColor(1, 0, 1, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 		for (auto i = layerManager.begin(); i != layerManager.end(); i++)
-		{
 			(*i)->OnUpdate();
-		}
+
+		auto [x, y] = Input::GetMousePosition();
+		SW_CORE_TRACE("{0}, {1}", x,y );
 		window->OnUpdate();
 	}
 }

@@ -171,6 +171,7 @@ bool WindowWindows::IsVSync() const
 	return data.vsync;
 }
 
+
 void WindowWindows::ShutDown()
 {
 	glfwDestroyWindow(windowGLFW);

@@ -24,6 +24,9 @@ NAMESPACE_BEGAN
 
 		void SetVSync(bool enabled) override;
 		bool IsVSync() const override;
+		
+
+		virtual inline void* GetNativeWindow() const override { return windowGLFW; }
 
 	private:
 		virtual void Init(const WindowProp& props);
