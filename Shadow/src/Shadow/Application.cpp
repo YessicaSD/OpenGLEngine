@@ -18,6 +18,7 @@ Application::Application()
 	app = this;
 	window = std::unique_ptr<Window>(Window::Create());
 	window->SetEventCallback(SW_BIND_FN(Application::OnEvent));
+
 }
 Application::~Application()
 {
@@ -31,8 +32,8 @@ void Application::Run()
 		for (auto i = layerManager.begin(); i != layerManager.end(); i++)
 			(*i)->OnUpdate();
 
-		auto [x, y] = Input::GetMousePosition();
-		SW_CORE_TRACE("{0}, {1}", x,y );
+		//auto [x, y] = Input::GetMousePosition();
+		//SW_CORE_TRACE("{0}, {1}", x,y );
 		window->OnUpdate();
 	}
 }

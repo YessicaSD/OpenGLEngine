@@ -59,6 +59,8 @@
     <ClInclude Include="src\Shadow\Platform\OpenGL\ImGuiOpenGLRenderer.h" />
     <ClInclude Include="src\Shadow\Input.h" />
     <ClInclude Include="src\Shadow\Platform\Window\WindowsInput.h" />
+    <ClInclude Include="src\Shadow\KeyCodes.h" />
+    <ClInclude Include="src\Shadow\MouseButtonCodes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Shadow\Application.cpp">

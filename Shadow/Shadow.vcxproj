@@ -157,10 +157,12 @@
     <ClInclude Include="src\Shadow\Event\EventKey.h" />
     <ClInclude Include="src\Shadow\Event\EventMouse.h" />
     <ClInclude Include="src\Shadow\Input.h" />
+    <ClInclude Include="src\Shadow\KeyCodes.h" />
     <ClInclude Include="src\Shadow\Layers\Layer.h" />
     <ClInclude Include="src\Shadow\Layers\LayerImGui.h" />
     <ClInclude Include="src\Shadow\Layers\LayerManager.h" />
     <ClInclude Include="src\Shadow\Log.h" />
+    <ClInclude Include="src\Shadow\MouseButtonCodes.h" />
     <ClInclude Include="src\Shadow\Platform\OpenGL\ImGuiOpenGLRenderer.h" />
     <ClInclude Include="src\Shadow\Platform\Window\WindowsInput.h" />
     <ClInclude Include="src\Shadow\Platform\Window\WindowWindows.h" />

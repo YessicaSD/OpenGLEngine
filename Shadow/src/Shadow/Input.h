@@ -9,7 +9,8 @@ NAMESPACE_BEGAN
 class SHADOW_API Input
 {
 public:
-	inline bool IsKeyPressed(int keycode) { return instance->IsKeyPressedImpl(keycode); }
+	//TODO Maybe add key repeat and key up and key down
+	static inline bool IsKeyPressed(int keycode) { return instance->IsKeyPressedImpl(keycode); }
 	inline bool IsMouseButtonPressed(int keycode) { return instance->IsMouseButtonPressedImpl(keycode); }
 	inline static std::pair<float, float> GetMousePosition() { return instance->GetMousePositionImpl(); }
 	inline float GetMouseX() { return instance->GetMouseXImpl(); }
