@@ -80,7 +80,7 @@
       <PrecompiledHeaderFile>swpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>SW_PLATFORM_WINDOWS;SW_BUILD_DLL;GLFW_INCLUDE_NONE;SW_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -102,7 +102,7 @@
       <PrecompiledHeaderFile>swpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>SW_PLATFORM_WINDOWS;SW_BUILD_DLL;GLFW_INCLUDE_NONE;SW_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -128,7 +128,7 @@
       <PrecompiledHeaderFile>swpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>SW_PLATFORM_WINDOWS;SW_BUILD_DLL;GLFW_INCLUDE_NONE;SW_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -149,6 +149,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Shadow.h" />
     <ClInclude Include="src\Shadow\Application.h" />
     <ClInclude Include="src\Shadow\Core.h" />
     <ClInclude Include="src\Shadow\EntryPoint.h" />
@@ -164,10 +165,9 @@
     <ClInclude Include="src\Shadow\Log.h" />
     <ClInclude Include="src\Shadow\MouseButtonCodes.h" />
     <ClInclude Include="src\Shadow\Platform\OpenGL\ImGuiOpenGLRenderer.h" />
-    <ClInclude Include="src\Shadow\Platform\Window\WindowsInput.h" />
     <ClInclude Include="src\Shadow\Platform\Window\WindowWindows.h" />
+    <ClInclude Include="src\Shadow\Platform\Window\WindowsInput.h" />
     <ClInclude Include="src\Shadow\Window.h" />
-    <ClInclude Include="src\Shadow.h" />
     <ClInclude Include="src\swpch.h" />
   </ItemGroup>
   <ItemGroup>
@@ -177,8 +177,8 @@
     <ClCompile Include="src\Shadow\Layers\LayerManager.cpp" />
     <ClCompile Include="src\Shadow\Log.cpp" />
     <ClCompile Include="src\Shadow\Platform\OpenGL\ImGuiOpenGLRenderer.cpp" />
-    <ClCompile Include="src\Shadow\Platform\Window\WindowsInput.cpp" />
     <ClCompile Include="src\Shadow\Platform\Window\WindowWindows.cpp" />
+    <ClCompile Include="src\Shadow\Platform\Window\WindowsInput.cpp" />
     <ClCompile Include="src\swpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

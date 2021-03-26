@@ -1,88 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Engine">
-      <UniqueIdentifier>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</UniqueIdentifier>
+    <Filter Include="Shadow">
+      <UniqueIdentifier>{4B0E0CD1-37B0-36A7-206B-4AFB0CACBDF7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Event">
-      <UniqueIdentifier>{6C812495-58E4-B339-016A-ECEFEDAB7FBC}</UniqueIdentifier>
+    <Filter Include="Shadow\Event">
+      <UniqueIdentifier>{DCDB7319-C83E-03BE-71C4-3B745D06CF40}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Platform">
-      <UniqueIdentifier>{8F0ABC95-FB95-295A-04A7-AC4E70B1855A}</UniqueIdentifier>
+    <Filter Include="Shadow\Layers">
+      <UniqueIdentifier>{AA42D256-1603-4E8D-DF3D-970A4BBD9269}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Platform\Window">
-      <UniqueIdentifier>{96C0DEC9-82BA-071C-6B27-9E2C57C06D88}</UniqueIdentifier>
+    <Filter Include="Shadow\Platform">
+      <UniqueIdentifier>{FF8E421D-6B1A-B0E1-742B-33D6E0350CE2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shadow\Platform\OpenGL">
+      <UniqueIdentifier>{5383061B-3F7D-2F6D-28EA-C57D148395D9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shadow\Platform\Window">
+      <UniqueIdentifier>{06E7352D-F2E0-5E7F-DB4D-F58FC7E6C4EB}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Shadow.h" />
     <ClInclude Include="src\Shadow\Application.h">
-      <Filter>Engine</Filter>
+      <Filter>Shadow</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Core.h">
-      <Filter>Engine</Filter>
+      <Filter>Shadow</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\EntryPoint.h">
-      <Filter>Engine</Filter>
+      <Filter>Shadow</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Event\Event.h">
-      <Filter>Engine\Event</Filter>
+      <Filter>Shadow\Event</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Event\EventApplication.h">
-      <Filter>Engine\Event</Filter>
+      <Filter>Shadow\Event</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Event\EventKey.h">
-      <Filter>Engine\Event</Filter>
+      <Filter>Shadow\Event</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Event\EventMouse.h">
-      <Filter>Engine\Event</Filter>
+      <Filter>Shadow\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shadow\Input.h">
+      <Filter>Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shadow\KeyCodes.h">
+      <Filter>Shadow</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Layers\Layer.h">
-      <Filter>Engine</Filter>
+      <Filter>Shadow\Layers</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Layers\LayerImGui.h">
-      <Filter>Engine</Filter>
+      <Filter>Shadow\Layers</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Layers\LayerManager.h">
-      <Filter>Engine</Filter>
+      <Filter>Shadow\Layers</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Log.h">
-      <Filter>Engine</Filter>
+      <Filter>Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shadow\MouseButtonCodes.h">
+      <Filter>Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shadow\Platform\OpenGL\ImGuiOpenGLRenderer.h">
+      <Filter>Shadow\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Platform\Window\WindowWindows.h">
-      <Filter>Engine\Platform\Window</Filter>
+      <Filter>Shadow\Platform\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shadow\Platform\Window\WindowsInput.h">
+      <Filter>Shadow\Platform\Window</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Window.h">
-      <Filter>Engine</Filter>
+      <Filter>Shadow</Filter>
     </ClInclude>
-    <ClInclude Include="src\Shadow.h" />
     <ClInclude Include="src\swpch.h" />
-    <ClInclude Include="src\Shadow\Platform\OpenGL\ImGuiOpenGLRenderer.h" />
-    <ClInclude Include="src\Shadow\Input.h" />
-    <ClInclude Include="src\Shadow\Platform\Window\WindowsInput.h" />
-    <ClInclude Include="src\Shadow\KeyCodes.h" />
-    <ClInclude Include="src\Shadow\MouseButtonCodes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Shadow\Application.cpp">
-      <Filter>Engine</Filter>
+      <Filter>Shadow</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Layers\Layer.cpp">
-      <Filter>Engine</Filter>
+      <Filter>Shadow\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Layers\LayerImGui.cpp">
-      <Filter>Engine</Filter>
+      <Filter>Shadow\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Layers\LayerManager.cpp">
-      <Filter>Engine</Filter>
+      <Filter>Shadow\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Log.cpp">
-      <Filter>Engine</Filter>
+      <Filter>Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shadow\Platform\OpenGL\ImGuiOpenGLRenderer.cpp">
+      <Filter>Shadow\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Platform\Window\WindowWindows.cpp">
-      <Filter>Engine\Platform\Window</Filter>
+      <Filter>Shadow\Platform\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shadow\Platform\Window\WindowsInput.cpp">
+      <Filter>Shadow\Platform\Window</Filter>
     </ClCompile>
     <ClCompile Include="src\swpch.cpp" />
-    <ClCompile Include="src\Shadow\Platform\OpenGL\ImGuiOpenGLRenderer.cpp" />
-    <ClCompile Include="src\Shadow\Platform\Window\WindowsInput.cpp" />
   </ItemGroup>
 </Project>

@@ -8,6 +8,8 @@
 #include "Core.h"
 #include "Input.h"
 
+#include "glm/glm.hpp"
+
 NAMESPACE_BEGAN
 
 Application* Application::app = nullptr;
