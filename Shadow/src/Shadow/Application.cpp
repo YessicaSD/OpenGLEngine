@@ -10,6 +10,7 @@
 
 #include "glm/glm.hpp"
 
+
 NAMESPACE_BEGAN
 
 Application* Application::app = nullptr;
@@ -21,6 +22,8 @@ Application::Application()
 	window = std::unique_ptr<Window>(Window::Create());
 	window->SetEventCallback(SW_BIND_FN(Application::OnEvent));
 
+	imguiLayer = new Shadow::LayerImGui();
+	PushOverlay(imguiLayer);
 }
 Application::~Application()
 {
@@ -31,11 +34,13 @@ void Application::Run()
 	{
 		glClearColor(1, 0, 1, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
-		for (auto i = layerManager.begin(); i != layerManager.end(); i++)
-			(*i)->OnUpdate();
+		for (auto layer = layerManager.begin(); layer != layerManager.end(); layer++)
+			(*layer)->OnUpdate();
 
-		//auto [x, y] = Input::GetMousePosition();
-		//SW_CORE_TRACE("{0}, {1}", x,y );
+		imguiLayer->Begin();
+		for (auto i = layerManager.begin(); i != layerManager.end(); i++)
+			(*i)->OnImGuiRender();
+		imguiLayer->End();
 		window->OnUpdate();
 	}
 }

@@ -164,7 +164,6 @@
     <ClInclude Include="src\Shadow\Layers\LayerManager.h" />
     <ClInclude Include="src\Shadow\Log.h" />
     <ClInclude Include="src\Shadow\MouseButtonCodes.h" />
-    <ClInclude Include="src\Shadow\Platform\OpenGL\ImGuiOpenGLRenderer.h" />
     <ClInclude Include="src\Shadow\Platform\Window\WindowWindows.h" />
     <ClInclude Include="src\Shadow\Platform\Window\WindowsInput.h" />
     <ClInclude Include="src\Shadow\Window.h" />
@@ -172,11 +171,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Shadow\Application.cpp" />
+    <ClCompile Include="src\Shadow\ImGuiBuild.cpp" />
     <ClCompile Include="src\Shadow\Layers\Layer.cpp" />
     <ClCompile Include="src\Shadow\Layers\LayerImGui.cpp" />
     <ClCompile Include="src\Shadow\Layers\LayerManager.cpp" />
     <ClCompile Include="src\Shadow\Log.cpp" />
-    <ClCompile Include="src\Shadow\Platform\OpenGL\ImGuiOpenGLRenderer.cpp" />
     <ClCompile Include="src\Shadow\Platform\Window\WindowWindows.cpp" />
     <ClCompile Include="src\Shadow\Platform\Window\WindowsInput.cpp" />
     <ClCompile Include="src\swpch.cpp">

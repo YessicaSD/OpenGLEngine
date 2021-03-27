@@ -8,6 +8,7 @@
 
 #include "Event/EventApplication.h"
 
+#include "Shadow/Layers/LayerImGui.h"
 NAMESPACE_BEGAN
 
 class SHADOW_API Application
@@ -32,6 +33,8 @@ class SHADOW_API Application
 	private:
 		bool running = true;
 		std::unique_ptr<Window> window;
+		LayerImGui* imguiLayer;
+
 		LayerManager layerManager;
 		static Application* app;
 };

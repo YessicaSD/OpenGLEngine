@@ -3,7 +3,7 @@
 
 Shadow::LayerManager::LayerManager()
 {
-	layerInsert = layers.begin();
+	
 }
 
 Shadow::LayerManager::~LayerManager()
@@ -14,7 +14,8 @@ Shadow::LayerManager::~LayerManager()
 
 void Shadow::LayerManager::PushLayer(Layer* layer)
 {
-	layerInsert = layers.emplace(layerInsert, layer);
+	layers.emplace(layers.begin() + layerInsertIndex, layer);
+	layerInsertIndex++;
 }
 
 void Shadow::LayerManager::PushOverlay(Layer* overlay)
@@ -28,7 +29,7 @@ void Shadow::LayerManager::PopLayer(Layer* layer)
 	if (it != layers.end())
 	{
 		layers.erase(it);
-		layerInsert--;
+		layerInsertIndex--;
 	}
 }
 

@@ -15,25 +15,13 @@ public:
 	LayerImGui();
 	~LayerImGui();
 
-	void OnUpdate() override;
-	void OnEvent(Event& event) override;
-
-	void OnAttach() override;
-	void OnDetach() override;
-
-
+	virtual void OnAttach() override;
+	virtual void OnDetach() override;
+	virtual void OnImGuiRender() override;
+	void Begin();
+	void End();
 private:
-	//Mouse Event
-	bool OnMouseButtonPressedEvent(MouseButtonPressedEvent& e);
-	bool OnMouseButtonReleasedEvent(MouseButtonReleasedEvent& e);
-	bool OnMouseMovedEvent(MouseMovedEvent& e);
-	bool OnMouseScrolledEvent(MouseScrolledEvent& e);
-	//Key Event
-	bool OnKeyPressedEvent(KeyPressedEvent& e);
-	bool OnKeyReleasedEvent(KeyReleasedEvent& e);
-	bool OnKeyTypedEvent(KeyTypedEvent& e);
-	// Windows Event
-	bool OnWindowResizedEvent(WindowResizedEvent& e);
+
 
 
 private:

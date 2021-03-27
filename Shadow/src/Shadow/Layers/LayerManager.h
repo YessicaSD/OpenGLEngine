@@ -21,6 +21,6 @@ namespace Shadow
 
 	private:
 		std::vector <Layer*> layers;
-		std::vector<Layer*>::iterator layerInsert;
+		unsigned int layerInsertIndex = 0;
 	};
 }
