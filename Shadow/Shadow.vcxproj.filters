@@ -13,9 +13,6 @@
     <Filter Include="Shadow\Platform">
       <UniqueIdentifier>{FF8E421D-6B1A-B0E1-742B-33D6E0350CE2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shadow\Platform\OpenGL">
-      <UniqueIdentifier>{5383061B-3F7D-2F6D-28EA-C57D148395D9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shadow\Platform\Window">
       <UniqueIdentifier>{06E7352D-F2E0-5E7F-DB4D-F58FC7E6C4EB}</UniqueIdentifier>
     </Filter>
@@ -79,6 +76,9 @@
     <ClCompile Include="src\Shadow\Application.cpp">
       <Filter>Shadow</Filter>
     </ClCompile>
+    <ClCompile Include="src\Shadow\ImGuiBuild.cpp">
+      <Filter>Shadow</Filter>
+    </ClCompile>
     <ClCompile Include="src\Shadow\Layers\Layer.cpp">
       <Filter>Shadow\Layers</Filter>
     </ClCompile>
@@ -98,6 +98,5 @@
       <Filter>Shadow\Platform\Window</Filter>
     </ClCompile>
     <ClCompile Include="src\swpch.cpp" />
-    <ClCompile Include="src\Shadow\ImGuiBuild.cpp" />
   </ItemGroup>
 </Project>

@@ -6,7 +6,7 @@
 
 // THIS DEFINES ARE FOR WINDOWS 
 #ifdef SW_PLATFORM_WINDOWS
-	
+#if HZ_DYNAMIC_LINK
 	// IF ENGINE EXPORT DLL
 	#ifdef SW_BUILD_DLL
 		#define SHADOW_API __declspec(dllexport)
@@ -15,8 +15,9 @@
 	#else 
 		#define SHADOW_API __declspec(dllimport)
 	#endif
-
-
+#else
+	#define SHADOW_API
+#endif
 #else
 	#error Shadow only supports Windows!
 #endif

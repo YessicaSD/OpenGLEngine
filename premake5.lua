@@ -22,8 +22,10 @@ include "Shadow/vendor/imgui"
 
 project "Shadow"
     location "Shadow"
-    kind "SharedLib"
+    kind "StaticLib"
     language "C++"
+    cppdialect "C++17"
+    staticruntime "on"
 
    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
    objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -37,6 +39,10 @@ project "Shadow"
        "%{prj.name}/src/**.cpp",
    }
 
+   defines
+   {
+    "_CRT_SECURE_NO_WARNINGS"
+   }
    includedirs
    {
         "%{prj.name}/src",
@@ -54,39 +60,33 @@ project "Shadow"
        "opengl32.lib"
    }
     filter "system:windows"
-        cppdialect "C++17"
-        staticruntime "On"
         systemversion "latest"
         defines 
         { 
             "SW_PLATFORM_WINDOWS",
             "SW_BUILD_DLL",
             "GLFW_INCLUDE_NONE"
-            
         }
-    
-    postbuildcommands
-    {
-        ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir.. "/Sandbox")
-	}
 
    filter "configurations:Debug"
       defines "SW_DEBUG"
-      symbols "On"
+      symbols "on"
 
    filter "configurations:Release"
       defines "SW_RELEASE"
-      optimize "On"
+      optimize "on"
 
    filter "configurations:Dist"
       defines "SW_DIST"
-      optimize "On"
+      optimize "on"
 
  project "Sandbox"
     location "Sandbox"
     kind "ConsoleApp"
     language "C++"
-    
+    cppdialect "C++17"
+    staticruntime "on"
+
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
    
@@ -100,6 +100,7 @@ project "Shadow"
    includedirs 
    {
         "Shadow/vendor/spdlog/include",
+        "Shadow/vendor/imgui",
         "Shadow/src",
         "%{IncludeDir.glm}"
    }
@@ -110,8 +111,6 @@ project "Shadow"
    }
 
     filter "system:windows"
-        cppdialect "C++17"
-        staticruntime "On"
         systemversion "latest"
         defines 
         { 
@@ -120,14 +119,14 @@ project "Shadow"
     
    filter "configurations:Debug"
       defines "SW_DEBUG"
-      symbols "On"
+      symbols "on"
 
    filter "configurations:Release"
       defines "SW_RELEASE"
-      optimize "On"
+      optimize "on"
 
    filter "configurations:Dist"
       defines "SW_DIST"
-      optimize "On"
+      optimize "on"
 
    
