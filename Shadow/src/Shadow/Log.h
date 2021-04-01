@@ -1,10 +1,9 @@
 #pragma once
 
 #include "swpch.h"
-
-#include "Core.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/ostr.h" //in order to log custom types
+#include "Core.h"
 
 
 NAMESPACE_BEGAN
@@ -35,3 +34,29 @@ NAMESPACE_END
 #define SW_INFO(...)	::Shadow::Log::GetClientLogger()->info(__VA_ARGS__);
 #define SW_TRACE(...)	::Shadow::Log::GetClientLogger()->trace(__VA_ARGS__);
 #define SW_FATAL(...)	::Shadow::Log::GetClientLogger()->fatal(__VA_ARGS__);
+
+#define SW_ENABLE_ASSERTS
+
+#ifdef SW_ENABLE_ASSERTS
+// Currently accepts at least the condition and one additional parameter (the message) being optional
+#define SW_ASSERT(x, ...)							\
+	{													\
+		if(!(x))										\
+		{												\
+			SW_ERROR("Assertion Fail: {0}", __VA_ARGS__); \
+			__debugbreak();								\
+		}												\
+	} 
+
+#define SW_CORE_ASSERT(x,...)							 \
+	{														 \
+		if (!(x))											 \
+		{													 \
+			SW_CORE_ERROR("Assertion Fail: {0}", __VA_ARGS__); \
+			__debugbreak();									 \
+		}													 \
+	}
+#else
+#define SW_ASSERT(x, ...)
+#define SW_CORE_ASSERT(x, ...)
+#endif

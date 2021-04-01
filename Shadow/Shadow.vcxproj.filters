@@ -71,6 +71,14 @@
       <Filter>Shadow</Filter>
     </ClInclude>
     <ClInclude Include="src\swpch.h" />
+    <ClInclude Include="src\Shadow\Resources\Resource.h" />
+    <ClInclude Include="src\Shadow\Resources\ResourceProgram.h" />
+    <ClInclude Include="src\Shadow\Resources\ResourceModel.h" />
+    <ClInclude Include="src\Shadow\Layers\LayerResourceManager.h" />
+    <ClInclude Include="src\Shadow\Renderer\Buffer.h" />
+    <ClInclude Include="src\Shadow\Renderer\Mesh.h" />
+    <ClInclude Include="src\Shadow\Platform\OpenGL\OpenGLBuffer.h" />
+    <ClInclude Include="src\Shadow\Layers\LayerRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Shadow\Application.cpp">
@@ -98,5 +106,11 @@
       <Filter>Shadow\Platform\Window</Filter>
     </ClCompile>
     <ClCompile Include="src\swpch.cpp" />
+    <ClCompile Include="src\Shadow\Resources\ResourceProgram.cpp" />
+    <ClCompile Include="src\Shadow\Layers\LayerResourceManager.cpp" />
+    <ClCompile Include="src\Shadow\Renderer\Buffer.cpp" />
+    <ClCompile Include="src\Shadow\Renderer\Mesh.cpp" />
+    <ClCompile Include="src\Shadow\Platform\OpenGL\OpenGLBuffer.cpp" />
+    <ClCompile Include="src\Shadow\Layers\LayerRenderer.cpp" />
   </ItemGroup>
 </Project>

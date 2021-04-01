@@ -51,8 +51,6 @@ void WindowWindows::Init(const WindowProp& prop)
 		GLFWInitialized = true;
 	}
 	
-	if (GLFWInitialized)
-	{
 		windowGLFW = glfwCreateWindow(prop.width, prop.height, prop.title.c_str(), NULL, NULL);
 		glfwMakeContextCurrent(windowGLFW);
 
@@ -64,7 +62,7 @@ void WindowWindows::Init(const WindowProp& prop)
 
 		// Set GLFW callbacks
 		SetCallbacks();
-	}
+
 }
 
 void WindowWindows::SetCallbacks()
@@ -157,7 +155,15 @@ void WindowWindows::SetCallbacks()
 void WindowWindows::OnUpdate()
 {
 	glfwPollEvents();
+	
+	
+	
+	//glFlush();
+	//glClearColor(1, 0, 1, 1);
+	
 	glfwSwapBuffers(windowGLFW);
+
+	
 }
 
 void WindowWindows::SetVSync(bool enabled)
