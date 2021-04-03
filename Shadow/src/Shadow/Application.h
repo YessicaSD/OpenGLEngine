@@ -9,6 +9,7 @@
 #include "Event/EventApplication.h"
 
 #include "Shadow/Layers/LayerImGui.h"
+#include "Shadow/Layers/LayerResourceManager.h"
 #include "Shadow/Resources/ResourceProgram.h"
 #include "Shadow/Renderer/Buffer.h"
 
@@ -36,7 +37,9 @@ class SHADOW_API Application
 	private:
 		bool running = true;
 		std::unique_ptr<Window> window;
-		LayerImGui* imguiLayer;
+		LayerImGui* imguiLayer = nullptr;
+		LayerResourceManager* resourceManager = nullptr;
+
 
 		std::unique_ptr<Program> defaultProgram;
 		std::unique_ptr<VertexBuffer> vertexBuffer;

@@ -9,6 +9,8 @@ public:
 	LayerResourceManager();
 	~LayerResourceManager();
 
+	void LoadScene();
+
 private:
 
 };

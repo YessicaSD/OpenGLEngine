@@ -8,17 +8,19 @@ workspace "Shadow"
     }
 
    outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
-
+   startproject "Sandbox"
 
 IncludeDir = {}
 IncludeDir["GLFW"] = "Shadow/vendor/GLFW/include"
 IncludeDir["Glad"] = "Shadow/vendor/Glad/include"
 IncludeDir["imgui"] = "Shadow/vendor/imgui"
 IncludeDir["glm"] = "Shadow/vendor/glm"
+IncludeDir["assimp"] = "Shadow/vendor/assimp/include"
 
 include "Shadow/vendor/GLFW"
 include "Shadow/vendor/Glad"
 include "Shadow/vendor/imgui"
+include "Shadow/vendor/assimp"
 
 project "Shadow"
     location "Shadow"
@@ -50,13 +52,15 @@ project "Shadow"
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
         "%{IncludeDir.imgui}",
-        "%{IncludeDir.glm}"
+        "%{IncludeDir.glm}",
+        "%{IncludeDir.assimp}"
    }
    links
    {
        "GLFW",
        "Glad",
        "ImGui",
+       "assimp",
        "opengl32.lib"
    }
     filter "system:windows"
@@ -80,6 +84,9 @@ project "Shadow"
       defines "SW_DIST"
       optimize "on"
 
+
+
+      
  project "Sandbox"
     location "Sandbox"
     kind "ConsoleApp"
