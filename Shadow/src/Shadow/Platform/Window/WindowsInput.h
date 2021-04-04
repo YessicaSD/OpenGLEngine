@@ -2,7 +2,6 @@
 
 #include "Shadow/Input.h"
 
-#include "Shadow/Core.h"
 
 NAMESPACE_BEGAN
 class WindowsInput : public Input

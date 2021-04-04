@@ -2,21 +2,24 @@
 
 #include "Shadow/Renderer/Buffer.h"
 
-#include "Shadow/Core.h"
-
 NAMESPACE_BEGAN
 class OpenGLVertexBuffer : public VertexBuffer
 {
 public:
 	OpenGLVertexBuffer(float* vertices, uint32_t size);
+	OpenGLVertexBuffer(Vertex* vertices, uint32_t size);
 	~OpenGLVertexBuffer();
 
 	virtual void Bind() const override;
 	virtual void UnBind() const override;
 	virtual uint32_t GetBufferID() const override;
 
+	virtual const BufferLayout& GetLayout() const override;
+	virtual void SetLayout(const BufferLayout& layout) override;
+
 private:
 	uint32_t bufferID = 0;
+	BufferLayout layout;
 };
 
 class OpenGLIndexBuffer : public IndexBuffer

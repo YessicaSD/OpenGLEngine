@@ -1,6 +1,4 @@
 #pragma once
-
-#include "Core.h"
 #include "swpch.h"
 #include "Window.h"
 #include "Layers/LayerManager.h"

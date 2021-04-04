@@ -3,7 +3,6 @@
 #include "swpch.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/ostr.h" //in order to log custom types
-#include "Core.h"
 
 
 NAMESPACE_BEGAN

@@ -2,7 +2,6 @@
 
 #include "WindowWindows.h"
 #include "Shadow/Log.h"
-#include "Shadow/Core.h"
 
 #include "Shadow/Event/EventApplication.h"
 #include "Shadow/Event/EventMouse.h"

@@ -5,7 +5,6 @@
 
 #include "glad/glad.h"
 
-#include "Core.h"
 #include "Input.h"
 
 #include "glm/glm.hpp"
@@ -64,6 +63,11 @@ void Application::Run()
 	vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
 	indexBuffer.reset(IndexBuffer::Create(indices, 6));
 	
+
+	BufferLayout layout = {
+		{ShaderDataType::FLOAT3, "a_Position"}
+	};
+
 	unsigned int VAO;
 	glGenVertexArrays(1, &VAO);
 

@@ -11,6 +11,8 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
+#include "Shadow/Core.h"
+
 #ifdef  SW_PLATFORM_WINDOWS
 #include <Windows.h>
 

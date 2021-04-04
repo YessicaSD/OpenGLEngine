@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Shadow/Core.h"
+
 #include "swpch.h"
 
 NAMESPACE_BEGAN

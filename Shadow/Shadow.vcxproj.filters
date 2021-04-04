@@ -88,9 +88,6 @@
     <ClInclude Include="src\Shadow\Renderer\Buffer.h">
       <Filter>Shadow\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Shadow\Renderer\Mesh.h">
-      <Filter>Shadow\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\Shadow\Resources\Resource.h">
       <Filter>Shadow\Resources</Filter>
     </ClInclude>
@@ -104,6 +101,9 @@
       <Filter>Shadow</Filter>
     </ClInclude>
     <ClInclude Include="src\swpch.h" />
+    <ClInclude Include="src\Shadow\Renderer\ResourceMesh.h">
+      <Filter>Shadow\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Shadow\Application.cpp">
@@ -142,12 +142,12 @@
     <ClCompile Include="src\Shadow\Renderer\Buffer.cpp">
       <Filter>Shadow\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Shadow\Renderer\Mesh.cpp">
-      <Filter>Shadow\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="src\Shadow\Resources\ResourceProgram.cpp">
       <Filter>Shadow\Resources</Filter>
     </ClCompile>
     <ClCompile Include="src\swpch.cpp" />
+    <ClCompile Include="src\Shadow\Renderer\ResourceMesh.cpp">
+      <Filter>Shadow\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -2,7 +2,6 @@
 
 #include "Shadow/Layers/Layer.h"
 
-#include "Shadow/Core.h"
 #include "Shadow/Event/EventMouse.h"
 #include "Shadow/Event/EventKey.h"
 #include "Shadow/Event/EventApplication.h"

@@ -1,12 +1,10 @@
 #pragma once
-#include "Shadow/Core.h"
 
 #include <string>
 #include <functional>
 #include <sstream>
 
-namespace Shadow
-{
+NAMESPACE_BEGAN
 	enum class EventType
 	{
 		NONE  = 0, 
@@ -79,4 +77,4 @@ namespace Shadow
 		return os << e.ToString();
 	}
 
-}
+NAMESPACE_END

@@ -1,6 +1,4 @@
 #pragma once
-
-#include "Shadow/Core.h"
 #include "Shadow/Event/Event.h"
 
 #include <string>

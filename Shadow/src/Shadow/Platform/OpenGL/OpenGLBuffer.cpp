@@ -1,7 +1,6 @@
 #include "swpch.h"
 #include "OpenGLBuffer.h"
 
-#include "Shadow/Core.h"
 #include <glad/glad.h>
 
 NAMESPACE_BEGAN
@@ -12,6 +11,13 @@ OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size)
 	Bind();
 	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 
+}
+
+OpenGLVertexBuffer::OpenGLVertexBuffer(Vertex* vertices, uint32_t count)
+{
+	glCreateBuffers(1, &bufferID);
+	Bind();
+	glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), vertices, GL_STATIC_DRAW);
 }
 
 OpenGLVertexBuffer::~OpenGLVertexBuffer()
@@ -32,6 +38,16 @@ void OpenGLVertexBuffer::UnBind() const
 uint32_t OpenGLVertexBuffer::GetBufferID() const
 {
 	return bufferID;
+}
+
+const BufferLayout& OpenGLVertexBuffer::GetLayout() const
+{
+	return layout;
+}
+
+void OpenGLVertexBuffer::SetLayout(const BufferLayout& layout)
+{
+	this->layout = layout;
 }
 
 OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count)
