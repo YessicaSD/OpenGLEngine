@@ -8,9 +8,6 @@
 
 #include "Shadow/Layers/LayerImGui.h"
 #include "Shadow/Layers/LayerResourceManager.h"
-#include "Shadow/Resources/ResourceProgram.h"
-#include "Shadow/Renderer/Buffer.h"
-
 NAMESPACE_BEGAN
 
 class SHADOW_API Application
@@ -39,9 +36,7 @@ class SHADOW_API Application
 		LayerResourceManager* resourceManager = nullptr;
 
 
-		std::unique_ptr<Program> defaultProgram;
-		std::unique_ptr<VertexBuffer> vertexBuffer;
-		std::unique_ptr<IndexBuffer> indexBuffer;
+
 
 		LayerManager layerManager;
 		static Application* app;

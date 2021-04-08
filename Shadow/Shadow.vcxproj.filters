@@ -76,13 +76,13 @@
     <ClInclude Include="src\Shadow\MouseButtonCodes.h">
       <Filter>Shadow</Filter>
     </ClInclude>
-    <ClInclude Include="src\Shadow\Platform\OpenGL\OpenGLBuffer.h">
+    <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h">
       <Filter>Shadow\Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="src\Shadow\Platform\Window\WindowWindows.h">
+    <ClInclude Include="src\Platform\Window\WindowWindows.h">
       <Filter>Shadow\Platform\Window</Filter>
     </ClInclude>
-    <ClInclude Include="src\Shadow\Platform\Window\WindowsInput.h">
+    <ClInclude Include="src\Platform\Window\WindowsInput.h">
       <Filter>Shadow\Platform\Window</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Renderer\Buffer.h">
@@ -104,6 +104,15 @@
     <ClInclude Include="src\Shadow\Renderer\ResourceMesh.h">
       <Filter>Shadow\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="src\Shadow\Renderer\VertexArray.h">
+      <Filter>Shadow\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h">
+      <Filter>Shadow\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shadow\Renderer\RendererAPI.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h" />
+    <ClInclude Include="src\Shadow\Renderer\Camera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Shadow\Application.cpp">
@@ -130,13 +139,13 @@
     <ClCompile Include="src\Shadow\Log.cpp">
       <Filter>Shadow</Filter>
     </ClCompile>
-    <ClCompile Include="src\Shadow\Platform\OpenGL\OpenGLBuffer.cpp">
+    <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
       <Filter>Shadow\Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="src\Shadow\Platform\Window\WindowWindows.cpp">
+    <ClCompile Include="src\Platform\Window\WindowWindows.cpp">
       <Filter>Shadow\Platform\Window</Filter>
     </ClCompile>
-    <ClCompile Include="src\Shadow\Platform\Window\WindowsInput.cpp">
+    <ClCompile Include="src\Platform\Window\WindowsInput.cpp">
       <Filter>Shadow\Platform\Window</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Renderer\Buffer.cpp">
@@ -149,5 +158,14 @@
     <ClCompile Include="src\Shadow\Renderer\ResourceMesh.cpp">
       <Filter>Shadow\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="src\Shadow\Renderer\VertexArray.cpp">
+      <Filter>Shadow\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp">
+      <Filter>Shadow\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shadow\Renderer\RendererAPI.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp" />
+    <ClCompile Include="src\Shadow\Renderer\Camera.cpp" />
   </ItemGroup>
 </Project>

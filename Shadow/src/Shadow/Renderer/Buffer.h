@@ -70,9 +70,10 @@ struct BufferElement
 class BufferLayout
 {
 public:
+	BufferLayout() {};
 	BufferLayout(const std::initializer_list<BufferElement>& elements);
 	inline const std::vector<BufferElement>& GetElements() const { return elements;  };
-	inline const uint32_t GetStride() { return stride; };
+	inline const uint32_t GetStride() const { return stride; };
 
 	// To iterate BufferLayout
 	std::vector<BufferElement>::iterator begin() { return elements.begin(); }

@@ -1,5 +1,5 @@
 #pragma once
-
+#include "KeyCodes.h"
 NAMESPACE_BEGAN
 
 // this class is an interphase so for diferent platforms we are going to define diferent ways to read input

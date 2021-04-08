@@ -8,9 +8,9 @@ NAMESPACE_BEGAN
 OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size)
 {
 	glCreateBuffers(1, &bufferID);
-	Bind();
+	glBindBuffer(GL_ARRAY_BUFFER, bufferID);
 	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
-
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 OpenGLVertexBuffer::OpenGLVertexBuffer(Vertex* vertices, uint32_t count)
@@ -54,8 +54,9 @@ OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count)
 {
 	this->count = count;
 	glCreateBuffers(1, &bufferID);
-	Bind();
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices , GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 OpenGLIndexBuffer::~OpenGLIndexBuffer()

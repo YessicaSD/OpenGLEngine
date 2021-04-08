@@ -6,6 +6,7 @@ NAMESPACE_BEGAN
 class OpenGLVertexBuffer : public VertexBuffer
 {
 public:
+	OpenGLVertexBuffer() {};
 	OpenGLVertexBuffer(float* vertices, uint32_t size);
 	OpenGLVertexBuffer(Vertex* vertices, uint32_t size);
 	~OpenGLVertexBuffer();

@@ -11,7 +11,7 @@ public:
 	~Program();
 
 	unsigned int CreateShader(std::string& vs, std::string& fs);
-
+	inline unsigned int GetProgramID() { return programID; };
 	void Bind();
 	void UnBind();
 private:
