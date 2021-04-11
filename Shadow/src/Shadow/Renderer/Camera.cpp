@@ -19,7 +19,7 @@ void Camera::UpdateViewTransformation()
 
 Camera::Camera(float fov, float aspectRatio, float nearPlan, float farPlane)
 {
-	position = { 0,1,3 };
+	position = { 0,0,3 };
 	projectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, nearPlan, farPlane);
 	SetOrbit({ 0,0,0 });
 }
@@ -76,6 +76,7 @@ void Camera::UpdateViewTransformationFreeOrbit()
 {
 	glm::mat4 transform = glm::translate(glm::mat4(1.0f), position);
 	viewMatrix = glm::inverse(transform);
+	viewProjMatrix = projectionMatrix * viewMatrix;
 }
 
 NAMESPACE_END

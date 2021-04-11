@@ -15,7 +15,8 @@ public:
 
 	glm::vec3 GetPosition() const { return position; };
 	glm::vec3 GetRotation()const { return rotation; };
-
+	inline glm::vec3 GetRight() const  {return right; };
+	inline glm::vec3 GetUp() const  {return up; };
 	glm::mat4 GetProjectViewMatrix() const;
 	glm::mat4 GetViewMatrix() const;
 	glm::mat4 GetProjectionMatrix() const;

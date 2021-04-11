@@ -165,7 +165,6 @@
     <ClInclude Include="src\Shadow\Renderer\Buffer.h" />
     <ClInclude Include="src\Shadow\Renderer\Camera.h" />
     <ClInclude Include="src\Shadow\Renderer\RendererAPI.h" />
-    <ClInclude Include="src\Shadow\Renderer\ResourceMesh.h" />
     <ClInclude Include="src\Shadow\Resources\Resource.h" />
     <ClInclude Include="src\Shadow\Resources\ResourceModel.h" />
     <ClInclude Include="src\Shadow\Resources\ResourceProgram.h" />
@@ -190,7 +189,8 @@
     <ClCompile Include="src\Shadow\Renderer\Buffer.cpp" />
     <ClCompile Include="src\Shadow\Renderer\Camera.cpp" />
     <ClCompile Include="src\Shadow\Renderer\RendererAPI.cpp" />
-    <ClCompile Include="src\Shadow\Renderer\ResourceMesh.cpp" />
+    <ClCompile Include="src\Shadow\Resources\ResourceMesh.cpp" />
+    <ClCompile Include="src\Shadow\Resources\ResourceModel.cpp" />
     <ClCompile Include="src\Shadow\Resources\ResourceProgram.cpp" />
     <ClCompile Include="src\swpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

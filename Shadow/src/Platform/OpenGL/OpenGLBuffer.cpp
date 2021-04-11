@@ -10,13 +10,12 @@ OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size)
 	glCreateBuffers(1, &bufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, bufferID);
 	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 OpenGLVertexBuffer::OpenGLVertexBuffer(Vertex* vertices, uint32_t count)
 {
 	glCreateBuffers(1, &bufferID);
-	Bind();
+	glBindBuffer(GL_ARRAY_BUFFER, bufferID);
 	glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), vertices, GL_STATIC_DRAW);
 }
 

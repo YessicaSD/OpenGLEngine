@@ -23,7 +23,7 @@ Application::Application()
 
 	imguiLayer = new Shadow::LayerImGui();
 	PushOverlay(imguiLayer);
-	resourceManager = new Shadow::LayerResourceManager();
+	resourceManager = new Shadow::Resources();
 	PushOverlay(resourceManager);
 	PushOverlay(new Shadow::Renderer());
 

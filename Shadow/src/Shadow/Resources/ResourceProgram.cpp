@@ -2,6 +2,7 @@
 #include "ResourceProgram.h"
 #include "glad/glad.h"
 #include "Shadow/Log.h"
+#include <glm/gtc/type_ptr.hpp>
 
 NAMESPACE_BEGAN
 
@@ -104,6 +105,12 @@ void Program::Bind()
 void Program::UnBind()
 {
 	glUseProgram(0);
+}
+
+void Program::UploadUniformMat4(const std::string& name, const glm::mat4& matrix)
+{
+	GLint location = glGetUniformLocation(programID, name.c_str());
+	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
 NAMESPACE_END

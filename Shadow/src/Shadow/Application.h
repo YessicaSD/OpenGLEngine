@@ -33,7 +33,7 @@ class SHADOW_API Application
 		bool running = true;
 		std::unique_ptr<Window> window;
 		LayerImGui* imguiLayer = nullptr;
-		LayerResourceManager* resourceManager = nullptr;
+		Resources* resourceManager = nullptr;
 
 
 

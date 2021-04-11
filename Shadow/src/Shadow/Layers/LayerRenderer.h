@@ -9,8 +9,7 @@
 #include "Shadow/Renderer/Camera.h"
 
 NAMESPACE_BEGAN
-
-
+class Model;
 
 class Renderer: public Layer
 {
@@ -32,6 +31,7 @@ private:
 	int projViewUniform = -1;
 	std::shared_ptr<Program> defaultProgram;
 	std::shared_ptr<VertexArray> vertexArray;
+	Model* model = nullptr;
 	static RendererAPI* rendererAPI;
 };
 

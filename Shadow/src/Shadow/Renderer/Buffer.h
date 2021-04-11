@@ -6,10 +6,11 @@ NAMESPACE_BEGAN
 
 struct Vertex
 {
-	glm::vec3 position;
-	glm::vec3 Normal;
-	glm::vec2 TexCoords;
+	glm::vec3 position = glm::vec3(0.0, 0.0,0.0);
+	glm::vec3 normal = glm::vec3(0.0, 0.0,0.0);
+	glm::vec2 texCoords = glm::vec2(0.0,0.0);
 };
+
 enum class ShaderDataType
 {
 	NONE = 0, FLOAT, FLOAT2, FLOAT3, FLOAT4, MAT3, MAT4, INT, INT2, INT3, INT4, BOOL

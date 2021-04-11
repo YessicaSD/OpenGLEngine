@@ -101,7 +101,7 @@
       <Filter>Shadow</Filter>
     </ClInclude>
     <ClInclude Include="src\swpch.h" />
-    <ClInclude Include="src\Shadow\Renderer\ResourceMesh.h">
+    <ClInclude Include="src\Shadow\Resources\ResourceMesh.h">
       <Filter>Shadow\Resources</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Renderer\VertexArray.h">
@@ -155,7 +155,7 @@
       <Filter>Shadow\Resources</Filter>
     </ClCompile>
     <ClCompile Include="src\swpch.cpp" />
-    <ClCompile Include="src\Shadow\Renderer\ResourceMesh.cpp">
+    <ClCompile Include="src\Shadow\Resources\ResourceMesh.cpp">
       <Filter>Shadow\Resources</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Renderer\VertexArray.cpp">
@@ -167,5 +167,6 @@
     <ClCompile Include="src\Shadow\Renderer\RendererAPI.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp" />
     <ClCompile Include="src\Shadow\Renderer\Camera.cpp" />
+    <ClCompile Include="src\Shadow\Resources\ResourceModel.cpp" />
   </ItemGroup>
 </Project>
