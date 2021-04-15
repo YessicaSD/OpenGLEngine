@@ -3,7 +3,7 @@
 #include "Shadow/Layers/LayerRenderer.h"
 
 NAMESPACE_BEGAN
-Mesh::Mesh(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
+Mesh::Mesh(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, glm::mat4 matrix): transform(matrix)
 {
 	this->vertices = vertices;
 	this->indices = indices;
@@ -35,7 +35,7 @@ void Mesh::Draw()
 	if (!vertexArray)
 		return;
 
-	Renderer::Submit(vertexArray);
+	
 }
 
 NAMESPACE_END

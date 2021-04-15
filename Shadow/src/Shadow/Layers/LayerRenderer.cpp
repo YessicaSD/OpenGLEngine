@@ -24,30 +24,53 @@ Renderer::Renderer()
 		uniform mat4 projViewMatrix;
 
 		out vec3 pos;
+		out vec3 vNormal;
+		out vec3 FragPos;
 
 		void main()
 		{
 			pos = aPos;
-		   gl_Position =  projViewMatrix * vec4(aPos, 1.0);
+		    gl_Position =  projViewMatrix * vec4(aPos, 1.0);
+			vNormal = vec3(projViewMatrix * vec4(aNormal,1.0));
+			FragPos = aPos;
 		})";
 
 	std::string fragmentShaderSource = R"(
 		#version 330 core
 		out vec4 FragColor;
 		in vec3 pos;
+		in vec3 vNormal;
+		in vec3 FragPos;
+	
 
 		void main()
 		{
-		   FragColor = vec4(pos, 1.0f);
+		  vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
+		  vec3 lightPos = vec3(1.0,2.0,2.0);
+
+		  // ambient
+		  float ambientStrength = 0.1f;
+		  vec3 ambient = ambientStrength * lightColor;
+
+		  // Diffuse 
+		  vec3 norm = normalize(vNormal);
+		  vec3 lightDir = normalize(lightPos - FragPos);
+		  float diff = max(dot(norm, lightDir), 0.0);
+		  vec3 diffuse = diff * lightColor;
+
+		  vec3 result = (ambient + diffuse) * pos;
+		  FragColor = vec4(result, 1.0f);
+
 		})";
 
 	defaultProgram.reset(new Shadow::Program(vertexShaderSource, fragmentShaderSource));
 
-	model = Resources::LoadScene("E:/3D Objects/cube.fbx");
+	model = Resources::LoadScene("E:/3D Objects/Patrick/Patrick.obj");
 }
 
 Renderer::~Renderer()
 {
+
 }
 
 void Renderer::BeginScene()
@@ -56,6 +79,7 @@ void Renderer::BeginScene()
 
 void Renderer::EndScene()
 {
+
 }
 
 void Renderer::OnUpdate()

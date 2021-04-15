@@ -11,6 +11,7 @@ class Model : public Resource
 {
 public:
 	void Draw();
+
 private:
 	std::vector<Mesh> meshes;
 	void ProcessNode(aiNode* node, const aiScene* scene);

@@ -140,8 +140,11 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
+    <ClInclude Include="src\Platform\Window\WindowWindows.h" />
+    <ClInclude Include="src\Platform\Window\WindowsInput.h" />
     <ClInclude Include="src\Shadow.h" />
     <ClInclude Include="src\Shadow\Application.h" />
     <ClInclude Include="src\Shadow\Core.h" />
@@ -159,22 +162,23 @@
     <ClInclude Include="src\Shadow\Layers\LayerResourceManager.h" />
     <ClInclude Include="src\Shadow\Log.h" />
     <ClInclude Include="src\Shadow\MouseButtonCodes.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
-    <ClInclude Include="src\Platform\Window\WindowWindows.h" />
-    <ClInclude Include="src\Platform\Window\WindowsInput.h" />
     <ClInclude Include="src\Shadow\Renderer\Buffer.h" />
     <ClInclude Include="src\Shadow\Renderer\Camera.h" />
     <ClInclude Include="src\Shadow\Renderer\RendererAPI.h" />
+    <ClInclude Include="src\Shadow\Renderer\VertexArray.h" />
     <ClInclude Include="src\Shadow\Resources\Resource.h" />
+    <ClInclude Include="src\Shadow\Resources\ResourceMesh.h" />
     <ClInclude Include="src\Shadow\Resources\ResourceModel.h" />
     <ClInclude Include="src\Shadow\Resources\ResourceProgram.h" />
     <ClInclude Include="src\Shadow\Window.h" />
     <ClInclude Include="src\swpch.h" />
-    <ClInclude Include="src\Shadow\Renderer\VertexArray.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp" />
+    <ClCompile Include="src\Platform\Window\WindowWindows.cpp" />
+    <ClCompile Include="src\Platform\Window\WindowsInput.cpp" />
     <ClCompile Include="src\Shadow\Application.cpp" />
     <ClCompile Include="src\Shadow\ImGuiBuild.cpp" />
     <ClCompile Include="src\Shadow\Layers\Layer.cpp" />
@@ -183,19 +187,16 @@
     <ClCompile Include="src\Shadow\Layers\LayerRenderer.cpp" />
     <ClCompile Include="src\Shadow\Layers\LayerResourceManager.cpp" />
     <ClCompile Include="src\Shadow\Log.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
-    <ClCompile Include="src\Platform\Window\WindowWindows.cpp" />
-    <ClCompile Include="src\Platform\Window\WindowsInput.cpp" />
     <ClCompile Include="src\Shadow\Renderer\Buffer.cpp" />
     <ClCompile Include="src\Shadow\Renderer\Camera.cpp" />
     <ClCompile Include="src\Shadow\Renderer\RendererAPI.cpp" />
+    <ClCompile Include="src\Shadow\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Shadow\Resources\ResourceMesh.cpp" />
     <ClCompile Include="src\Shadow\Resources\ResourceModel.cpp" />
     <ClCompile Include="src\Shadow\Resources\ResourceProgram.cpp" />
     <ClCompile Include="src\swpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Shadow\Renderer\VertexArray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="vendor\GLFW\GLFW.vcxproj">

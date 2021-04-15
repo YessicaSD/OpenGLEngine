@@ -16,6 +16,7 @@ public:
 	inline unsigned int GetProgramID() { return programID; };
 	void Bind();
 	void UnBind();
+	void UploadUniformFloat4(const std::string& name, const glm::vec4& values);
 	void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
 
 private:

@@ -6,6 +6,7 @@
 #include "assimp/postprocess.h"
 #include "assimp/cfileio.h"
 #include "assimp/cimport.h"
+#include "Shadow/Layers/LayerRenderer.h"
 
 NAMESPACE_BEGAN
 
@@ -13,7 +14,8 @@ void Model::Draw()
 {
     for (auto mesh = meshes.begin(); mesh != meshes.end(); mesh++)
     {
-        mesh->Draw();
+        
+        Renderer::Submit(mesh->vertexArray);
     }
 }
 
@@ -23,7 +25,13 @@ void Model::ProcessNode(aiNode* node, const aiScene* scene)
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-        meshes.push_back(ProcessMesh(mesh, scene));
+        Mesh rmesh = ProcessMesh(mesh, scene);
+        aiMatrix4x4 transform = node->mTransformation;
+        rmesh.transform = glm::mat4(transform.a1, transform.a2, transform.a3, transform.a4,
+                                    transform.b1, transform.b2, transform.b3, transform.b4,
+                                    transform.c1, transform.c2, transform.c3, transform.c4, 
+                                    transform.d1, transform.d2, transform.d3, transform.d4) ;
+        meshes.push_back(rmesh);
     }
     // then do the same for each of its children
     for (unsigned int i = 0; i < node->mNumChildren; i++)
@@ -54,7 +62,6 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
         for (unsigned int j = 0; j < face.mNumIndices; j++)
             indices.push_back(face.mIndices[j]);
     }
-
     return Mesh(vertices, indices);
 }
 
