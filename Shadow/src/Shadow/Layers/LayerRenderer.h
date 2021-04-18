@@ -23,7 +23,7 @@ public:
 	inline static void SetClearColor(const glm::vec4& color) { rendererAPI->SetClearColor(color); };
 	inline static void ClearScreen() { rendererAPI->ClearScreen(); };
 	static void Submit(const std::shared_ptr<VertexArray>& vertexArray);
-	
+	virtual void OnImGuiRender() override;
 
 	virtual void OnUpdate() override ;
 private:

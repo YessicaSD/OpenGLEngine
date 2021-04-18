@@ -6,6 +6,9 @@
 #include "Shadow/Input.h"
 #include "Shadow/Log.h"
 #include "LayerResourceManager.h"
+
+#include <imgui.h>
+
 NAMESPACE_BEGAN
 
 RendererAPI* Renderer::rendererAPI = new OpenGLRendererAPI;
@@ -86,36 +89,66 @@ void Renderer::EndScene()
 
 void Renderer::OnUpdate()
 {
+	float speed = 0.05;
 	glm::vec3 cameraPos = camera.GetPosition();
+	glm::vec3 cameraRotation = camera.GetRotation();
+
+	std::pair<float, float> mousePos = Input::GetMousePosition();
+	glm::vec2 mousePosv = glm::vec2(mousePos.first, mousePos.second);
+	static glm::vec2 lastMousePos = mousePosv;
+
+	if (Input::IsMouseButtonPressed(SW_MOUSE_BUTTON_2))
+	{
+		glm::vec2 offset = mousePosv - lastMousePos;
+		cameraRotation.x -= offset.y;
+		cameraRotation.y += offset.x;
+		
+		if (cameraRotation.x > 89.0f)
+			cameraRotation.x = 89.0f;
+		if (cameraRotation.x < -89.0f)
+			cameraRotation.x = -89.0f;
+
+	}
 	if (Input::IsKeyPressed(SW_KEY_LEFT))
 	{
-		cameraPos += camera.GetRight();
+		cameraPos += camera.GetRight() * speed;
 	}
 	if (Input::IsKeyPressed(SW_KEY_RIGHT))
 	{
-		cameraPos -= camera.GetRight();
+		cameraPos -= camera.GetRight() * speed;
 	}
 	if (Input::IsKeyPressed(SW_KEY_UP))
 	{
-		cameraPos -= camera.GetUp();
+		cameraPos += camera.GetForward() * speed;
 	}
 	if (Input::IsKeyPressed(SW_KEY_DOWN))
 	{
-		cameraPos += camera.GetUp();
+		cameraPos -= camera.GetForward() * speed;
 	}
+
+	camera.SetRotation(cameraRotation);
 	camera.SetPosition(cameraPos);
+	
+	
+	lastMousePos = mousePosv;
 
 	defaultProgram->Bind();
 	defaultProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectViewMatrix());
 
 	model->Draw();
-
 }
 
 void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray)
 {
 	vertexArray->Bind();
 	rendererAPI->DrawIndexed(vertexArray);
+}
+
+void Renderer::OnImGuiRender()
+{
+	ImGui::Begin("Renderer");
+	camera.OnImGuiRender();
+	ImGui::End();
 }
 
 NAMESPACE_END
