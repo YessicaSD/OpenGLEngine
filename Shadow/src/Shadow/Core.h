@@ -24,4 +24,6 @@
 
 #define BIT(x) (1 << x)	
 
+#define ARRAY_COUNT(x) (sizeof(x)/sizeof(x[0]))
+
 #define SW_BIND_FN(fn) std::bind(&fn, this, std::placeholders::_1)

@@ -1,186 +1,237 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Platform">
-      <UniqueIdentifier>{2AC788B4-1694-E3BF-3FAD-D1672BD9184E}</UniqueIdentifier>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Platform\OpenGL">
-      <UniqueIdentifier>{1E7D2C1D-8A08-9AE1-9319-1DD6FF23F6E1}</UniqueIdentifier>
+    <Filter Include="src\Platform">
+      <UniqueIdentifier>{21CA02E5-0D2D-9289-B6B2-CA3FA2F45D0C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Platform\Window">
-      <UniqueIdentifier>{D1E05B2F-3D6C-C9F3-467D-4CE8B28725F4}</UniqueIdentifier>
+    <Filter Include="src\Platform\OpenGL">
+      <UniqueIdentifier>{35A49437-A105-7245-2A73-B8F796D3A804}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shadow">
-      <UniqueIdentifier>{4B0E0CD1-37B0-36A7-206B-4AFB0CACBDF7}</UniqueIdentifier>
+    <Filter Include="src\Platform\Window">
+      <UniqueIdentifier>{E807C449-5469-A157-DDD6-E7094937D816}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shadow\Event">
-      <UniqueIdentifier>{DCDB7319-C83E-03BE-71C4-3B745D06CF40}</UniqueIdentifier>
+    <Filter Include="src\Shadow">
+      <UniqueIdentifier>{82E76A2E-6E9F-AC7B-D7A6-85D7C37D476C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shadow\Layers">
-      <UniqueIdentifier>{AA42D256-1603-4E8D-DF3D-970A4BBD9269}</UniqueIdentifier>
+    <Filter Include="src\Shadow\Event">
+      <UniqueIdentifier>{5382942C-3F7B-B37E-68AD-98035405938A}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shadow\Renderer">
-      <UniqueIdentifier>{51961FF8-BD21-8DBC-C632-10B1323DE9BC}</UniqueIdentifier>
+    <Filter Include="src\Shadow\Layers">
+      <UniqueIdentifier>{01B807CE-6DCE-0564-B645-9185229BD6EB}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shadow\Resources">
-      <UniqueIdentifier>{75CDBF97-61C6-DEE9-8AF8-C36E7650BEF5}</UniqueIdentifier>
+    <Filter Include="src\Shadow\Renderer">
+      <UniqueIdentifier>{68BD8712-D41E-6520-5D8C-ABD2C9EC9BDF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Shadow\Resources">
+      <UniqueIdentifier>{6CD72CFF-5866-B6C8-0185-CAC3EDF2C66E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor">
+      <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\stb">
+      <UniqueIdentifier>{8BD3C5A8-778B-07F6-E092-E051CC69A2E6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h">
-      <Filter>Platform\OpenGL</Filter>
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLDataType.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLProgram.h">
+      <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h">
-      <Filter>Platform\OpenGL</Filter>
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h">
+      <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h">
-      <Filter>Platform\OpenGL</Filter>
+      <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\Window\WindowWindows.h">
-      <Filter>Platform\Window</Filter>
+      <Filter>src\Platform\Window</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\Window\WindowsInput.h">
-      <Filter>Platform\Window</Filter>
+      <Filter>src\Platform\Window</Filter>
     </ClInclude>
-    <ClInclude Include="src\Shadow.h" />
+    <ClInclude Include="src\Shadow.h">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="src\Shadow\Application.h">
-      <Filter>Shadow</Filter>
+      <Filter>src\Shadow</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Core.h">
-      <Filter>Shadow</Filter>
+      <Filter>src\Shadow</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\EntryPoint.h">
-      <Filter>Shadow</Filter>
+      <Filter>src\Shadow</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Event\Event.h">
-      <Filter>Shadow\Event</Filter>
+      <Filter>src\Shadow\Event</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Event\EventApplication.h">
-      <Filter>Shadow\Event</Filter>
+      <Filter>src\Shadow\Event</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Event\EventKey.h">
-      <Filter>Shadow\Event</Filter>
+      <Filter>src\Shadow\Event</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Event\EventMouse.h">
-      <Filter>Shadow\Event</Filter>
+      <Filter>src\Shadow\Event</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Input.h">
-      <Filter>Shadow</Filter>
+      <Filter>src\Shadow</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\KeyCodes.h">
-      <Filter>Shadow</Filter>
+      <Filter>src\Shadow</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Layers\Layer.h">
-      <Filter>Shadow\Layers</Filter>
+      <Filter>src\Shadow\Layers</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Layers\LayerImGui.h">
-      <Filter>Shadow\Layers</Filter>
+      <Filter>src\Shadow\Layers</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Layers\LayerManager.h">
-      <Filter>Shadow\Layers</Filter>
+      <Filter>src\Shadow\Layers</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Layers\LayerRenderer.h">
-      <Filter>Shadow\Layers</Filter>
+      <Filter>src\Shadow\Layers</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Layers\LayerResourceManager.h">
-      <Filter>Shadow\Layers</Filter>
+      <Filter>src\Shadow\Layers</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Log.h">
-      <Filter>Shadow</Filter>
+      <Filter>src\Shadow</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\MouseButtonCodes.h">
-      <Filter>Shadow</Filter>
+      <Filter>src\Shadow</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Renderer\Buffer.h">
-      <Filter>Shadow\Renderer</Filter>
+      <Filter>src\Shadow\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Renderer\Camera.h">
-      <Filter>Shadow\Renderer</Filter>
+      <Filter>src\Shadow\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Renderer\RendererAPI.h">
-      <Filter>Shadow\Renderer</Filter>
+      <Filter>src\Shadow\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shadow\Renderer\ShaderData.h">
+      <Filter>src\Shadow\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Renderer\VertexArray.h">
-      <Filter>Shadow\Renderer</Filter>
+      <Filter>src\Shadow\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Resources\Resource.h">
-      <Filter>Shadow\Resources</Filter>
+      <Filter>src\Shadow\Resources</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Resources\ResourceMesh.h">
-      <Filter>Shadow\Resources</Filter>
+      <Filter>src\Shadow\Resources</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Resources\ResourceModel.h">
-      <Filter>Shadow\Resources</Filter>
+      <Filter>src\Shadow\Resources</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Resources\ResourceProgram.h">
-      <Filter>Shadow\Resources</Filter>
+      <Filter>src\Shadow\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shadow\Resources\ResourceTexture.h">
+      <Filter>src\Shadow\Resources</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Window.h">
-      <Filter>Shadow</Filter>
+      <Filter>src\Shadow</Filter>
     </ClInclude>
-    <ClInclude Include="src\swpch.h" />
+    <ClInclude Include="src\swpch.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\stb\stb_image.h">
+      <Filter>vendor\stb</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
-      <Filter>Platform\OpenGL</Filter>
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLDataType.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLProgram.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp">
-      <Filter>Platform\OpenGL</Filter>
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp">
-      <Filter>Platform\OpenGL</Filter>
+      <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\Window\WindowWindows.cpp">
-      <Filter>Platform\Window</Filter>
+      <Filter>src\Platform\Window</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\Window\WindowsInput.cpp">
-      <Filter>Platform\Window</Filter>
+      <Filter>src\Platform\Window</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Application.cpp">
-      <Filter>Shadow</Filter>
+      <Filter>src\Shadow</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\ImGuiBuild.cpp">
-      <Filter>Shadow</Filter>
+      <Filter>src\Shadow</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Layers\Layer.cpp">
-      <Filter>Shadow\Layers</Filter>
+      <Filter>src\Shadow\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Layers\LayerImGui.cpp">
-      <Filter>Shadow\Layers</Filter>
+      <Filter>src\Shadow\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Layers\LayerManager.cpp">
-      <Filter>Shadow\Layers</Filter>
+      <Filter>src\Shadow\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Layers\LayerRenderer.cpp">
-      <Filter>Shadow\Layers</Filter>
+      <Filter>src\Shadow\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Layers\LayerResourceManager.cpp">
-      <Filter>Shadow\Layers</Filter>
+      <Filter>src\Shadow\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Log.cpp">
-      <Filter>Shadow</Filter>
+      <Filter>src\Shadow</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Renderer\Buffer.cpp">
-      <Filter>Shadow\Renderer</Filter>
+      <Filter>src\Shadow\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Renderer\Camera.cpp">
-      <Filter>Shadow\Renderer</Filter>
+      <Filter>src\Shadow\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Renderer\RendererAPI.cpp">
-      <Filter>Shadow\Renderer</Filter>
+      <Filter>src\Shadow\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shadow\Renderer\ShaderData.cpp">
+      <Filter>src\Shadow\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Renderer\VertexArray.cpp">
-      <Filter>Shadow\Renderer</Filter>
+      <Filter>src\Shadow\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Resources\ResourceMesh.cpp">
-      <Filter>Shadow\Resources</Filter>
+      <Filter>src\Shadow\Resources</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Resources\ResourceModel.cpp">
-      <Filter>Shadow\Resources</Filter>
+      <Filter>src\Shadow\Resources</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Resources\ResourceProgram.cpp">
-      <Filter>Shadow\Resources</Filter>
+      <Filter>src\Shadow\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="src\swpch.cpp" />
+    <ClCompile Include="src\Shadow\Resources\ResourceTexture.cpp">
+      <Filter>src\Shadow\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\swpch.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\stb\stb_image.cpp">
+      <Filter>vendor\stb</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

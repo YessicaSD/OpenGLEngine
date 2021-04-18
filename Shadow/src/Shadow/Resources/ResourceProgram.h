@@ -3,24 +3,34 @@
 #include "Resource.h"
 
 #include "glm/glm.hpp"
+#include "Shadow/Renderer/ShaderData.h"
 
 NAMESPACE_BEGAN
-
+struct VertexShaderAttribute
+{
+	unsigned int location;
+	ShaderDataType type;
+	std::string name;
+};
 class Program : public Resource
 {
 public:
-	Program(std::string& vs, std::string& fs);
-	~Program();
+	Program() {};
+	virtual ~Program();
 
-	unsigned int CreateShader(std::string& vs, std::string& fs);
-	inline unsigned int GetProgramID() { return programID; };
-	void Bind();
-	void UnBind();
-	void UploadUniformFloat4(const std::string& name, const glm::vec4& values);
-	void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
+	virtual inline unsigned int GetProgramID() { return 0; };
+	virtual void Bind() {};
+	virtual void UnBind() {};
+	virtual void UploadUniformFloat4(const std::string& name, const glm::vec4& values) {};
+	virtual void UploadUniformMat4(const std::string& name, const glm::mat4& matrix) {};
 
-private:
-	unsigned int programID = 0;
+protected:
+	virtual void Delete() {};
+
+protected:
+	std::vector<VertexShaderAttribute> attributes;
 };
+
+Program* CreateShader(std::string& vs, std::string& fs);
 
 NAMESPACE_END

@@ -1,6 +1,7 @@
 #pragma once
 #include "glm/vec3.hpp"
 #include "glm/vec2.hpp"
+#include "ShaderData.h"
 
 NAMESPACE_BEGAN
 
@@ -11,30 +12,7 @@ struct Vertex
 	glm::vec2 texCoords = glm::vec2(0.0,0.0);
 };
 
-enum class ShaderDataType
-{
-	NONE = 0, FLOAT, FLOAT2, FLOAT3, FLOAT4, MAT3, MAT4, INT, INT2, INT3, INT4, BOOL
-};
 
-static uint32_t ShaderDataTypeSize(ShaderDataType type)
-{
-	switch (type)
-	{
-	
-	case Shadow::ShaderDataType::FLOAT:			return 4;			break;
-	case Shadow::ShaderDataType::FLOAT2:		return 4 * 2;		break;
-	case Shadow::ShaderDataType::FLOAT3:		return 4 * 3;		break;
-	case Shadow::ShaderDataType::FLOAT4:		return 4 * 4;		break;
-	case Shadow::ShaderDataType::MAT3:			return 4 * 3 * 3; 	break;
-	case Shadow::ShaderDataType::MAT4:			return 4 * 4 * 4;	break;
-	case Shadow::ShaderDataType::INT:			return 4;			break;
-	case Shadow::ShaderDataType::INT2:			return 4 * 2;		break;
-	case Shadow::ShaderDataType::INT3:			return 4 * 3;		break;
-	case Shadow::ShaderDataType::INT4:			return 4 * 4;		break;
-	case Shadow::ShaderDataType::BOOL:			return 1;			break;
-	case Shadow::ShaderDataType::NONE: defaul:	return 0;			break;
-	}
-}
 
 struct BufferElement
 {
@@ -45,27 +23,12 @@ struct BufferElement
 	bool normalize;
 
 	BufferElement(ShaderDataType type, const std::string& name, bool normalize = false):
-				 name(name), type(type),size(ShaderDataTypeSize(type)),offset(0), normalize(normalize)
+				 name(name), type(type),size(ShaderData::ShaderDataTypeSize(type)),offset(0), normalize(normalize)
 	{}
 
 	uint32_t GetElementCount() const
 	{
-		switch (type)
-		{
-
-		case Shadow::ShaderDataType::FLOAT:			return 1;		break;
-		case Shadow::ShaderDataType::FLOAT2:		return 2;		break;
-		case Shadow::ShaderDataType::FLOAT3:		return 3;		break;
-		case Shadow::ShaderDataType::FLOAT4:		return 4;		break;
-		case Shadow::ShaderDataType::MAT3:			return 3 * 3; 	break;
-		case Shadow::ShaderDataType::MAT4:			return 4 * 4;	break;
-		case Shadow::ShaderDataType::INT:			return 1;		break;
-		case Shadow::ShaderDataType::INT2:			return 2;		break;
-		case Shadow::ShaderDataType::INT3:			return 3;		break;
-		case Shadow::ShaderDataType::INT4:			return 4;		break;
-		case Shadow::ShaderDataType::BOOL:			return 1;		break;
-		case Shadow::ShaderDataType::NONE: defaul:	return 0;		break;
-		}
+		return	ShaderData::GetElementCount(type);
 	}
 };
 class BufferLayout

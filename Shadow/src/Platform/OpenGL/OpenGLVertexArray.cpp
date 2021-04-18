@@ -2,34 +2,10 @@
 #include "Platform/OpenGL/OpenGLVertexArray.h"
 #include "Shadow/Log.h"
 #include <glad/glad.h>
+#include "Platform/OpenGL/OpenGLDataType.h"
+
 NAMESPACE_BEGAN
 
-static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
-{
-	switch (type)
-	{
-	case Shadow::ShaderDataType::FLOAT: 
-	case Shadow::ShaderDataType::FLOAT2:
-	case Shadow::ShaderDataType::FLOAT3:
-	case Shadow::ShaderDataType::FLOAT4:
-	case Shadow::ShaderDataType::MAT3:
-	case Shadow::ShaderDataType::MAT4:
-		return GL_FLOAT;
-		break;
-
-	case Shadow::ShaderDataType::INT:
-	case Shadow::ShaderDataType::INT2:
-	case Shadow::ShaderDataType::INT3:
-	case Shadow::ShaderDataType::INT4:
-		return GL_INT;
-		break;
-	case Shadow::ShaderDataType::BOOL:
-		return GL_BOOL;
-		break;
-
-	case Shadow::ShaderDataType::NONE: default: return GL_NONE; 	break;
-		}
-}
 OpenGLVertexArray::OpenGLVertexArray()
 {
 	glCreateVertexArrays(1, &vertexArrayID);

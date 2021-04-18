@@ -16,6 +16,7 @@ IncludeDir["Glad"] = "Shadow/vendor/Glad/include"
 IncludeDir["imgui"] = "Shadow/vendor/imgui"
 IncludeDir["glm"] = "Shadow/vendor/glm"
 IncludeDir["assimp"] = "Shadow/vendor/assimp/include"
+IncludeDir["stb"] = "Shadow/vendor/stb"
 
 include "Shadow/vendor/GLFW"
 include "Shadow/vendor/Glad"
@@ -39,6 +40,8 @@ project "Shadow"
    { 
        "%{prj.name}/src/**.h",
        "%{prj.name}/src/**.cpp",
+       "%{prj.name}/vendor/stb/**.cpp",
+       "%{prj.name}/vendor/stb/**.h",
    }
 
    defines
@@ -53,7 +56,8 @@ project "Shadow"
         "%{IncludeDir.Glad}",
         "%{IncludeDir.imgui}",
         "%{IncludeDir.glm}",
-        "%{IncludeDir.assimp}"
+        "%{IncludeDir.assimp}",
+        "%{IncludeDir.stb}"
    }
    links
    {
@@ -96,7 +100,6 @@ project "Shadow"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-   
 
      files 
    { 
@@ -111,7 +114,6 @@ project "Shadow"
         "Shadow/src",
         "%{IncludeDir.glm}"
    }
-
    links 
    {
        "Shadow"

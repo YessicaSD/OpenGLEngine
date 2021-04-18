@@ -26,9 +26,11 @@ Renderer::Renderer()
 		out vec3 pos;
 		out vec3 vNormal;
 		out vec3 FragPos;
+		out vec2 uv;
 
 		void main()
 		{
+			uv = aUV;
 			pos = aPos;
 		    gl_Position =  projViewMatrix * vec4(aPos, 1.0);
 			vNormal = vec3(projViewMatrix * vec4(aNormal,1.0));
@@ -41,7 +43,7 @@ Renderer::Renderer()
 		in vec3 pos;
 		in vec3 vNormal;
 		in vec3 FragPos;
-	
+		in vec2 uv;
 
 		void main()
 		{
@@ -58,12 +60,12 @@ Renderer::Renderer()
 		  float diff = max(dot(norm, lightDir), 0.0);
 		  vec3 diffuse = diff * lightColor;
 
-		  vec3 result = (ambient + diffuse) * pos;
+		  vec3 result = (ambient + diffuse) * vec3(uv,0.0);
 		  FragColor = vec4(result, 1.0f);
 
 		})";
 
-	defaultProgram.reset(new Shadow::Program(vertexShaderSource, fragmentShaderSource));
+	defaultProgram.reset(Shadow::CreateShader(vertexShaderSource, fragmentShaderSource));
 
 	model = Resources::LoadScene("E:/3D Objects/Patrick/Patrick.obj");
 }
