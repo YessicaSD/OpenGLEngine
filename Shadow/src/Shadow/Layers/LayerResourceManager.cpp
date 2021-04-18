@@ -1,5 +1,7 @@
 #include "swpch.h"
 #include "LayerResourceManager.h"
+#include "LayerRenderer.h"
+
 #include "Shadow/Log.h"
 
 #include "assimp/Importer.hpp"
@@ -7,6 +9,9 @@
 #include "assimp/postprocess.h"
 #include "assimp/cfileio.h"
 #include "assimp/cimport.h"
+
+#include "Platform/OpenGL/OpenGLTexture.h"
+
 
 NAMESPACE_BEGAN
 
@@ -20,7 +25,7 @@ Resources::~Resources()
 {
 }
 
-Model* Resources::LoadScene(std::string path)
+Model* Resources::LoadModel(std::string path)
 {
 	Model* resultModel = nullptr;
 	unsigned flags = aiProcess_CalcTangentSpace | \
@@ -34,7 +39,7 @@ Model* Resources::LoadScene(std::string path)
 		aiProcess_SortByPType | \
 		aiProcess_FindDegenerates | \
 		aiProcess_FindInvalidData | \
-		//aiProcess_FlipUVs | 
+		aiProcess_FlipUVs | 
 		0;
 
 	const aiScene* scene = aiImportFile(path.c_str(), flags);
@@ -51,6 +56,17 @@ Model* Resources::LoadScene(std::string path)
 	resultModel->ProcessNode(scene->mRootNode, scene);
 
 	return resultModel;
+}
+
+Texture* Resources::LoadTexture(std::string path)
+{
+	switch (Renderer::GetRendererAPI())
+	{
+		case RendererAPI::RenderAPIType::NONE:	SW_CORE_ASSERT(false, "not render api using"); return nullptr; break;
+		case RendererAPI::RenderAPIType::OPENGL: return new OpenGLTexture(path); break;
+	}
+
+	return nullptr;
 }
 
 NAMESPACE_END

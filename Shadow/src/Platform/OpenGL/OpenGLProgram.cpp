@@ -141,6 +141,13 @@ void OpenGLProgram::UploadUniformMat4(const std::string& name, const glm::mat4& 
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
+void OpenGLProgram::UploadUniformInt(const std::string& name, const int& value)
+{
+	GLint location = glGetUniformLocation(programID, name.c_str());
+	glUniform1i(location, value);
+	
+}
+
 void OpenGLProgram::Delete()
 {
 	glDeleteProgram(programID);

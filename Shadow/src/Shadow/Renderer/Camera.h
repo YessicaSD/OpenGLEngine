@@ -26,9 +26,8 @@ public:
 
 	void OnImGuiRender();
 private:
-	void UpdateViewTransformOrbit();
 	void UpdateViewTransformation();
-	void UpdateViewTransformationFreeOrbit();
+	void UpdateViewTransformOrbit();
 	void UpdateViewTransformationLookAround();
 
 private:
@@ -38,7 +37,7 @@ private:
 	glm::mat4 projectionMatrix;
 	glm::mat4 viewProjMatrix;
 
-	glm::vec3 position = {3,0,0};
+	glm::vec3 position = {-3,0,0};
 	glm::vec3 rotation = {0,0,0};
 
 	//float pitch, yaw, roll;

@@ -2,6 +2,7 @@
 #include "Camera.h"
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 #include  <imgui.h>
 
 NAMESPACE_BEGAN
@@ -91,6 +92,13 @@ void Camera::UpdateViewTransformOrbit()
 								lookPosition,
 								up);
 	viewProjMatrix = projectionMatrix * viewMatrix;
+
+	
+	glm::vec3 scale, translation, skew;
+	glm::quat qrot;
+	glm::vec4 perspective;
+	glm::decompose(viewProjMatrix, scale, qrot, translation, skew, perspective);
+	rotation = glm::eulerAngles(qrot) * 3.14159f / 180.f;
 }
 void Camera::UpdateViewTransformationLookAround()
 {
@@ -110,14 +118,8 @@ void Camera::UpdateViewTransformationLookAround()
 	viewMatrix = glm::lookAt(position,
 		position + forward,
 		up);
-
 	viewProjMatrix = projectionMatrix * viewMatrix;
-}
-void Camera::UpdateViewTransformationFreeOrbit()
-{
-	glm::mat4 transform = glm::translate(glm::mat4(1.0f), position);
-	viewMatrix = glm::inverse(transform);
-	viewProjMatrix = projectionMatrix * viewMatrix;
+	
 }
 
 NAMESPACE_END

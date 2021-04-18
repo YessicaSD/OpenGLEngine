@@ -43,6 +43,8 @@ Renderer::Renderer()
 	std::string fragmentShaderSource = R"(
 		#version 330 core
 		out vec4 FragColor;
+
+		uniform sampler2D u_Texture;
 		in vec3 pos;
 		in vec3 vNormal;
 		in vec3 FragPos;
@@ -63,14 +65,17 @@ Renderer::Renderer()
 		  float diff = max(dot(norm, lightDir), 0.0);
 		  vec3 diffuse = diff * lightColor;
 
-		  vec3 result = (ambient + diffuse) * vec3(uv,0.0);
-		  FragColor = vec4(result, 1.0f);
+		  vec3 result = (ambient + diffuse) * texture(u_Texture, uv).xyz;
+		  FragColor = texture(u_Texture, uv);
 
 		})";
 
 	defaultProgram.reset(Shadow::CreateShader(vertexShaderSource, fragmentShaderSource));
 
-	model = Resources::LoadScene("E:/3D Objects/Patrick/Patrick.obj");
+	model = Resources::LoadModel("E:/3D Objects/Patrick/Patrick.obj");
+	tex = Resources::LoadTexture("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/Patrick/Flowers.png");
+	//tex->Bind();
+	//defaultProgram->UploadUniformInt("u_Texture", 0);
 }
 
 Renderer::~Renderer()
@@ -109,19 +114,19 @@ void Renderer::OnUpdate()
 			cameraRotation.x = -89.0f;
 
 	}
-	if (Input::IsKeyPressed(SW_KEY_LEFT))
+	if (Input::IsKeyPressed(SW_KEY_A))
 	{
 		cameraPos += camera.GetRight() * speed;
 	}
-	if (Input::IsKeyPressed(SW_KEY_RIGHT))
+	if (Input::IsKeyPressed(SW_KEY_D))
 	{
 		cameraPos -= camera.GetRight() * speed;
 	}
-	if (Input::IsKeyPressed(SW_KEY_UP))
+	if (Input::IsKeyPressed(SW_KEY_W))
 	{
 		cameraPos += camera.GetForward() * speed;
 	}
-	if (Input::IsKeyPressed(SW_KEY_DOWN))
+	if (Input::IsKeyPressed(SW_KEY_S))
 	{
 		cameraPos -= camera.GetForward() * speed;
 	}
@@ -131,10 +136,12 @@ void Renderer::OnUpdate()
 	
 	
 	lastMousePos = mousePosv;
+	//glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
+	tex->Bind(1);
 
 	defaultProgram->Bind();
 	defaultProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectViewMatrix());
-
+	defaultProgram->UploadUniformInt("u_Texture", 0);
 	model->Draw();
 }
 

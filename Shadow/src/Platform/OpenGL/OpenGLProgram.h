@@ -12,8 +12,9 @@ public:
 	virtual void UnBind() override;
 	virtual void UploadUniformFloat4(const std::string& name, const glm::vec4& values);
 	virtual void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
+	virtual void UploadUniformInt(const std::string& name, const int& value) override;
 	virtual inline unsigned int GetProgramID() { return programID; };
-
+	
 private:
 	virtual void Delete() override;
 	void LoadAttributes();

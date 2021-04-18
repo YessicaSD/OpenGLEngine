@@ -46,6 +46,13 @@ void WindowWindows::Init(const WindowProp& prop)
 	{
 		int success = glfwInit();
 		SW_CORE_ASSERT(success, "Could not intialize GLFW!");
+
+		//glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		//glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+		
+	
 		glfwSetErrorCallback(GLFWErrorCallback);
 		GLFWInitialized = true;
 	}
@@ -61,6 +68,12 @@ void WindowWindows::Init(const WindowProp& prop)
 
 		// Set GLFW callbacks
 		SetCallbacks();
+
+		//std::string openglVersion = (const char*)glGetString(GL_VERSION);
+		SW_TRACE("OpenGL version: {0}", glGetString(GL_VERSION));
+		SW_TRACE("OpenGL version: {0}", glGetString(GL_RENDERER));
+		SW_TRACE("OpenGL version: {0}", glGetString(GL_VENDOR));
+		SW_TRACE("OpenGL version: {0}", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 }
 

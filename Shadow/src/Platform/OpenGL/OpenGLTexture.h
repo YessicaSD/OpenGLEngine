@@ -8,6 +8,8 @@ class OpenGLTexture : public Texture
 public:
 	OpenGLTexture(const std::string& path);
 	~OpenGLTexture();
+	virtual uint32_t GetWidth() override;
+	virtual uint32_t GetHeight() override;
 	virtual void Bind(uint32_t slot) override;
 
 private:

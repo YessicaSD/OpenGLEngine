@@ -5,11 +5,9 @@ NAMESPACE_BEGAN
 class Texture : public Resource
 {
 public:
-	virtual uint32_t GetWidth();
-	virtual uint32_t GetHeight();
-	virtual void Bind(uint32_t slot = 0);
+	virtual uint32_t GetWidth()  =0;
+	virtual uint32_t GetHeight() = 0;
+	virtual void Bind(uint32_t slot = 0) =0;
 };
-
-Texture* Create(std::string path);
 
 NAMESPACE_END

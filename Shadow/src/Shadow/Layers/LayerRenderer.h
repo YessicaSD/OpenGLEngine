@@ -10,6 +10,7 @@
 
 NAMESPACE_BEGAN
 class Model;
+class Texture;
 
 class Renderer: public Layer
 {
@@ -32,6 +33,7 @@ private:
 	std::shared_ptr<Program> defaultProgram;
 	std::shared_ptr<VertexArray> vertexArray;
 	Model* model = nullptr;
+	Texture* tex = nullptr;
 	static RendererAPI* rendererAPI;
 };
 
