@@ -71,9 +71,9 @@ void WindowWindows::Init(const WindowProp& prop)
 
 		//std::string openglVersion = (const char*)glGetString(GL_VERSION);
 		SW_TRACE("OpenGL version: {0}", glGetString(GL_VERSION));
-		SW_TRACE("OpenGL version: {0}", glGetString(GL_RENDERER));
-		SW_TRACE("OpenGL version: {0}", glGetString(GL_VENDOR));
-		SW_TRACE("OpenGL version: {0}", glGetString(GL_SHADING_LANGUAGE_VERSION));
+		SW_TRACE("OpenGL renderer: {0}", glGetString(GL_RENDERER));
+		SW_TRACE("OpenGL vendor: {0}", glGetString(GL_VENDOR));
+		SW_TRACE("OpenGL glsl version: {0}", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 }
 

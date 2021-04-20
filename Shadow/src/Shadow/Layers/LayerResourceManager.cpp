@@ -69,6 +69,17 @@ Texture* Resources::LoadTexture(std::string path)
 	return nullptr;
 }
 
+Cubemap* Resources::CreateCubemap()
+{
+	switch (Renderer::GetRendererAPI())
+	{
+	case RendererAPI::RenderAPIType::NONE:	SW_CORE_ASSERT(false, "not render api using"); return nullptr; break;
+	case RendererAPI::RenderAPIType::OPENGL: return new Cubemap(); break;
+	}
+
+	return nullptr;
+}
+
 NAMESPACE_END
 
 

@@ -16,7 +16,7 @@ RendererAPI* Renderer::rendererAPI = new OpenGLRendererAPI;
 Renderer::Renderer()
 {
 	Renderer::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-	glEnable(GL_DEPTH_TEST);
+	
 
 	std::string vertexShaderSource = R"(
 		#version 330 core
@@ -72,10 +72,52 @@ Renderer::Renderer()
 
 	defaultProgram.reset(Shadow::CreateShader(vertexShaderSource, fragmentShaderSource));
 
+	std::string vsSky = R"(
+		#version 330 core
+		layout (location = 0) in vec3 aPos;
+
+		out vec3 TexCoords;
+
+		uniform mat4 projViewMatrix;
+		
+
+		void main()
+		{
+			TexCoords = aPos;
+			gl_Position = projViewMatrix * vec4(aPos, 1.0);
+		})";
+
+	std::string fsSky = R"(
+		#version 330 core
+		out vec4 FragColor;
+
+		in vec3 TexCoords;
+
+		uniform samplerCube skybox;
+
+		void main()
+		{    
+			FragColor = texture(skybox, TexCoords);
+			//FragColor = vec4(1.0,0.0,0.0,1.0);
+		})";
+	skyProgram.reset(Shadow::CreateShader(vsSky, fsSky));
+	skyProgram->UploadUniformInt("skybox", 0);
+
 	model = Resources::LoadModel("E:/3D Objects/Patrick/Patrick.obj");
+	cube = Resources::LoadModel("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/cube.fbx");
+
 	tex = Resources::LoadTexture("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/Patrick/Flowers.png");
 	//tex->Bind();
 	//defaultProgram->UploadUniformInt("u_Texture", 0);
+	skybox = Resources::CreateCubemap();
+	skybox->SetPositiveX("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/skybox/right.jpg");
+	skybox->SetNegativeX("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/skybox/left.jpg");
+	skybox->SetPositiveY("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/skybox/top.jpg");
+	skybox->SetNegativeY("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/skybox/bottom.jpg");
+	skybox->SetPositiveZ("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/skybox/front.jpg");
+	skybox->SetNegativeZ("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/skybox/back.jpg");
+	
+	glEnable(GL_DEPTH_TEST);
 }
 
 Renderer::~Renderer()
@@ -94,6 +136,41 @@ void Renderer::EndScene()
 
 void Renderer::OnUpdate()
 {
+	CameraUpdate();
+
+	glDepthMask(GL_FALSE);
+
+	skybox->Bind();
+	skyProgram->Bind();
+	glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
+	skyProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectionMatrix() * view);
+	cube->Draw();
+
+	glDepthMask(GL_TRUE);
+	//glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
+	tex->Bind(1);
+	//
+	defaultProgram->Bind();
+	defaultProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectViewMatrix());
+	defaultProgram->UploadUniformInt("u_Texture", 0);
+	model->Draw();
+}
+
+void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray)
+{
+	vertexArray->Bind();
+	rendererAPI->DrawIndexed(vertexArray);
+}
+
+void Renderer::OnImGuiRender()
+{
+	ImGui::Begin("Renderer");
+	camera.OnImGuiRender();
+	ImGui::End();
+}
+
+void Renderer::CameraUpdate()
+{
 	float speed = 0.05;
 	glm::vec3 cameraPos = camera.GetPosition();
 	glm::vec3 cameraRotation = camera.GetRotation();
@@ -107,7 +184,7 @@ void Renderer::OnUpdate()
 		glm::vec2 offset = mousePosv - lastMousePos;
 		cameraRotation.x -= offset.y;
 		cameraRotation.y += offset.x;
-		
+
 		if (cameraRotation.x > 89.0f)
 			cameraRotation.x = 89.0f;
 		if (cameraRotation.x < -89.0f)
@@ -133,29 +210,9 @@ void Renderer::OnUpdate()
 
 	camera.SetRotation(cameraRotation);
 	camera.SetPosition(cameraPos);
-	
-	
+
+
 	lastMousePos = mousePosv;
-	//glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
-	tex->Bind(1);
-
-	defaultProgram->Bind();
-	defaultProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectViewMatrix());
-	defaultProgram->UploadUniformInt("u_Texture", 0);
-	model->Draw();
-}
-
-void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray)
-{
-	vertexArray->Bind();
-	rendererAPI->DrawIndexed(vertexArray);
-}
-
-void Renderer::OnImGuiRender()
-{
-	ImGui::Begin("Renderer");
-	camera.OnImGuiRender();
-	ImGui::End();
 }
 
 NAMESPACE_END

@@ -11,6 +11,7 @@
 NAMESPACE_BEGAN
 class Model;
 class Texture;
+class Cubemap;
 
 class Renderer: public Layer
 {
@@ -28,12 +29,17 @@ public:
 
 	virtual void OnUpdate() override ;
 private:
+	void CameraUpdate();
+private:
 	Camera camera;
 	int projViewUniform = -1;
 	std::shared_ptr<Program> defaultProgram;
+	std::shared_ptr<Program> skyProgram;
 	std::shared_ptr<VertexArray> vertexArray;
 	Model* model = nullptr;
+	Model* cube = nullptr;
 	Texture* tex = nullptr;
+	Cubemap* skybox = nullptr;
 	static RendererAPI* rendererAPI;
 };
 
