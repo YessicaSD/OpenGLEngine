@@ -14,6 +14,7 @@ namespace Shadow
 		virtual void OnEvent(Event& event) {};
 		virtual void OnUpdate() {};
 		virtual void OnAttach() {};
+		virtual void OnMainTopBar() {};
 		virtual void OnImGuiRender() {};
 		virtual void OnDetach() {};
 

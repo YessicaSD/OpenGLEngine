@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Glad", "Shadow\vendor\Glad\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImGui", "Shadow\vendor\imgui\ImGui.vcxproj", "{C0FF640D-2C14-8DBE-F595-301E616989EF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImGuiNodeEditor", "Shadow\vendor\imgui_node_editor\ImGuiNodeEditor.vcxproj", "{0D1D5786-79A8-C44A-82B9-473FEEC3204B}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Shadow", "Shadow\Shadow.vcxproj", "{4B0E0CD1-37B0-36A7-206B-4AFB0CACBDF7}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "assimp", "Shadow\vendor\assimp\assimp.vcxproj", "{724885F2-5EEA-AFC8-47A5-C31C33E63619}"
@@ -44,6 +46,12 @@ Global
 		{C0FF640D-2C14-8DBE-F595-301E616989EF}.Dist|x64.Build.0 = Dist|x64
 		{C0FF640D-2C14-8DBE-F595-301E616989EF}.Release|x64.ActiveCfg = Release|x64
 		{C0FF640D-2C14-8DBE-F595-301E616989EF}.Release|x64.Build.0 = Release|x64
+		{0D1D5786-79A8-C44A-82B9-473FEEC3204B}.Debug|x64.ActiveCfg = Debug|x64
+		{0D1D5786-79A8-C44A-82B9-473FEEC3204B}.Debug|x64.Build.0 = Debug|x64
+		{0D1D5786-79A8-C44A-82B9-473FEEC3204B}.Dist|x64.ActiveCfg = Dist|x64
+		{0D1D5786-79A8-C44A-82B9-473FEEC3204B}.Dist|x64.Build.0 = Dist|x64
+		{0D1D5786-79A8-C44A-82B9-473FEEC3204B}.Release|x64.ActiveCfg = Release|x64
+		{0D1D5786-79A8-C44A-82B9-473FEEC3204B}.Release|x64.Build.0 = Release|x64
 		{4B0E0CD1-37B0-36A7-206B-4AFB0CACBDF7}.Debug|x64.ActiveCfg = Debug|x64
 		{4B0E0CD1-37B0-36A7-206B-4AFB0CACBDF7}.Debug|x64.Build.0 = Debug|x64
 		{4B0E0CD1-37B0-36A7-206B-4AFB0CACBDF7}.Dist|x64.ActiveCfg = Dist|x64

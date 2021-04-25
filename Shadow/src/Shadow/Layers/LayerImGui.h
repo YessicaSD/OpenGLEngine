@@ -19,6 +19,8 @@ public:
 	virtual void OnImGuiRender() override;
 	void Begin();
 	void End();
+	void StartTopBar();
+	void EndTopBar();
 private:
 
 

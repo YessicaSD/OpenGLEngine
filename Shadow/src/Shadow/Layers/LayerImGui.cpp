@@ -25,7 +25,6 @@ void LayerImGui::Begin()
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
-
 }
 
 void LayerImGui::End()
@@ -45,6 +44,16 @@ void LayerImGui::End()
         glfwMakeContextCurrent(backup_current_context);
     }
 
+}
+
+void LayerImGui::StartTopBar()
+{
+    ImGui::BeginMainMenuBar();
+}
+
+void LayerImGui::EndTopBar()
+{
+    ImGui::EndMainMenuBar();
 }
 
 

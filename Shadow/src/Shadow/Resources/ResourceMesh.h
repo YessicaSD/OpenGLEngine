@@ -11,8 +11,9 @@ class Mesh : public Resource
 public:
 	Mesh(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, glm::mat4 matrix = glm::mat4(1.0));
 	void Draw();
-
+	std::string GetName() const { return name; };
 private:
+	std::string name;
 	glm::mat4 transform;
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;

@@ -7,6 +7,8 @@
 
 #include "Shadow/Renderer/RendererAPI.h"
 #include "Shadow/Renderer/Camera.h"
+#include "Shadow/Resources/ResourceMaterial.h"
+
 
 NAMESPACE_BEGAN
 class Model;
@@ -36,6 +38,8 @@ private:
 	std::shared_ptr<Program> defaultProgram;
 	std::shared_ptr<Program> skyProgram;
 	std::shared_ptr<VertexArray> vertexArray;
+	std::unique_ptr<Material> material;
+
 	Model* model = nullptr;
 	Model* cube = nullptr;
 	Texture* tex = nullptr;

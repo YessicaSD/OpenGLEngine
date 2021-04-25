@@ -15,7 +15,8 @@ public:
 	static Model* LoadModel(std::string path);
 	static Texture* LoadTexture(std::string path);
 	static Cubemap* CreateCubemap();
-
+	virtual void OnImGuiRender() override;
+	virtual void OnMainTopBar() override;
 private:
 	static Resources* instance;
 

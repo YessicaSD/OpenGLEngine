@@ -31,6 +31,9 @@
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
     </Filter>
+    <Filter Include="vendor\pcg">
+      <UniqueIdentifier>{9CC4C5A8-887C-07F6-F183-E051DD5AA2E6}</UniqueIdentifier>
+    </Filter>
     <Filter Include="vendor\stb">
       <UniqueIdentifier>{8BD3C5A8-778B-07F6-E092-E051CC69A2E6}</UniqueIdentifier>
     </Filter>
@@ -111,6 +114,9 @@
     <ClInclude Include="src\Shadow\MouseButtonCodes.h">
       <Filter>src\Shadow</Filter>
     </ClInclude>
+    <ClInclude Include="src\Shadow\Random.h">
+      <Filter>src\Shadow</Filter>
+    </ClInclude>
     <ClInclude Include="src\Shadow\Renderer\Buffer.h">
       <Filter>src\Shadow\Renderer</Filter>
     </ClInclude>
@@ -127,6 +133,12 @@
       <Filter>src\Shadow\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Resources\Resource.h">
+      <Filter>src\Shadow\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shadow\Resources\ResourceCubemap.h">
+      <Filter>src\Shadow\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shadow\Resources\ResourceMaterial.h">
       <Filter>src\Shadow\Resources</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Resources\ResourceMesh.h">
@@ -147,10 +159,19 @@
     <ClInclude Include="src\swpch.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="vendor\pcg\pcg_extras.hpp">
+      <Filter>vendor\pcg</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\pcg\pcg_random.hpp">
+      <Filter>vendor\pcg</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\pcg\pcg_uint128.hpp">
+      <Filter>vendor\pcg</Filter>
+    </ClInclude>
     <ClInclude Include="vendor\stb\stb_image.h">
       <Filter>vendor\stb</Filter>
     </ClInclude>
-    <ClInclude Include="src\Shadow\Resources\ResourceCubemap.h" />
+    <ClInclude Include="src\Shadow\Layers\LayerMaterialEditor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
@@ -201,6 +222,9 @@
     <ClCompile Include="src\Shadow\Log.cpp">
       <Filter>src\Shadow</Filter>
     </ClCompile>
+    <ClCompile Include="src\Shadow\Random.cpp">
+      <Filter>src\Shadow</Filter>
+    </ClCompile>
     <ClCompile Include="src\Shadow\Renderer\Buffer.cpp">
       <Filter>src\Shadow\Renderer</Filter>
     </ClCompile>
@@ -215,6 +239,12 @@
     </ClCompile>
     <ClCompile Include="src\Shadow\Renderer\VertexArray.cpp">
       <Filter>src\Shadow\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shadow\Resources\ResourceCubemap.cpp">
+      <Filter>src\Shadow\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shadow\Resources\ResourceMaterial.cpp">
+      <Filter>src\Shadow\Resources</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Resources\ResourceMesh.cpp">
       <Filter>src\Shadow\Resources</Filter>
@@ -234,6 +264,6 @@
     <ClCompile Include="vendor\stb\stb_image.cpp">
       <Filter>vendor\stb</Filter>
     </ClCompile>
-    <ClCompile Include="src\Shadow\Resources\ResourceCubemap.cpp" />
+    <ClCompile Include="src\Shadow\Layers\LayerMaterialEditor.cpp" />
   </ItemGroup>
 </Project>

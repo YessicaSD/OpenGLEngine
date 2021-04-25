@@ -8,70 +8,21 @@
 #include "LayerResourceManager.h"
 
 #include <imgui.h>
+#include <imgui_node_editor.h>
+
+
+
 
 NAMESPACE_BEGAN
-
 RendererAPI* Renderer::rendererAPI = new OpenGLRendererAPI;
+
 
 Renderer::Renderer()
 {
+
+
 	Renderer::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 	
-
-	std::string vertexShaderSource = R"(
-		#version 330 core
-		layout (location = 0) in vec3 aPos;
-		layout (location = 1) in vec3 aNormal;
-		layout (location = 2) in vec2 aUV;
-
-		uniform mat4 projViewMatrix;
-
-		out vec3 pos;
-		out vec3 vNormal;
-		out vec3 FragPos;
-		out vec2 uv;
-
-		void main()
-		{
-			uv = aUV;
-			pos = aPos;
-		    gl_Position =  projViewMatrix * vec4(aPos, 1.0);
-			vNormal = vec3(projViewMatrix * vec4(aNormal,1.0));
-			FragPos = aPos;
-		})";
-
-	std::string fragmentShaderSource = R"(
-		#version 330 core
-		out vec4 FragColor;
-
-		uniform sampler2D u_Texture;
-		in vec3 pos;
-		in vec3 vNormal;
-		in vec3 FragPos;
-		in vec2 uv;
-
-		void main()
-		{
-		  vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
-		  vec3 lightPos = vec3(1.0,2.0,2.0);
-
-		  // ambient
-		  float ambientStrength = 0.1f;
-		  vec3 ambient = ambientStrength * lightColor;
-
-		  // Diffuse 
-		  vec3 norm = normalize(vNormal);
-		  vec3 lightDir = normalize(lightPos - FragPos);
-		  float diff = max(dot(norm, lightDir), 0.0);
-		  vec3 diffuse = diff * lightColor;
-
-		  vec3 result = (ambient + diffuse) * texture(u_Texture, uv).xyz;
-		  FragColor = texture(u_Texture, uv);
-
-		})";
-
-	defaultProgram.reset(Shadow::CreateShader(vertexShaderSource, fragmentShaderSource));
-
 	std::string vsSky = R"(
 		#version 330 core
 		layout (location = 0) in vec3 aPos;
@@ -105,6 +56,7 @@ Renderer::Renderer()
 
 	model = Resources::LoadModel("E:/3D Objects/Patrick/Patrick.obj");
 	cube = Resources::LoadModel("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/cube.fbx");
+	material = std::make_unique<Material>();
 
 	tex = Resources::LoadTexture("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/Patrick/Flowers.png");
 	//tex->Bind();
@@ -122,7 +74,7 @@ Renderer::Renderer()
 
 Renderer::~Renderer()
 {
-
+	
 }
 
 void Renderer::BeginScene()
@@ -149,10 +101,10 @@ void Renderer::OnUpdate()
 	glDepthMask(GL_TRUE);
 	//glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
 	tex->Bind(1);
-	//
-	defaultProgram->Bind();
-	defaultProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectViewMatrix());
-	defaultProgram->UploadUniformInt("u_Texture", 0);
+	material->UseMaterial();
+	std::shared_ptr<Program> program = material->GetProgram();
+	program->UploadUniformMat4("projViewMatrix", camera.GetProjectViewMatrix());
+	program->UploadUniformInt("u_Texture", 0);
 	model->Draw();
 }
 
@@ -162,8 +114,26 @@ void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray)
 	rendererAPI->DrawIndexed(vertexArray);
 }
 
+
 void Renderer::OnImGuiRender()
 {
+	ImGui::Begin("Scene Info");
+	std::vector<Mesh> meshes = model->GetMeshes();
+	if (ImGui::TreeNode("Model"))
+	{
+		for (int i = 0; i < meshes.size(); i++)
+		{
+			if (ImGui::TreeNode((void*)(intptr_t)i, meshes[i].GetName().c_str()))
+			{
+				//ImGui::Text(meshes[i].GetName().c_str());
+				ImGui::TreePop();
+			}
+		}
+		ImGui::TreePop();
+	}
+
+	ImGui::End();
+
 	ImGui::Begin("Renderer");
 	camera.OnImGuiRender();
 	ImGui::End();

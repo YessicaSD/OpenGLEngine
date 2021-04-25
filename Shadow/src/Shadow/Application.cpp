@@ -9,6 +9,7 @@
 
 #include "glm/glm.hpp"
 #include "Shadow/Layers/LayerRenderer.h"
+#include "Shadow/Layers/LayerMaterialEditor.h"
 
 NAMESPACE_BEGAN
 
@@ -26,8 +27,7 @@ Application::Application()
 	resourceManager = new Shadow::Resources();
 	PushOverlay(resourceManager);
 	PushOverlay(new Shadow::Renderer());
-
-	
+	PushOverlay(new Shadow::MaterialEditor());
 }
 Application::~Application()
 {
@@ -46,6 +46,12 @@ void Application::Run()
 
 		Renderer::EndScene();
 		imguiLayer->Begin();
+		
+		imguiLayer->StartTopBar();
+			for (auto i = layerManager.begin(); i != layerManager.end(); i++)
+				(*i)->OnMainTopBar();
+		imguiLayer->EndTopBar();
+
 		for (auto i = layerManager.begin(); i != layerManager.end(); i++)
 			(*i)->OnImGuiRender();
 		imguiLayer->End();

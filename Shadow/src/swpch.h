@@ -11,6 +11,7 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
+#include <random>
 #include "Shadow/Core.h"
 
 #ifdef  SW_PLATFORM_WINDOWS

@@ -14,14 +14,18 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "Shadow/vendor/GLFW/include"
 IncludeDir["Glad"] = "Shadow/vendor/Glad/include"
 IncludeDir["imgui"] = "Shadow/vendor/imgui"
+IncludeDir["imgui_node_editor"] = "Shadow/vendor/imgui_node_editor"
 IncludeDir["glm"] = "Shadow/vendor/glm"
 IncludeDir["assimp"] = "Shadow/vendor/assimp/include"
 IncludeDir["stb"] = "Shadow/vendor/stb"
+IncludeDir["pcg"] = "Shadow/vendor/pcg"
 
 include "Shadow/vendor/GLFW"
 include "Shadow/vendor/Glad"
 include "Shadow/vendor/imgui"
 include "Shadow/vendor/assimp"
+include "Shadow/vendor/imgui_node_editor"
+--include "Shadow/vendor/pcg"
 
 project "Shadow"
     location "Shadow"
@@ -42,6 +46,8 @@ project "Shadow"
        "%{prj.name}/src/**.cpp",
        "%{prj.name}/vendor/stb/**.cpp",
        "%{prj.name}/vendor/stb/**.h",
+       "%{prj.name}/vendor/pcg/**.hpp",
+
    }
 
    defines
@@ -55,15 +61,18 @@ project "Shadow"
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
         "%{IncludeDir.imgui}",
+        "%{IncludeDir.imgui_node_editor}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.assimp}",
-        "%{IncludeDir.stb}"
+        "%{IncludeDir.stb}",
+        "%{IncludeDir.pcg}"
    }
    links
    {
        "GLFW",
        "Glad",
        "ImGui",
+       "ImGuiNodeEditor",
        "assimp",
        "opengl32.lib"
    }

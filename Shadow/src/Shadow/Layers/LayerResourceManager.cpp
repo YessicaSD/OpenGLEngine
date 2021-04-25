@@ -12,6 +12,7 @@
 
 #include "Platform/OpenGL/OpenGLTexture.h"
 
+#include "imgui.h"
 
 NAMESPACE_BEGAN
 
@@ -78,6 +79,22 @@ Cubemap* Resources::CreateCubemap()
 	}
 
 	return nullptr;
+}
+
+void Resources::OnImGuiRender()
+{
+	ImGui::Begin("Resources");
+	ImGui::End();
+}
+
+void Resources::OnMainTopBar()
+{
+	static bool open = true;
+	if (ImGui::Button("Hey"))
+	{
+
+	}
+	//ImGui::BeginTabItem("Resources", &open);
 }
 
 NAMESPACE_END

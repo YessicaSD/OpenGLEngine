@@ -10,3 +10,6 @@
 [submodule "Shadow/vendor/glm"]
 	path = Shadow/vendor/glm
 	url = https://github.com/g-truc/glm
+[submodule "Shadow/vendor/imgui_node_editor"]
+	path = Shadow/vendor/imgui_node_editor
+	url = https://github.com/thedmd/imgui-node-editor
