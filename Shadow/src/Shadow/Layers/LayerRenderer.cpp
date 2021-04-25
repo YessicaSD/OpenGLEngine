@@ -49,18 +49,23 @@ Renderer::Renderer()
 		void main()
 		{    
 			FragColor = texture(skybox, TexCoords);
-			//FragColor = vec4(1.0,0.0,0.0,1.0);
 		})";
+
 	skyProgram.reset(Shadow::CreateShader(vsSky, fsSky));
 	skyProgram->UploadUniformInt("skybox", 0);
 
 	model = Resources::LoadModel("E:/3D Objects/Patrick/Patrick.obj");
 	cube = Resources::LoadModel("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/cube.fbx");
 	material = std::make_unique<Material>();
+	std::shared_ptr<Program> program = material->GetProgram();
+	program->Bind();
+	program->UploadUniformMat4("Model", glm::mat4(1.0));
+	program->UploadUniformFloat3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+	program->UploadUniformFloat3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+	program->UploadUniformFloat3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+	program->UploadUniformFloat("material.shininess", 32.0f);
 
 	tex = Resources::LoadTexture("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/Patrick/Flowers.png");
-	//tex->Bind();
-	//defaultProgram->UploadUniformInt("u_Texture", 0);
 	skybox = Resources::CreateCubemap();
 	skybox->SetPositiveX("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/skybox/right.jpg");
 	skybox->SetNegativeX("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/skybox/left.jpg");
@@ -102,9 +107,12 @@ void Renderer::OnUpdate()
 	//glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
 	tex->Bind(1);
 	material->UseMaterial();
+
 	std::shared_ptr<Program> program = material->GetProgram();
 	program->UploadUniformMat4("projViewMatrix", camera.GetProjectViewMatrix());
 	program->UploadUniformInt("u_Texture", 0);
+	program->UploadUniformMat4("Model", glm::mat4(1.0));
+
 	model->Draw();
 }
 

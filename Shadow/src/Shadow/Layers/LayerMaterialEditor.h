@@ -10,6 +10,8 @@ public:
 	~MaterialEditor();
 
 	virtual void OnImGuiRender() override;
+private:
+	
 };
 
 NAMESPACE_END

@@ -30,6 +30,19 @@ MaterialEditor::~MaterialEditor()
 
 void MaterialEditor::OnImGuiRender()
 {
+	ImGui::Begin("Resulting Shader");
+	std::string fs = R"(
+		#version 330 core
+		out vec4 FragColor;
+
+		in vec3 TexCoords;
+		void main()
+		{    
+			FragColor = vec4(1.0,0.0,0.0,1.0);
+		}
+	)";
+	ImGui::Text(fs.c_str());
+	ImGui::End();
 	ed::SetCurrentEditor(g_Context);
 
 	ed::Begin("My Editor");
@@ -67,13 +80,6 @@ void MaterialEditor::OnImGuiRender()
 
 	ed::BeginPin(nodeB_InputPinId1, ed::PinKind::Input);
 	ImGui::Text("-> Alberdo");
-	ed::EndPin();
-	ed::BeginPin(nodeB_InputPinId2, ed::PinKind::Input);
-	ImGui::Text("-> In2");
-	ed::EndPin();
-
-	ed::BeginPin(nodeB_OutputPinId, ed::PinKind::Output);
-	ImGui::Text("Out ->");
 	ed::EndPin();
 	ed::EndNode();
 

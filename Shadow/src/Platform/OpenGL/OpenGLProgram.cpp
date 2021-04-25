@@ -99,7 +99,7 @@ void OpenGLProgram::LoadAttributes()
 
 	for (auto i = 0; i < attributeCount; i++)
 	{
-		VertexShaderAttribute attribute;
+		ProgramAttribute attribute;
 
 		char name[255];
 		GLsizei attributeLength, attributeSize;
@@ -117,6 +117,7 @@ void OpenGLProgram::LoadAttributes()
 		attribute.type = OpenGLBaseTypeToShaderDataType(attributeType);
 		attributes.push_back(attribute);
 	}
+	LogAttributes();
 }
 
 void OpenGLProgram::Bind()
@@ -129,10 +130,22 @@ void OpenGLProgram::UnBind()
 	glUseProgram(0);
 }
 
+void OpenGLProgram::UploadUniformFloat(const std::string& name, const float& value)
+{
+	GLint location = glGetUniformLocation(programID, name.c_str());
+	glUniform1f(location, value);
+}
+
 void OpenGLProgram::UploadUniformFloat4(const std::string& name, const glm::vec4& values)
 {
 	GLint location = glGetUniformLocation(programID, name.c_str());
-	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(values));
+	glUniform4f(location,values.x, values.y, values.z, values.w);
+}
+
+void OpenGLProgram::UploadUniformFloat3(const std::string& name, const glm::vec3& values)
+{
+	GLint location = glGetUniformLocation(programID, name.c_str());
+	glUniform3f(location, values.x, values.y, values.z);
 }
 
 void OpenGLProgram::UploadUniformMat4(const std::string& name, const glm::mat4& matrix)

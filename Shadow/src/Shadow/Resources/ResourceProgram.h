@@ -6,7 +6,7 @@
 #include "Shadow/Renderer/ShaderData.h"
 
 NAMESPACE_BEGAN
-struct VertexShaderAttribute
+struct ProgramAttribute
 {
 	unsigned int location;
 	ShaderDataType type;
@@ -21,15 +21,17 @@ public:
 	virtual inline unsigned int GetProgramID() { return 0; };
 	virtual void Bind() {};
 	virtual void UnBind() {};
+	virtual void UploadUniformFloat(const std::string& name, const float& value) {};
+	virtual void UploadUniformFloat3(const std::string& name, const glm::vec3& values) {};
 	virtual void UploadUniformFloat4(const std::string& name, const glm::vec4& values) {};
 	virtual void UploadUniformMat4(const std::string& name, const glm::mat4& matrix) {};
 	virtual void UploadUniformInt(const std::string& name, const int& value) {};
-
+			void LogAttributes();
 protected:
 	virtual void Delete() {};
 
 protected:
-	std::vector<VertexShaderAttribute> attributes;
+	std::vector<ProgramAttribute> attributes;
 };
 
 Program* CreateShader(std::string& vs, std::string& fs);

@@ -172,6 +172,7 @@
       <Filter>vendor\stb</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Layers\LayerMaterialEditor.h" />
+    <ClInclude Include="src\Shadow\Nodes\Node.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">

@@ -7,11 +7,21 @@ Material::Material()
 {
 	vs = R"(
 		#version 330 core
+
+		struct Material {
+			vec3 ambient;
+			vec3 diffuse;
+			vec3 specular;
+			float shininess;
+		}; 
+
 		layout (location = 0) in vec3 aPos;
 		layout (location = 1) in vec3 aNormal;
 		layout (location = 2) in vec2 aUV;
 
+		uniform mat4 Model;
 		uniform mat4 projViewMatrix;
+		uniform Material material;
 
 		out vec3 pos;
 		out vec3 vNormal;
@@ -20,11 +30,14 @@ Material::Material()
 
 		void main()
 		{
+
 			uv = aUV;
 			pos = aPos;
+			mat4 model = mat4(1.0);
 		    gl_Position =  projViewMatrix * vec4(aPos, 1.0);
-			vNormal = vec3(projViewMatrix * vec4(aNormal,1.0));
+			vNormal = mat3(transpose(inverse(Model))) * aNormal;  
 			FragPos = aPos;
+
 		})";
 
 	fs = R"(
@@ -39,8 +52,9 @@ Material::Material()
 
 		void main()
 		{
+
 		  vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
-		  vec3 lightPos = vec3(1.0,2.0,2.0);
+		  vec3 lightPos = vec3(0.0,5.0,1.0);
 
 		  // ambient
 		  float ambientStrength = 0.1f;
@@ -49,14 +63,20 @@ Material::Material()
 		  // Diffuse 
 		  vec3 norm = normalize(vNormal);
 		  vec3 lightDir = normalize(lightPos - FragPos);
+
 		  float diff = max(dot(norm, lightDir), 0.0);
 		  vec3 diffuse = diff * lightColor;
 
 		  vec3 result = (ambient + diffuse) * texture(u_Texture, uv).xyz;
-		  FragColor = texture(u_Texture, uv);
+		  FragColor = vec4(result,1.0);
 
 		})";
 
+	program.reset(Shadow::CreateShader(vs, fs));
+}
+
+Material::Material(std::string vs, std::string fs)
+{
 	program.reset(Shadow::CreateShader(vs, fs));
 }
 

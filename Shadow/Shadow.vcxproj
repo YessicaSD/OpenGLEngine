@@ -166,6 +166,7 @@
     <ClInclude Include="src\Shadow\Layers\LayerMaterialEditor.h" />
     <ClInclude Include="src\Shadow\Log.h" />
     <ClInclude Include="src\Shadow\MouseButtonCodes.h" />
+    <ClInclude Include="src\Shadow\Nodes\Node.h" />
     <ClInclude Include="src\Shadow\Random.h" />
     <ClInclude Include="src\Shadow\Renderer\Buffer.h" />
     <ClInclude Include="src\Shadow\Renderer\Camera.h" />
