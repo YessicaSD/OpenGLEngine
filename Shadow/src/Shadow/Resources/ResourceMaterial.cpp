@@ -41,36 +41,45 @@ Material::Material()
 		})";
 
 	fs = R"(
-		#version 330 core
-		out vec4 FragColor;
+	#version 330 core
+	//layout (location = 0) out vec3 gPosition;
+	//layout (location = 1) out vec3 gNormal;
+	//layout (location = 2) out vec4 gAlbedoSpec;		
 
-		uniform sampler2D u_Texture;
-		in vec3 pos;
-		in vec3 vNormal;
-		in vec3 FragPos;
-		in vec2 uv;
 
-		void main()
-		{
+	out vec4 FragColor;
 
-		  vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
-		  vec3 lightPos = vec3(0.0,5.0,1.0);
+	uniform sampler2D u_Texture;
+	in vec3 pos;
+	in vec3 vNormal;
+	in vec3 FragPos;
+	in vec2 uv;
 
-		  // ambient
-		  float ambientStrength = 0.1f;
-		  vec3 ambient = ambientStrength * lightColor;
+	void main()
+	{
 
-		  // Diffuse 
-		  vec3 norm = normalize(vNormal);
-		  vec3 lightDir = normalize(lightPos - FragPos);
+	  //gPosition = FragColor;
+	  //gNormal = normalize(vNormal);
+	  //gAlbedoSpec = texture(u_Texture, uv);
 
-		  float diff = max(dot(norm, lightDir), 0.0);
-		  vec3 diffuse = diff * lightColor;
+	  vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
+	  vec3 lightPos = vec3(0.0,5.0,1.0);
 
-		  vec3 result = (ambient + diffuse) * texture(u_Texture, uv).xyz;
-		  FragColor = vec4(result,1.0);
+	  // ambient
+	  float ambientStrength = 0.1f;
+	  vec3 ambient = ambientStrength * lightColor;
 
-		})";
+	  // Diffuse 
+	  vec3 norm = normalize(vNormal);
+	  vec3 lightDir = normalize(lightPos - FragPos);
+
+	  float diff = max(dot(norm, lightDir), 0.0);
+	  vec3 diffuse = diff * lightColor;
+
+	  vec3 result = (ambient + diffuse) * texture(u_Texture, uv).xyz;
+	  FragColor = vec4(result,1.0);
+
+	})";
 
 	program.reset(Shadow::CreateShader(vs, fs));
 }

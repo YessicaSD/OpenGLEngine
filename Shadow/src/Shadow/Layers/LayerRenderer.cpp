@@ -9,6 +9,7 @@
 
 #include <imgui.h>
 #include <imgui_node_editor.h>
+#include "Shadow/Application.h"
 
 
 
@@ -54,8 +55,8 @@ Renderer::Renderer()
 	skyProgram.reset(Shadow::CreateShader(vsSky, fsSky));
 	skyProgram->UploadUniformInt("skybox", 0);
 
-	model = Resources::LoadModel("E:/3D Objects/Patrick/Patrick.obj");
-	cube = Resources::LoadModel("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/cube.fbx");
+	model = Resources::LoadModel("Assets/gun/model.dae");
+	cube = Resources::LoadModel("Assets/cube.fbx");
 	material = std::make_unique<Material>();
 	std::shared_ptr<Program> program = material->GetProgram();
 	program->Bind();
@@ -65,15 +66,51 @@ Renderer::Renderer()
 	program->UploadUniformFloat3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 	program->UploadUniformFloat("material.shininess", 32.0f);
 
-	tex = Resources::LoadTexture("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/Patrick/Flowers.png");
+	tex = Resources::LoadTexture("Assets/gun/textures/Default_albedo.jpg");
 	skybox = Resources::CreateCubemap();
-	skybox->SetPositiveX("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/skybox/right.jpg");
-	skybox->SetNegativeX("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/skybox/left.jpg");
-	skybox->SetPositiveY("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/skybox/top.jpg");
-	skybox->SetNegativeY("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/skybox/bottom.jpg");
-	skybox->SetPositiveZ("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/skybox/front.jpg");
-	skybox->SetNegativeZ("E:/Documents/GitHub/OpenGLEngine/Sandbox/Assets/skybox/back.jpg");
+	skybox->SetPositiveX("Assets/skybox/right.jpg");
+	skybox->SetNegativeX("Assets/skybox/left.jpg");
+	skybox->SetPositiveY("Assets/skybox/top.jpg");
+	skybox->SetNegativeY("Assets/skybox/bottom.jpg");
+	skybox->SetPositiveZ("Assets/skybox/front.jpg");
+	skybox->SetNegativeZ("Assets/skybox/back.jpg");
 	
+	float w = Application::Get().GetWindow().GetWidth();
+	float h = Application::Get().GetWindow().GetHeight();
+
+	//Create gBuffer ==
+	glGenFramebuffers(1, &gBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+
+	// - position color buffer
+	glGenTextures(1, &gPosition);
+	glBindTexture(GL_TEXTURE_2D, gPosition);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
+
+	// - normal color buffer
+	glGenTextures(1, &gNormal);
+	glBindTexture(GL_TEXTURE_2D, gNormal);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
+
+	// - color + specular color buffer
+	glGenTextures(1, &gColorSpec);
+	glBindTexture(GL_TEXTURE_2D, gColorSpec);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gColorSpec, 0);
+
+	// - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
+	unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+	glDrawBuffers(3, attachments);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glEnable(GL_DEPTH_TEST);
 }
 

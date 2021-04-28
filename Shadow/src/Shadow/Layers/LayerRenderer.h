@@ -45,6 +45,9 @@ private:
 	Texture* tex = nullptr;
 	Cubemap* skybox = nullptr;
 	static RendererAPI* rendererAPI;
+
+	unsigned int gBuffer;
+	unsigned int gPosition, gNormal, gColorSpec;
 };
 
 
