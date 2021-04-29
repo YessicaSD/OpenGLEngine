@@ -37,17 +37,20 @@ private:
 	int projViewUniform = -1;
 	std::shared_ptr<Program> defaultProgram;
 	std::shared_ptr<Program> skyProgram;
+	std::unique_ptr<Program> deferredProgram;
 	std::shared_ptr<VertexArray> vertexArray;
 	std::unique_ptr<Material> material;
 
 	Model* model = nullptr;
 	Model* cube = nullptr;
+	std::unique_ptr<Model> renderQuad = nullptr;
+
 	Texture* tex = nullptr;
 	Cubemap* skybox = nullptr;
 	static RendererAPI* rendererAPI;
 
 	unsigned int gBuffer;
-	unsigned int gPosition, gNormal, gColorSpec;
+	unsigned int gPosition, gNormal, gAlbedoSpec, gDepth;
 };
 
 

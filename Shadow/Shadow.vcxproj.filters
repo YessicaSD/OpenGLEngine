@@ -173,6 +173,7 @@
     </ClInclude>
     <ClInclude Include="src\Shadow\Layers\LayerMaterialEditor.h" />
     <ClInclude Include="src\Shadow\Nodes\Node.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLPrimitive.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
@@ -266,5 +267,6 @@
       <Filter>vendor\stb</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Layers\LayerMaterialEditor.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLPrimitive.cpp" />
   </ItemGroup>
 </Project>

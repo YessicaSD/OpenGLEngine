@@ -13,6 +13,7 @@ public:
 	~Resources();
 
 	static Model* LoadModel(std::string path);
+	static Model* GetQuad();
 	static Texture* LoadTexture(std::string path);
 	static Cubemap* CreateCubemap();
 	virtual void OnImGuiRender() override;

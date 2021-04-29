@@ -142,6 +142,7 @@
   <ItemGroup>
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLDataType.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLPrimitive.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLProgram.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h" />
@@ -190,6 +191,7 @@
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLDataType.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLPrimitive.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLProgram.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp" />

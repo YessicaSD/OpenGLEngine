@@ -42,12 +42,12 @@ Material::Material()
 
 	fs = R"(
 	#version 330 core
-	//layout (location = 0) out vec3 gPosition;
-	//layout (location = 1) out vec3 gNormal;
-	//layout (location = 2) out vec4 gAlbedoSpec;		
+	layout (location = 0) out vec3 gPosition;
+	layout (location = 1) out vec3 gNormal;
+	layout (location = 2) out vec4 gAlbedoSpec;		
 
 
-	out vec4 FragColor;
+	//out vec4 FragColor;
 
 	uniform sampler2D u_Texture;
 	in vec3 pos;
@@ -58,9 +58,10 @@ Material::Material()
 	void main()
 	{
 
-	  //gPosition = FragColor;
-	  //gNormal = normalize(vNormal);
-	  //gAlbedoSpec = texture(u_Texture, uv);
+	  gPosition = FragPos;
+	  gNormal = normalize(vNormal);
+	  gAlbedoSpec.xyz = texture(u_Texture, uv).xyz;
+	  gAlbedoSpec.a = 1.0;
 
 	  vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
 	  vec3 lightPos = vec3(0.0,5.0,1.0);
@@ -77,7 +78,8 @@ Material::Material()
 	  vec3 diffuse = diff * lightColor;
 
 	  vec3 result = (ambient + diffuse) * texture(u_Texture, uv).xyz;
-	  FragColor = vec4(result,1.0);
+	  //FragColor = vec4(result,1.0);
+	gAlbedoSpec =  vec4(result,1.0);
 
 	})";
 

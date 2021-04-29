@@ -11,6 +11,7 @@
 #include "assimp/cimport.h"
 
 #include "Platform/OpenGL/OpenGLTexture.h"
+#include "Platform/OpenGL/OpenGLPrimitive.h"
 
 #include "imgui.h"
 
@@ -57,6 +58,17 @@ Model* Resources::LoadModel(std::string path)
 	resultModel->ProcessNode(scene->mRootNode, scene);
 
 	return resultModel;
+}
+
+Model* Resources::GetQuad()
+{
+	switch (Renderer::GetRendererAPI())
+	{
+		case RendererAPI::RenderAPIType::NONE:	SW_CORE_ASSERT(false, "not render api using"); return nullptr; break;
+		case RendererAPI::RenderAPIType::OPENGL: return OpenGLPrimitive::GetQuad();
+	}
+
+	return nullptr;
 }
 
 Texture* Resources::LoadTexture(std::string path)

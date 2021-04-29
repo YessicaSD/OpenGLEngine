@@ -13,7 +13,7 @@ public:
 	void Draw();
 	inline int GetNumberOfMeshes() { return meshes.size(); };
 	std::vector<Mesh> GetMeshes() { return meshes; };
-
+	void AddMesh(Mesh mesh) { meshes.push_back(mesh); };
 private:
 	std::vector<Mesh> meshes;
 
