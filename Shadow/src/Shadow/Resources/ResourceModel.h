@@ -16,9 +16,9 @@ public:
 	void AddMesh(Mesh mesh) { meshes.push_back(mesh); };
 private:
 	std::vector<Mesh> meshes;
-
 	void ProcessNode(aiNode* node, const aiScene* scene);
 	Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
+
 	friend class Resources;
 };
 

@@ -50,6 +50,8 @@ Material::Material()
 	//out vec4 FragColor;
 
 	uniform sampler2D u_Texture;
+	//uniform sample2D u_Normal;
+
 	in vec3 pos;
 	in vec3 vNormal;
 	in vec3 FragPos;
@@ -79,7 +81,7 @@ Material::Material()
 
 	  vec3 result = (ambient + diffuse) * texture(u_Texture, uv).xyz;
 	  //FragColor = vec4(result,1.0);
-	gAlbedoSpec =  vec4(result,1.0);
+	//gAlbedoSpec =  vec4(result,1.0);
 
 	})";
 

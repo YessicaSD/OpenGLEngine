@@ -22,7 +22,7 @@ void Camera::UpdateViewTransformation()
 Camera::Camera(float fov, float aspectRatio, float nearPlan, float farPlane)
 {
 	projectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, nearPlan, farPlane);
-	UpdateViewTransformOrbit();
+	UpdateViewTransformationLookAround();
 	//SetOrbit({ 0,0,0 });
 }
 

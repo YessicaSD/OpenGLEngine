@@ -41,15 +41,16 @@ Renderer::Renderer()
 
 	std::string fsSky = R"(
 		#version 330 core
-		out vec4 FragColor;
+		layout (location = 2) out vec4 gAlbedoSpec;	
+		//out vec4 FragColor;
 
 		in vec3 TexCoords;
 
 		uniform samplerCube skybox;
-
+		
 		void main()
 		{    
-			FragColor = texture(skybox, TexCoords);
+			gAlbedoSpec = texture(skybox, TexCoords);
 		})";
 
 	skyProgram.reset(Shadow::CreateShader(vsSky, fsSky));
@@ -83,8 +84,15 @@ Renderer::Renderer()
 		uniform sampler2D gDepth;
 
 		void main()
-		{    
-			FragColor = texture(gAlbedoSpec, TexCoords);
+		{   
+			
+			FragColor.xyz = texture(gDepth, TexCoords).xyz;
+			//if(texture(gDepth, TexCoords).r > 0.99)
+			//
+			//else
+			// FragColor.xyz = texture(gDepth, TexCoords).xyz * 0.75;
+			
+			FragColor.w = 1;
 		})";
 
 	deferredProgram.reset(Shadow::CreateShader(deferredVs, deferredFs));
@@ -96,7 +104,7 @@ Renderer::Renderer()
 	deferredProgram->UploadUniformInt("gDepth", 3);
 
 
-	model = Resources::LoadModel("Assets/gun/model.dae");
+	model = Resources::LoadModel("Assets/backpack/backpack.obj");
 	cube = Resources::LoadModel("Assets/cube.fbx");
 	renderQuad.reset(Resources::GetQuad());
 
@@ -110,7 +118,7 @@ Renderer::Renderer()
 	program->UploadUniformFloat("material.shininess", 32.0f);
 	program->UploadUniformInt("u_Texture",0);
 
-	tex = Resources::LoadTexture("Assets/gun/textures/Default_albedo.jpg");
+	tex = Resources::LoadTexture("Assets/backpack/diffuse.jpg");
 	skybox = Resources::CreateCubemap();
 	skybox->SetPositiveX("Assets/skybox/right.jpg");
 	skybox->SetNegativeX("Assets/skybox/left.jpg");
@@ -122,12 +130,13 @@ Renderer::Renderer()
 	float w = Application::Get().GetWindow().GetWidth();
 	float h = Application::Get().GetWindow().GetHeight();
 
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
 
 	//Create gBuffer ==
 	glGenFramebuffers(1, &gBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
-
+	glEnable(GL_DEPTH_TEST);
+	//glDepthFunc(GL_NOTEQUAL);
 	// - position color buffer
 	glGenTextures(1, &gPosition);
 	glBindTexture(GL_TEXTURE_2D, gPosition);
@@ -153,19 +162,26 @@ Renderer::Renderer()
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0);
 
 	// - depth buffer
-	/*glGenTextures(1, &gDepth);
+	glGenTextures(1, &gDepth);
+	glBindTexture(GL_TEXTURE_2D, gDepth);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, w, h, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, w, h, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, gDepth, 0);*/
-
-
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, gDepth, 0);
 
 	// - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
 	unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 	glDrawBuffers(3, attachments);
+
+
+	// finally check if framebuffer is complete
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		SW_TRACE("Framebuffer not complete!");
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 }
 
 Renderer::~Renderer()
@@ -184,9 +200,33 @@ void Renderer::EndScene()
 
 void Renderer::OnUpdate()
 {
+
 	CameraUpdate();
 
+	switch (renderMethod)
+	{
+		case Shadow::FORWARD:
+			ForwardRendering();
+			break;
+		case Shadow::DEFERRED:
+			DeferredRendering();
+			break;
+	}
 	
+
+
+
+}
+
+void Renderer::ForwardRendering()
+{
+
+}
+void Renderer::DeferredRendering()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//glDepthMask(GL_FALSE);
 	//
@@ -195,20 +235,14 @@ void Renderer::OnUpdate()
 	//glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
 	//skyProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectionMatrix() * view);
 	//cube->Draw();
-	//
 	//glDepthMask(GL_TRUE);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
-	glClearColor(1.0, 0.0, 1.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	
 
-	
 	// Draw in the g-buffer ====
-	
-	glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
-	tex->Bind(1);
+
+	 // activate the texture unit first before binding texture
+	tex->Bind(0);
 	material->UseMaterial();
 	std::shared_ptr<Program> program = material->GetProgram();
 	program->UploadUniformMat4("projViewMatrix", camera.GetProjectViewMatrix());
@@ -216,26 +250,30 @@ void Renderer::OnUpdate()
 	program->UploadUniformMat4("Model", glm::mat4(1.0));
 	model->Draw();
 
-	// Draw in the screen ===
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	deferredProgram->Bind();
+	// Draw in the screen ===
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gPosition);
-	
+
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, gNormal);
 
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
+
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, gDepth);
+
+	deferredProgram->Bind();
+
+
 	//glActiveTexture(GL_TEXTURE3);
 	//glBindTexture(GL_TEXTURE_2D, gDepth);
 
 	renderQuad->Draw();
-
 }
 
 void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray)

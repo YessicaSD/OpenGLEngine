@@ -37,8 +37,8 @@ private:
 	glm::mat4 projectionMatrix;
 	glm::mat4 viewProjMatrix;
 
-	glm::vec3 position = {-3,0,0};
-	glm::vec3 rotation = {0,0,0};
+	glm::vec3 position = {6.959,2.826,5.760};
+	glm::vec3 rotation = {-13.994,221.99,0.047};
 
 	//float pitch, yaw, roll;
 

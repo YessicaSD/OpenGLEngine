@@ -45,6 +45,8 @@ void Application::Run()
 			layer->OnUpdate();
 
 		Renderer::EndScene();
+
+
 		imguiLayer->Begin();
 		
 		imguiLayer->StartTopBar();
@@ -55,6 +57,7 @@ void Application::Run()
 		for (auto i = layerManager.begin(); i != layerManager.end(); i++)
 			(*i)->OnImGuiRender();
 		imguiLayer->End();
+
 		window->OnUpdate();
 	}
 }
