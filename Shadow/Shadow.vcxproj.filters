@@ -22,6 +22,9 @@
     <Filter Include="src\Shadow\Layers">
       <UniqueIdentifier>{01B807CE-6DCE-0564-B645-9185229BD6EB}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Shadow\Nodes">
+      <UniqueIdentifier>{CA82332D-B67B-527F-DFAD-3704CB05328B}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Shadow\Renderer">
       <UniqueIdentifier>{68BD8712-D41E-6520-5D8C-ABD2C9EC9BDF}</UniqueIdentifier>
     </Filter>
@@ -43,6 +46,9 @@
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLDataType.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLPrimitive.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLProgram.h">
@@ -102,6 +108,9 @@
     <ClInclude Include="src\Shadow\Layers\LayerManager.h">
       <Filter>src\Shadow\Layers</Filter>
     </ClInclude>
+    <ClInclude Include="src\Shadow\Layers\LayerMaterialEditor.h">
+      <Filter>src\Shadow\Layers</Filter>
+    </ClInclude>
     <ClInclude Include="src\Shadow\Layers\LayerRenderer.h">
       <Filter>src\Shadow\Layers</Filter>
     </ClInclude>
@@ -113,6 +122,9 @@
     </ClInclude>
     <ClInclude Include="src\Shadow\MouseButtonCodes.h">
       <Filter>src\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shadow\Nodes\Node.h">
+      <Filter>src\Shadow\Nodes</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Random.h">
       <Filter>src\Shadow</Filter>
@@ -171,15 +183,15 @@
     <ClInclude Include="vendor\stb\stb_image.h">
       <Filter>vendor\stb</Filter>
     </ClInclude>
-    <ClInclude Include="src\Shadow\Layers\LayerMaterialEditor.h" />
-    <ClInclude Include="src\Shadow\Nodes\Node.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLPrimitive.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLDataType.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLPrimitive.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLProgram.cpp">
@@ -213,6 +225,9 @@
       <Filter>src\Shadow\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Layers\LayerManager.cpp">
+      <Filter>src\Shadow\Layers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shadow\Layers\LayerMaterialEditor.cpp">
       <Filter>src\Shadow\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Layers\LayerRenderer.cpp">
@@ -266,7 +281,5 @@
     <ClCompile Include="vendor\stb\stb_image.cpp">
       <Filter>vendor\stb</Filter>
     </ClCompile>
-    <ClCompile Include="src\Shadow\Layers\LayerMaterialEditor.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLPrimitive.cpp" />
   </ItemGroup>
 </Project>

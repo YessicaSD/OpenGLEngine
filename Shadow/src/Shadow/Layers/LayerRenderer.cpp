@@ -86,7 +86,7 @@ Renderer::Renderer()
 		void main()
 		{   
 			
-			FragColor.xyz = texture(gDepth, TexCoords).xyz;
+			FragColor.xyz = texture(gAlbedoSpec, TexCoords).xyz;
 			//if(texture(gDepth, TexCoords).r > 0.99)
 			//
 			//else
@@ -228,14 +228,14 @@ void Renderer::DeferredRendering()
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//glDepthMask(GL_FALSE);
-	//
-	//skybox->Bind();
-	//skyProgram->Bind();
-	//glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
-	//skyProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectionMatrix() * view);
-	//cube->Draw();
-	//glDepthMask(GL_TRUE);
+	glDepthMask(GL_FALSE);
+	
+	skybox->Bind();
+	skyProgram->Bind();
+	glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
+	skyProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectionMatrix() * view);
+	cube->Draw();
+	glDepthMask(GL_TRUE);
 
 	
 

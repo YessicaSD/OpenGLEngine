@@ -162,9 +162,9 @@
     <ClInclude Include="src\Shadow\Layers\Layer.h" />
     <ClInclude Include="src\Shadow\Layers\LayerImGui.h" />
     <ClInclude Include="src\Shadow\Layers\LayerManager.h" />
+    <ClInclude Include="src\Shadow\Layers\LayerMaterialEditor.h" />
     <ClInclude Include="src\Shadow\Layers\LayerRenderer.h" />
     <ClInclude Include="src\Shadow\Layers\LayerResourceManager.h" />
-    <ClInclude Include="src\Shadow\Layers\LayerMaterialEditor.h" />
     <ClInclude Include="src\Shadow\Log.h" />
     <ClInclude Include="src\Shadow\MouseButtonCodes.h" />
     <ClInclude Include="src\Shadow\Nodes\Node.h" />
