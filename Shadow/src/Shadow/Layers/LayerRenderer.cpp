@@ -82,16 +82,22 @@ Renderer::Renderer()
 		uniform sampler2D gNormal;
 		uniform sampler2D gAlbedoSpec;
 		uniform sampler2D gDepth;
-
+		uniform int renderMode;
 		void main()
 		{   
 			
-			FragColor.xyz = texture(gAlbedoSpec, TexCoords).xyz;
-			//if(texture(gDepth, TexCoords).r > 0.99)
-			//
-			//else
-			// FragColor.xyz = texture(gDepth, TexCoords).xyz * 0.75;
-			
+			if(renderMode == 1)
+				FragColor.xyz = texture(gNormal, TexCoords).xyz;
+			else if(renderMode == 2)
+				FragColor.xyz = texture(gDepth, TexCoords).xyz;
+			else if(renderMode == 3)
+				FragColor.xyz = texture(gPosition, TexCoords).xyz;
+			else if(renderMode == 4)
+				FragColor.xyz = texture(gAlbedoSpec, TexCoords).xyz;
+			else
+			{
+				FragColor.xyz = texture(gAlbedoSpec, TexCoords).xyz;
+			}
 			FragColor.w = 1;
 		})";
 
@@ -268,7 +274,7 @@ void Renderer::DeferredRendering()
 	glBindTexture(GL_TEXTURE_2D, gDepth);
 
 	deferredProgram->Bind();
-
+	deferredProgram->UploadUniformInt("renderMode", renderMode);
 
 	//glActiveTexture(GL_TEXTURE3);
 	//glBindTexture(GL_TEXTURE_2D, gDepth);
@@ -304,12 +310,15 @@ void Renderer::OnImGuiRender()
 
 	ImGui::Begin("Renderer");
 	camera.OnImGuiRender();
+
+	const char* items[] = { "Final", "Normal", "Depth", "Position", "Albedo"};
+	ImGui::Combo("Render mode", &renderMode, items, IM_ARRAYSIZE(items));
 	ImGui::End();
 }
 
 void Renderer::CameraUpdate()
 {
-	float speed = 0.05;
+	float speed = 0.5;
 	glm::vec3 cameraPos = camera.GetPosition();
 	glm::vec3 cameraRotation = camera.GetRotation();
 

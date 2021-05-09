@@ -20,6 +20,14 @@ enum RenderMethod
 	FORWARD,
 	DEFERRED,
 };
+enum RenderMode
+{
+	NORMAL = 0,
+	ALBEDO,
+	POSITION,
+	DEPTH,
+	FINAL,
+};
 class Renderer: public Layer
 {
 public:
@@ -60,6 +68,7 @@ private:
 
 	unsigned int gBuffer;
 	unsigned int gPosition, gNormal, gAlbedoSpec, gDepth;
+	int renderMode = 0;
 };
 
 
