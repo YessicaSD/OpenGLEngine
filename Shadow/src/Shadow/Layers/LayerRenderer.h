@@ -34,7 +34,7 @@ public:
 	Renderer();
 	~Renderer();
 
-	static void BeginScene();
+	static void BeginScene() ;
 	static void EndScene();
 
 	static inline RendererAPI::RenderAPIType GetRendererAPI() { return RendererAPI::GetAPI(); };
@@ -43,12 +43,17 @@ public:
 	static void Submit(const std::shared_ptr<VertexArray>& vertexArray);
 	virtual void OnImGuiRender() override;
 
+
+public:
+	virtual void Init() override;
 	virtual void OnUpdate() override ;
 
 private:
 	void CameraUpdate();
 	void ForwardRendering();
 	void DeferredRendering();
+	void SetSkybox();
+	void CreateDeferredProgram();
 
 private:
 	Camera camera;

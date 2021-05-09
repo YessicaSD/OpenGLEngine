@@ -10,7 +10,7 @@ public:
 	void OnUpdate() override
 	{
 		if (Shadow::Input::IsKeyPressed(SW_KEY_0))
-			SW_TRACE("0 IS PRESSED");
+			SW_LOG_TRACE("0 IS PRESSED");
 	}
 	virtual void OnImGuiRender() override {
 		ImGui::Begin("Hello");

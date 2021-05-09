@@ -24,8 +24,7 @@ Application::Application()
 
 	imguiLayer = new Shadow::LayerImGui();
 	PushOverlay(imguiLayer);
-	resourceManager = new Shadow::Resources();
-	PushOverlay(resourceManager);
+	PushOverlay(resourceManager = new Shadow::Resources());
 	PushOverlay(new Shadow::Renderer());
 	PushOverlay(new Shadow::MaterialEditor());
 }
@@ -34,7 +33,8 @@ Application::~Application()
 }
 void Application::Run()
 {
-	
+	for (auto& layer : layerManager)
+		layer->Init();
 
 	while (running)
 	{

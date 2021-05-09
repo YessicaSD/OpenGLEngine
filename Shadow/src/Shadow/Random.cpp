@@ -6,7 +6,7 @@ NAMESPACE_BEGAN
 Random* Random::instance = new Random();
 Random::Random()
 {
-	SW_TRACE("Initializing random seed source from Module Random");
+	SW_LOG_TRACE("Initializing random seed source from Module Random");
 	// Seed with a real random value, if available
 	pcg_extras::seed_seq_from<std::random_device> seed_source;
 

@@ -1,5 +1,7 @@
 #include "swpch.h"
 #include "ResourceMaterial.h"
+#include "Shadow/Log.h"
+#include "Shadow/Layers/LayerResourceManager.h"
 
 NAMESPACE_BEGAN
 
@@ -49,8 +51,12 @@ Material::Material()
 
 	//out vec4 FragColor;
 
-	uniform sampler2D u_Texture;
-	//uniform sample2D u_Normal;
+	uniform sampler2D albedoTex;
+	//uniform sample2D normalTex;
+	//uniform sample2D aoTex;
+	//uniform sample2D roughnessTex;
+	//uniform sample2D specularTex;
+
 
 	in vec3 pos;
 	in vec3 vNormal;
@@ -62,7 +68,7 @@ Material::Material()
 
 	  gPosition = FragPos;
 	  gNormal = normalize(vNormal);
-	  gAlbedoSpec.xyz = texture(u_Texture, uv).xyz;
+	  gAlbedoSpec.xyz = texture(albedoTex, uv).xyz;
 	  gAlbedoSpec.a = 1.0;
 
 	  vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
@@ -79,23 +85,70 @@ Material::Material()
 	  float diff = max(dot(norm, lightDir), 0.0);
 	  vec3 diffuse = diff * lightColor;
 
-	  vec3 result = (ambient + diffuse) * texture(u_Texture, uv).xyz;
+	  vec3 result = (ambient + diffuse) * texture(albedoTex, uv).xyz;
 	  //FragColor = vec4(result,1.0);
 	//gAlbedoSpec =  vec4(result,1.0);
 
 	})";
 
 	program.reset(Shadow::CreateShader(vs, fs));
+	Init();
 }
 
 Material::Material(std::string vs, std::string fs)
 {
 	program.reset(Shadow::CreateShader(vs, fs));
+	Init();
 }
 
 void Material::UseMaterial()
 {
 	program->Bind();
+	for (int i = 0; i < TextureType::MAX_TEXTURE; i++)
+	{
+		if(textures[i].use_count() > 0)
+			textures[i]->Bind(i);
+	}
+}
+
+void Material::SetTexture(TextureType::TextureType textureType, Texture* texture)
+{
+	switch (textureType)
+	{
+	case TextureType::ALBEDO:
+		textures[TextureType::ALBEDO].reset(texture);
+		break;
+	case TextureType::NORMAL:
+		textures[TextureType::NORMAL].reset(texture);
+		break;
+	case TextureType::AMBIENT_OCCLUSION:
+		textures[TextureType::AMBIENT_OCCLUSION].reset(texture);
+		break;
+	case TextureType::ROUGHNESS:
+		textures[TextureType::ROUGHNESS].reset(texture);
+		break;
+	case TextureType::SPECULAR:
+		textures[TextureType::SPECULAR].reset(texture);
+		break;
+	default:
+		SW_LOG_WARN("Could not set the texture");
+		break;
+	}
+}
+
+void Material::Init()
+{
+	program->Bind();
+	program->UploadUniformInt("albedoTex", 0);
+	program->UploadUniformInt("normalTex", 1);
+	program->UploadUniformInt("aoTex", 2);
+	program->UploadUniformInt("roughnessTex", 3);
+	program->UploadUniformInt("specularTex", 4);
+
+	for (int i = 0; i < TextureType::MAX_TEXTURE; i++)
+	{
+		textures[i] = Resources::GetNoTextureTexture();
+	}
 }
 
 NAMESPACE_END

@@ -34,10 +34,10 @@ Program* CreateShader(std::string& vertexSource, std::string& fragmentSource)
 
 void Program::LogAttributes()
 {
-	SW_TRACE("{0}", GetProgramID());
+	SW_LOG_TRACE("{0}", GetProgramID());
 	for each (auto attribute in attributes)
 	{
-		SW_TRACE("{0}", attribute.name);
+		SW_LOG_TRACE("{0}", attribute.name);
 	}
 }
 

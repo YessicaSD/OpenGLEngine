@@ -11,6 +11,7 @@ namespace Shadow
 		Layer(const std::string& name = "Module");
 		virtual ~Layer();
 
+		virtual void Init() {};
 		virtual void OnEvent(Event& event) {};
 		virtual void OnUpdate() {};
 		virtual void OnAttach() {};

@@ -6,7 +6,7 @@ extern Shadow::Application* Shadow::CreateApplication();
 int main(int argc, char** argv)
 {
 	Shadow::Log::Init();
-	SW_INFO("Initialized App!");
+	SW_LOG_INFO("Initialized App!");
 
 
 	auto app = Shadow::CreateApplication();

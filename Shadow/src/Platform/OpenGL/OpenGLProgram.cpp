@@ -27,7 +27,7 @@ OpenGLProgram::OpenGLProgram(std::string& vertexSource, std::string& fragmentSou
 
 		glDeleteShader(vertexShader);
 
-		SW_ERROR("There was an error with the vertex shader, Error Info: {0}", infoLog.data());
+		SW_LOG_ERROR("There was an error with the vertex shader, Error Info: {0}", infoLog.data());
 		return;
 	}
 
@@ -51,7 +51,7 @@ OpenGLProgram::OpenGLProgram(std::string& vertexSource, std::string& fragmentSou
 		glDeleteShader(fragmentShader);
 		glDeleteShader(vertexShader);
 
-		SW_ERROR("There was an error with the fragment shader, Error Info: {0}", infoLog.data());
+		SW_LOG_ERROR("There was an error with the fragment shader, Error Info: {0}", infoLog.data());
 
 		return;
 	}
@@ -77,7 +77,7 @@ OpenGLProgram::OpenGLProgram(std::string& vertexSource, std::string& fragmentSou
 		glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
 
-		SW_ERROR("There was an error with the program, Error Info: {0}", infoLog.data());
+		SW_LOG_ERROR("There was an error with the program, Error Info: {0}", infoLog.data());
 
 		return;
 	}

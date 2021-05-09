@@ -19,14 +19,6 @@ NAMESPACE_BEGAN
 
 Resources* Resources::instance = new Resources;
 
-Resources::Resources()
-{
-}
-
-Resources::~Resources()
-{
-}
-
 Model* Resources::LoadModel(std::string path)
 {
 	Model* resultModel = nullptr;
@@ -48,7 +40,7 @@ Model* Resources::LoadModel(std::string path)
 
 	if (scene == nullptr || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
-		SW_ERROR(path + " could not be imported");
+		SW_LOG_ERROR(path + " could not be imported");
 		return resultModel;
 	}
 
@@ -82,6 +74,17 @@ Texture* Resources::LoadTexture(std::string path)
 	return nullptr;
 }
 
+Texture* Resources::CreateTextureFromArray(unsigned int* array, int width, int height, int layerCount, int mipLevelCount)
+{
+	switch (Renderer::GetRendererAPI())
+	{
+		case RendererAPI::RenderAPIType::NONE:	SW_CORE_ASSERT(false, "not render api using"); return nullptr; break;
+		case RendererAPI::RenderAPIType::OPENGL: return new OpenGLTexture(array, width, height, layerCount, mipLevelCount); break;
+	}
+
+	return nullptr;
+}
+
 Cubemap* Resources::CreateCubemap()
 {
 	switch (Renderer::GetRendererAPI())
@@ -91,6 +94,11 @@ Cubemap* Resources::CreateCubemap()
 	}
 
 	return nullptr;
+}
+
+std::shared_ptr<Texture> Resources::GetNoTextureTexture()
+{
+	return instance->noTextureTex;
 }
 
 void Resources::OnImGuiRender()
@@ -107,6 +115,17 @@ void Resources::OnMainTopBar()
 
 	}
 	//ImGui::BeginTabItem("Resources", &open);
+}
+
+void Resources::Init()
+{
+	CreateNoTextureTexture();
+}
+
+void Resources::CreateNoTextureTexture()
+{
+	unsigned int value = 0;
+	instance->noTextureTex.reset(CreateTextureFromArray(&value, 1, 1));
 }
 
 NAMESPACE_END

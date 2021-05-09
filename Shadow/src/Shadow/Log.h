@@ -28,11 +28,11 @@ NAMESPACE_END
 #define SW_CORE_TRACE(...)	::Shadow::Log::GetCoreLogger()->trace(__VA_ARGS__);
 #define SW_CORE_FATAL(...)	::Shadow::Log::GetCoreLogger()->fatal(__VA_ARGS__);
 
-#define SW_ERROR(...)	::Shadow::Log::GetClientLogger()->error(__VA_ARGS__);
-#define SW_WARN(...)	::Shadow::Log::GetClientLogger()->warn(__VA_ARGS__);
-#define SW_INFO(...)	::Shadow::Log::GetClientLogger()->info(__VA_ARGS__);
-#define SW_TRACE(...)	::Shadow::Log::GetClientLogger()->trace(__VA_ARGS__);
-#define SW_FATAL(...)	::Shadow::Log::GetClientLogger()->fatal(__VA_ARGS__);
+#define SW_LOG_ERROR(...)	::Shadow::Log::GetClientLogger()->error(__VA_ARGS__);
+#define SW_LOG_WARN(...)	::Shadow::Log::GetClientLogger()->warn(__VA_ARGS__);
+#define SW_LOG_INFO(...)	::Shadow::Log::GetClientLogger()->info(__VA_ARGS__);
+#define SW_LOG_TRACE(...)	::Shadow::Log::GetClientLogger()->trace(__VA_ARGS__);
+#define SW_LOG_FATAL(...)	::Shadow::Log::GetClientLogger()->fatal(__VA_ARGS__);
 
 #define SW_ENABLE_ASSERTS
 
@@ -42,7 +42,7 @@ NAMESPACE_END
 	{													\
 		if(!(x))										\
 		{												\
-			SW_ERROR("Assertion Fail: {0}", __VA_ARGS__); \
+			SW_LOG_ERROR("Assertion Fail: {0}", __VA_ARGS__); \
 			__debugbreak();								\
 		}												\
 	} 
