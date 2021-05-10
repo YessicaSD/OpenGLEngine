@@ -52,6 +52,7 @@ void Renderer::Init()
 
 	material = std::make_unique<Material>();
 	material->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/backpack/diffuse.jpg"));
+	material->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/backpack/normal.png"));
 
 	std::shared_ptr<Program> program = material->GetProgram();
 	program->Bind();
@@ -113,6 +114,7 @@ void Renderer::DeferredRendering()
 	program->UploadUniformMat4("projViewMatrix", camera.GetProjectViewMatrix());
 	program->UploadUniformInt("u_Texture", 0);
 	program->UploadUniformMat4("Model", glm::mat4(1.0));
+	program->UploadUniformFloat3("lightPos", lightPos);
 	model->Draw();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -324,6 +326,12 @@ void Renderer::OnImGuiRender()
 
 	const char* items[] = { "Final", "Normal", "Depth", "Position", "Albedo"};
 	ImGui::Combo("Render mode", &renderMode, items, IM_ARRAYSIZE(items));
+	ImGui::Text("Light position:");
+	ImGui::PushItemWidth(100);
+	ImGui::DragFloat("#lightx", &lightPos.x);  ImGui::SameLine();
+	ImGui::DragFloat("#lighty", &lightPos.y); ImGui::SameLine();
+	ImGui::DragFloat("#lightz", &lightPos.z);
+	ImGui::PopItemWidth();
 	ImGui::End();
 }
 

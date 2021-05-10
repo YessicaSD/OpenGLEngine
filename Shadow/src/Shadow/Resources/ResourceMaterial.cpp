@@ -30,6 +30,14 @@ Material::Material()
 		out vec3 FragPos;
 		out vec2 uv;
 
+		out VS_OUT {
+		vec3 FragPos;
+		vec2 TexCoords;
+		vec3 TangentLightPos;
+		vec3 TangentViewPos;
+		vec3 TangentFragPos;
+		} vs_out;
+
 		void main()
 		{
 
@@ -38,7 +46,7 @@ Material::Material()
 			mat4 model = mat4(1.0);
 		    gl_Position =  projViewMatrix * vec4(aPos, 1.0);
 			vNormal = mat3(transpose(inverse(Model))) * aNormal;  
-			FragPos = aPos;
+			FragPos = vec3(model * vec4(aPos,1.0));
 
 		})";
 
@@ -52,11 +60,12 @@ Material::Material()
 	//out vec4 FragColor;
 
 	uniform sampler2D albedoTex;
-	//uniform sample2D normalTex;
-	//uniform sample2D aoTex;
-	//uniform sample2D roughnessTex;
-	//uniform sample2D specularTex;
-
+	uniform sampler2D normalTex;
+	uniform sampler2D aoTex;
+	uniform sampler2D roughnessTex;
+	uniform sampler2D specularTex;
+	
+	uniform vec3 lightPos;
 
 	in vec3 pos;
 	in vec3 vNormal;
@@ -67,19 +76,24 @@ Material::Material()
 	{
 
 	  gPosition = FragPos;
-	  gNormal = normalize(vNormal);
+		// Normal ===============
+		vec3 normal = texture(normalTex, uv).rgb;
+		// transform normal vector to range [-1,1]
+		normal = normalize(normal * 2.0 - 1.0);  
+		
+
 	  gAlbedoSpec.xyz = texture(albedoTex, uv).xyz;
 	  gAlbedoSpec.a = 1.0;
 
 	  vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
-	  vec3 lightPos = vec3(0.0,5.0,1.0);
+	  //vec3 lightPos = vec3(0.5,1.0,0.3);
 
 	  // ambient
-	  float ambientStrength = 0.1f;
+	  float ambientStrength = 0.5f;
 	  vec3 ambient = ambientStrength * lightColor;
 
 	  // Diffuse 
-	  vec3 norm = normalize(vNormal);
+	  vec3 norm = normal;
 	  vec3 lightDir = normalize(lightPos - FragPos);
 
 	  float diff = max(dot(norm, lightDir), 0.0);
@@ -87,8 +101,8 @@ Material::Material()
 
 	  vec3 result = (ambient + diffuse) * texture(albedoTex, uv).xyz;
 	  //FragColor = vec4(result,1.0);
-	//gAlbedoSpec =  vec4(result,1.0);
-
+	gAlbedoSpec =  vec4(result,1.0);
+	gNormal = normal;
 	})";
 
 	program.reset(Shadow::CreateShader(vs, fs));
@@ -145,10 +159,10 @@ void Material::Init()
 	program->UploadUniformInt("roughnessTex", 3);
 	program->UploadUniformInt("specularTex", 4);
 
-	for (int i = 0; i < TextureType::MAX_TEXTURE; i++)
-	{
-		textures[i] = Resources::GetNoTextureTexture();
-	}
+	//for (int i = 0; i < TextureType::MAX_TEXTURE; i++)
+	//{
+	//	textures[i] = Resources::GetNoTextureTexture();
+	//}
 }
 
 NAMESPACE_END

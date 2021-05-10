@@ -57,6 +57,7 @@ private:
 
 private:
 	Camera camera;
+	glm::vec3 lightPos = { 0.5,1.0,0.3 };
 	RenderMethod renderMethod = DEFERRED;
 	int projViewUniform = -1;
 	std::shared_ptr<Program> skyProgram;
