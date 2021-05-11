@@ -33,7 +33,7 @@ Model* Resources::LoadModel(std::string path)
 		aiProcess_SortByPType | \
 		aiProcess_FindDegenerates | \
 		aiProcess_FindInvalidData | \
-		aiProcess_FlipUVs | 
+		aiProcess_FlipUVs | \
 		0;
 
 	const aiScene* scene = aiImportFile(path.c_str(), flags);

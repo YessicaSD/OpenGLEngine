@@ -22,8 +22,10 @@ void Mesh::SetupBuffers()
 
 	vertexBuffer->SetLayout({
 		{ShaderDataType::FLOAT3, "aPos"},
-		{ShaderDataType::FLOAT3, "a_Normal"},
-		{ShaderDataType::FLOAT2, "a_UV"}
+		{ShaderDataType::FLOAT3, "aNormal"},
+		{ShaderDataType::FLOAT2, "aUV"},
+		{ShaderDataType::FLOAT3, "aTangent"},
+		{ShaderDataType::FLOAT3, "aBitangent"}
 		});
 
 	vertexArray->AddVertexBuffer(vertexBuffer);

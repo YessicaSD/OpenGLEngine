@@ -115,6 +115,7 @@ void Renderer::DeferredRendering()
 	program->UploadUniformInt("u_Texture", 0);
 	program->UploadUniformMat4("Model", glm::mat4(1.0));
 	program->UploadUniformFloat3("lightPos", lightPos);
+	program->UploadUniformFloat3("viewPos", camera.GetPosition());
 	model->Draw();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
