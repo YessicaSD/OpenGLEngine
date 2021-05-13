@@ -44,6 +44,7 @@ public:
 	virtual void OnImGuiRender() override;
 
 
+
 public:
 	virtual void Init() override;
 	virtual void OnUpdate() override ;
@@ -54,6 +55,8 @@ private:
 	void DeferredRendering();
 	void SetSkybox();
 	void CreateDeferredProgram();
+	void GenerateNoiseTexture();
+	std::vector<glm::vec3> GenerateKernelPoints();
 
 private:
 	Camera camera;
@@ -70,10 +73,15 @@ private:
 
 	Texture* tex = nullptr;
 	Cubemap* skybox = nullptr;
+	std::unique_ptr<Texture> noiseTex;
+	std::unique_ptr<Texture> gPosTex;
+	std::unique_ptr<Texture> gNormal;
+	std::unique_ptr<Texture> gAlbedoSpec;
+	std::unique_ptr<Texture> gDepth;
+
 	static RendererAPI* rendererAPI;
 
 	unsigned int gBuffer;
-	unsigned int gPosition, gNormal, gAlbedoSpec, gDepth;
 	int renderMode = 0;
 };
 

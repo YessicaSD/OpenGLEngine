@@ -85,6 +85,30 @@ Texture* Resources::CreateTextureFromArray(unsigned int* array, int width, int h
 	return nullptr;
 }
 
+Texture* Resources::CreateTextureFromArray(std::vector<glm::vec3>& array, int width, int height, int layerCount, int mipLevelCount)
+{
+	switch (Renderer::GetRendererAPI())
+	{
+		case RendererAPI::RenderAPIType::NONE:	SW_CORE_ASSERT(false, "not render api using"); return nullptr; break;
+		case RendererAPI::RenderAPIType::OPENGL: return new OpenGLTexture(array, width, height, layerCount, mipLevelCount); break;
+	}
+
+	return nullptr;
+}
+
+Texture* Resources::CreateEmptyTexture(int width, int height, int internalFormat, int format, int type)
+{
+	switch (Renderer::GetRendererAPI())
+	{
+		case RendererAPI::RenderAPIType::NONE:	SW_CORE_ASSERT(false, "not render api using"); return nullptr; break;
+		case RendererAPI::RenderAPIType::OPENGL: return new OpenGLTexture(width, height, internalFormat, format, type); break;
+	}
+
+	return nullptr;
+	
+}
+
+
 Cubemap* Resources::CreateCubemap()
 {
 	switch (Renderer::GetRendererAPI())

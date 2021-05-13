@@ -22,6 +22,7 @@ public:
 	virtual uint32_t GetWidth()  =0;
 	virtual uint32_t GetHeight() = 0;
 	virtual void Bind(uint32_t slot = 0) =0;
+	virtual int GetID() { return 0; }
 };
 
 NAMESPACE_END

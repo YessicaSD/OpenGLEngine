@@ -16,6 +16,9 @@ public:
 	static Model* GetQuad();
 	static Texture* LoadTexture(std::string path);
 	static Texture* CreateTextureFromArray(unsigned int* array, int width, int height, int layerCount = 2, int mipLevelCount = 1);
+	static Texture* CreateTextureFromArray(std::vector<glm::vec3>& array, int width, int height, int layerCount = 2, int mipLevelCount = 1);
+	static Texture* CreateEmptyTexture(int width, int height, int internalFormat, int format, int type);
+
 	static Cubemap* CreateCubemap();
 	static std::shared_ptr<Texture> GetNoTextureTexture();
 	virtual void OnImGuiRender() override;

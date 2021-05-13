@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <random>
+#include <cmath>
 #include "Shadow/Core.h"
 
 #ifdef  SW_PLATFORM_WINDOWS

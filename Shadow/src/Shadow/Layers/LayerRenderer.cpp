@@ -13,23 +13,15 @@
 
 
 
-
 NAMESPACE_BEGAN
 RendererAPI* Renderer::rendererAPI = new OpenGLRendererAPI;
 
 
 Renderer::Renderer()
-{
-	
-	
-
-	
-
-}
+{}
 
 Renderer::~Renderer()
 {
-	
 }
 
 void Renderer::BeginScene()
@@ -44,6 +36,7 @@ void Renderer::EndScene()
 void Renderer::Init()
 {
 	Renderer::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+
 	SetSkybox();
 	CreateDeferredProgram();
 	model = Resources::LoadModel("Assets/backpack/backpack.obj");
@@ -62,13 +55,12 @@ void Renderer::Init()
 	program->UploadUniformFloat3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 	program->UploadUniformFloat("material.shininess", 32.0f);
 
+	
 }
 
 void Renderer::OnUpdate()
 {
-
 	CameraUpdate();
-
 	switch (renderMethod)
 	{
 		case Shadow::FORWARD:
@@ -78,10 +70,6 @@ void Renderer::OnUpdate()
 			DeferredRendering();
 			break;
 	}
-	
-
-
-
 }
 
 void Renderer::ForwardRendering()
@@ -103,12 +91,9 @@ void Renderer::DeferredRendering()
 	cube->Draw();
 	glDepthMask(GL_TRUE);
 
-	
-
 	// Draw in the g-buffer ====
 
 	 // activate the texture unit first before binding texture
-	//tex->Bind(0);
 	material->UseMaterial();
 	std::shared_ptr<Program> program = material->GetProgram();
 	program->UploadUniformMat4("projViewMatrix", camera.GetProjectViewMatrix());
@@ -123,17 +108,12 @@ void Renderer::DeferredRendering()
 	// Draw in the screen ===
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, gPosition);
+	gPosTex->Bind(0);
+	gNormal->Bind(1);
+	gAlbedoSpec->Bind(2);
+	gDepth->Bind(3);
 
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, gNormal);
-
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
-
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, gDepth);
+	//noiseTex->Bind(4);
 
 	deferredProgram->Bind();
 	deferredProgram->UploadUniformInt("renderMode", renderMode);
@@ -214,7 +194,10 @@ void Renderer::CreateDeferredProgram()
 		uniform sampler2D gNormal;
 		uniform sampler2D gAlbedoSpec;
 		uniform sampler2D gDepth;
+		uniform sampler2D noiseTex;
+
 		uniform int renderMode;
+		
 		void main()
 		{   
 			
@@ -241,6 +224,10 @@ void Renderer::CreateDeferredProgram()
 	deferredProgram->UploadUniformInt("gAlbedoSpec", 2);
 	deferredProgram->UploadUniformInt("gDepth", 3);
 
+	std::vector<glm::vec3> kernelsPoint = GenerateKernelPoints();
+	for (unsigned int i = 0; i < kernelsPoint.size(); ++i)
+		deferredProgram->UploadUniformFloat3("samples[" + std::to_string(i) + "]", kernelsPoint[i]);
+
 	//Create gBuffer ==
 	glGenFramebuffers(1, &gBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
@@ -251,38 +238,20 @@ void Renderer::CreateDeferredProgram()
 
 	//glDepthFunc(GL_NOTEQUAL);
 	// - position color buffer
-	glGenTextures(1, &gPosition);
-	glBindTexture(GL_TEXTURE_2D, gPosition);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
+	gPosTex.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA16F, GL_RGBA, GL_FLOAT));
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosTex->GetID(), 0);
 
 	// - normal color buffer
-	glGenTextures(1, &gNormal);
-	glBindTexture(GL_TEXTURE_2D, gNormal);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
+	gNormal.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA16F, GL_RGBA, GL_FLOAT));
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal->GetID(), 0);
 
 	// - color + specular color buffer
-	glGenTextures(1, &gAlbedoSpec);
-	glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0);
+	gAlbedoSpec.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE));
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec->GetID(), 0);
 
 	// - depth buffer
-	glGenTextures(1, &gDepth);
-	glBindTexture(GL_TEXTURE_2D, gDepth);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, w, h, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, gDepth, 0);
+	gDepth.reset(Resources::CreateEmptyTexture(w, h, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT));
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, gDepth->GetID(), 0);
 
 	// - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
 	unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
@@ -294,6 +263,48 @@ void Renderer::CreateDeferredProgram()
 		SW_LOG_TRACE("Framebuffer not complete!");
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Renderer::GenerateNoiseTexture()
+{
+	std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0); // generates random floats between 0.0 and 1.0
+	std::default_random_engine generator;
+	std::vector<glm::vec3> ssaoNoise;
+	for (unsigned int i = 0; i < 16; i++)
+	{
+		glm::vec3 noise(
+			randomFloats(generator) * 2.0 - 1.0,
+			randomFloats(generator) * 2.0 - 1.0,
+			0.0f);
+		ssaoNoise.push_back(noise);
+	}
+	noiseTex.reset(Resources::CreateTextureFromArray(ssaoNoise, 8, 8));
+	deferredProgram->UploadUniformInt("noiseTex", 4);
+}
+
+float lerp(float a, float b, float f)
+{
+	return a + f * (b - a);
+}
+
+std::vector<glm::vec3> Renderer::GenerateKernelPoints()
+{
+	std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0); // generates random floats between 0.0 and 1.0
+	std::default_random_engine generator;
+	std::vector<glm::vec3> ssaoKernel;
+	for (unsigned int i = 0; i < 64; ++i)
+	{
+		glm::vec3 sample(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, randomFloats(generator));
+		sample = glm::normalize(sample);
+		sample *= randomFloats(generator);
+		float scale = float(i) / 64.0;
+
+		// scale samples s.t. they're more aligned to center of kernel
+		scale = lerp(0.1f, 1.0f, scale * scale);
+		sample *= scale;
+		ssaoKernel.push_back(sample);
+	}
+	return ssaoKernel;
 }
 
 void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray)
