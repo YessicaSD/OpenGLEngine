@@ -50,22 +50,34 @@ public:
 	virtual void OnUpdate() override ;
 
 private:
-	void CameraUpdate();
-	void ForwardRendering();
-	void DeferredRendering();
-	void SetSkybox();
+	//Init ==
+	void InitSSAO();
 	void CreateDeferredProgram();
 	void GenerateNoiseTexture();
-	std::vector<glm::vec3> GenerateKernelPoints();
+
+	//Update ==
+	void ForwardRendering();
+	void DeferredRendering();
+	void GeometryPass();
+	void SSAOPass();
+	void LightingPass();
+	void CameraUpdate();
+	//Other ==
+	void SetSkybox();
+
+	std::vector<glm::vec3> GenerateKernelPoints(int number);
 
 private:
 	Camera camera;
 	glm::vec3 lightPos = { 0.5,1.0,0.3 };
 	RenderMethod renderMethod = DEFERRED;
-	int projViewUniform = -1;
+
 	std::shared_ptr<Program> skyProgram;
 	std::unique_ptr<Program> deferredProgram;
+	std::unique_ptr<Program> ssaoProgram;
+
 	std::unique_ptr<Material> material;
+	std::vector<glm::vec3> kernelsPoint;
 
 	Model* model = nullptr;
 	Model* cube = nullptr;
@@ -74,14 +86,16 @@ private:
 	Texture* tex = nullptr;
 	Cubemap* skybox = nullptr;
 	std::unique_ptr<Texture> noiseTex;
-	std::unique_ptr<Texture> gPosTex;
+	std::unique_ptr<Texture> gPosition;
 	std::unique_ptr<Texture> gNormal;
 	std::unique_ptr<Texture> gAlbedoSpec;
 	std::unique_ptr<Texture> gDepth;
+	std::unique_ptr<Texture> ssaoTex;
 
 	static RendererAPI* rendererAPI;
 
 	unsigned int gBuffer;
+	unsigned int ssaoFBO;
 	int renderMode = 0;
 };
 

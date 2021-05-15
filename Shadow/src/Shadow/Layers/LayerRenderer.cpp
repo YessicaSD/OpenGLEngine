@@ -39,6 +39,7 @@ void Renderer::Init()
 
 	SetSkybox();
 	CreateDeferredProgram();
+	InitSSAO();
 	model = Resources::LoadModel("Assets/backpack/backpack.obj");
 	cube = Resources::LoadModel("Assets/cube.fbx");
 	renderQuad.reset(Resources::GetQuad());
@@ -78,12 +79,19 @@ void Renderer::ForwardRendering()
 }
 void Renderer::DeferredRendering()
 {
+	GeometryPass();
+	SSAOPass();
+	LightingPass();
+}
+
+void Renderer::GeometryPass()
+{
 	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glDepthMask(GL_FALSE);
-	
+
 	skybox->Bind();
 	skyProgram->Bind();
 	glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
@@ -102,20 +110,40 @@ void Renderer::DeferredRendering()
 	program->UploadUniformFloat3("lightPos", lightPos);
 	program->UploadUniformFloat3("viewPos", camera.GetPosition());
 	model->Draw();
+}
 
+void Renderer::SSAOPass()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
+	glClear(GL_COLOR_BUFFER_BIT);
+	gPosition->Bind(0);
+	gNormal->Bind(1);
+	noiseTex->Bind(2);
+
+	ssaoProgram->Bind();
+	//SendKernelSamplesToShader();
+	ssaoProgram->UploadUniformMat4("model", glm::mat4(1.0));
+	ssaoProgram->UploadUniformMat4("view", camera.GetViewMatrix());
+	ssaoProgram->UploadUniformMat4("projection", camera.GetProjectionMatrix());
+	renderQuad->Draw();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
 
+void Renderer::LightingPass()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	// Draw in the screen ===
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	gPosTex->Bind(0);
+	gPosition->Bind(0);
 	gNormal->Bind(1);
 	gAlbedoSpec->Bind(2);
 	gDepth->Bind(3);
-
-	//noiseTex->Bind(4);
+	ssaoTex->Bind(4);
 
 	deferredProgram->Bind();
+	for (unsigned int i = 0; i < kernelsPoint.size(); ++i)
+		deferredProgram->UploadUniformFloat3("samples[" + std::to_string(i) + "]", kernelsPoint[i]);
 	deferredProgram->UploadUniformInt("renderMode", renderMode);
 
 	//glActiveTexture(GL_TEXTURE3);
@@ -169,64 +197,18 @@ void Renderer::SetSkybox()
 
 void Renderer::CreateDeferredProgram()
 {
-	std::string deferredVs = R"(
-		#version 330 core
-		layout (location = 0) in vec3 aPos;
-		layout (location = 1) in vec3 aNormal;
-		layout (location = 2) in vec2 aTexCoords;
-
-		out vec2 TexCoords;
-
-		void main()
-		{
-			TexCoords = aTexCoords;
-			gl_Position = vec4(aPos, 1.0);
-		})";
-
-	std::string deferredFs = R"(
-		#version 330 core
-
-		out vec4 FragColor;
-
-		in vec2 TexCoords;
-
-		uniform sampler2D gPosition;
-		uniform sampler2D gNormal;
-		uniform sampler2D gAlbedoSpec;
-		uniform sampler2D gDepth;
-		uniform sampler2D noiseTex;
-
-		uniform int renderMode;
-		
-		void main()
-		{   
-			
-			if(renderMode == 1)
-				FragColor.xyz = texture(gNormal, TexCoords).xyz;
-			else if(renderMode == 2)
-				FragColor.xyz = texture(gDepth, TexCoords).xyz;
-			else if(renderMode == 3)
-				FragColor.xyz = texture(gPosition, TexCoords).xyz;
-			else if(renderMode == 4)
-				FragColor.xyz = texture(gAlbedoSpec, TexCoords).xyz;
-			else
-			{
-				FragColor.xyz = texture(gAlbedoSpec, TexCoords).xyz;
-			}
-			FragColor.w = 1;
-		})";
-
-	deferredProgram.reset(Shadow::CreateShader(deferredVs, deferredFs));
+	deferredProgram.reset(Shadow::LoadProgram("Assets/Programs/deferred.program"));
 
 	deferredProgram->Bind();
 	deferredProgram->UploadUniformInt("gPosition", 0);
 	deferredProgram->UploadUniformInt("gNormal", 1);
 	deferredProgram->UploadUniformInt("gAlbedoSpec", 2);
 	deferredProgram->UploadUniformInt("gDepth", 3);
+	deferredProgram->UploadUniformInt("gSSAO", 4);
 
-	std::vector<glm::vec3> kernelsPoint = GenerateKernelPoints();
-	for (unsigned int i = 0; i < kernelsPoint.size(); ++i)
-		deferredProgram->UploadUniformFloat3("samples[" + std::to_string(i) + "]", kernelsPoint[i]);
+	GenerateNoiseTexture();
+	kernelsPoint = GenerateKernelPoints(64);
+	
 
 	//Create gBuffer ==
 	glGenFramebuffers(1, &gBuffer);
@@ -238,8 +220,8 @@ void Renderer::CreateDeferredProgram()
 
 	//glDepthFunc(GL_NOTEQUAL);
 	// - position color buffer
-	gPosTex.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA16F, GL_RGBA, GL_FLOAT));
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosTex->GetID(), 0);
+	gPosition.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA16F, GL_RGBA, GL_FLOAT));
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition->GetID(), 0);
 
 	// - normal color buffer
 	gNormal.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA16F, GL_RGBA, GL_FLOAT));
@@ -278,8 +260,25 @@ void Renderer::GenerateNoiseTexture()
 			0.0f);
 		ssaoNoise.push_back(noise);
 	}
-	noiseTex.reset(Resources::CreateTextureFromArray(ssaoNoise, 8, 8));
-	deferredProgram->UploadUniformInt("noiseTex", 4);
+
+	noiseTex.reset(Resources::CreateTextureFromArray(ssaoNoise, 4, 4));
+}
+
+void Renderer::InitSSAO()
+{
+	glGenFramebuffers(1, &ssaoFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
+
+	float w = Application::Get().GetWindow().GetWidth();
+	float h = Application::Get().GetWindow().GetHeight();
+
+	ssaoTex.reset(Resources::CreateEmptyTexture(w, h, GL_RED, GL_RED, GL_FLOAT));
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoTex->GetID(), 0);
+
+	ssaoProgram.reset(Shadow::LoadProgram("Assets/Programs/ssao.program"));
+
+	ssaoProgram->Bind();
+ 	ssaoProgram->UploadUniformFloat3("samples", kernelsPoint);
 }
 
 float lerp(float a, float b, float f)
@@ -287,12 +286,12 @@ float lerp(float a, float b, float f)
 	return a + f * (b - a);
 }
 
-std::vector<glm::vec3> Renderer::GenerateKernelPoints()
+std::vector<glm::vec3> Renderer::GenerateKernelPoints(int number)
 {
 	std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0); // generates random floats between 0.0 and 1.0
 	std::default_random_engine generator;
 	std::vector<glm::vec3> ssaoKernel;
-	for (unsigned int i = 0; i < 64; ++i)
+	for (unsigned int i = 0; i < number; ++i)
 	{
 		glm::vec3 sample(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, randomFloats(generator));
 		sample = glm::normalize(sample);

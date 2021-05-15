@@ -1,0 +1,51 @@
+#ifdef VERTEX_SHADER
+		layout (location = 0) in vec3 aPos;
+		layout (location = 1) in vec3 aNormal;
+		layout (location = 2) in vec2 aTexCoords;
+
+		out vec2 TexCoords;
+
+		void main()
+		{
+			TexCoords = aTexCoords;
+			gl_Position = vec4(aPos, 1.0);
+		}
+#endif
+
+#ifdef FRAGMENT_SHADER
+
+		out vec4 FragColor;
+
+		in vec2 TexCoords;
+		
+
+		uniform sampler2D gPosition;
+		uniform sampler2D gNormal;
+		uniform sampler2D gAlbedoSpec;
+		uniform sampler2D gDepth;
+		uniform sampler2D gSSAO;
+		
+		uniform vec3 samples[64];	
+		uniform int renderMode;
+		
+		void main()
+		{   
+
+			 //float AmbientOcclusion = texture(ssao, TexCoords).r;
+
+			if(renderMode == 1)
+				FragColor.xyz = texture(gNormal, TexCoords).xyz;
+			else if(renderMode == 2)
+				FragColor.xyz = texture(gDepth, TexCoords).xyz;
+			else if(renderMode == 3)
+				FragColor.xyz = texture(gPosition, TexCoords).xyz;
+			else if(renderMode == 4)
+				FragColor.xyz = texture(gSSAO, TexCoords).xyz;
+			else
+			{
+				FragColor.xyz = texture(gAlbedoSpec, TexCoords).xyz;
+			}
+			FragColor.w = 1;
+		}
+
+#endif

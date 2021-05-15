@@ -148,6 +148,12 @@ void OpenGLProgram::UploadUniformFloat3(const std::string& name, const glm::vec3
 	glUniform3f(location, values.x, values.y, values.z);
 }
 
+void OpenGLProgram::UploadUniformFloat3(const std::string& name, std::vector<glm::vec3>& values)
+{
+	GLint location = glGetUniformLocation(programID, name.c_str());
+	glUniform3fv(location, values.size(), (GLfloat*)&values[0]);
+}
+
 void OpenGLProgram::UploadUniformMat4(const std::string& name, const glm::mat4& matrix)
 {
 	GLint location = glGetUniformLocation(programID, name.c_str());
