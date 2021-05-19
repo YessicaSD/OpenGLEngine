@@ -10,7 +10,7 @@
 #include <imgui.h>
 #include <imgui_node_editor.h>
 #include "Shadow/Application.h"
-
+#include <glm/ext/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale
 
 
 NAMESPACE_BEGAN
@@ -37,9 +37,11 @@ void Renderer::Init()
 {
 	Renderer::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 
-	SetSkybox();
-	CreateDeferredProgram();
+	InitSkybox();
+	InitDeferredProgram();
 	InitSSAO();
+	InitBlurSSAO();
+
 	model = Resources::LoadModel("Assets/backpack/backpack.obj");
 	cube = Resources::LoadModel("Assets/cube.fbx");
 	renderQuad.reset(Resources::GetQuad());
@@ -107,26 +109,37 @@ void Renderer::GeometryPass()
 	program->UploadUniformMat4("projViewMatrix", camera.GetProjectViewMatrix());
 	program->UploadUniformInt("u_Texture", 0);
 	program->UploadUniformMat4("Model", glm::mat4(1.0));
+	program->UploadUniformMat4("view", camera.GetViewMatrix());
 	program->UploadUniformFloat3("lightPos", lightPos);
 	program->UploadUniformFloat3("viewPos", camera.GetPosition());
 	model->Draw();
+	glm::mat4 tranformation = glm::mat4(1.0);
+	tranformation = glm::translate(tranformation, glm::vec3(0.0,-2.0,0.0));
+	tranformation = glm::scale(tranformation, glm::vec3(5.0,0.5,5.0));
+	program->UploadUniformMat4("Model", tranformation);
+	cube->Draw();
 }
 
 void Renderer::SSAOPass()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	//ssaoProgram->UploadUniformInt("gPosition", 0);
+	//ssaoProgram->UploadUniformInt("gNormal", 1);
+	//ssaoProgram->UploadUniformInt("texNoise", 2);
+
 	gPosition->Bind(0);
 	gNormal->Bind(1);
 	noiseTex->Bind(2);
-
 	ssaoProgram->Bind();
-	//SendKernelSamplesToShader();
-	ssaoProgram->UploadUniformMat4("model", glm::mat4(1.0));
-	ssaoProgram->UploadUniformMat4("view", camera.GetViewMatrix());
-	ssaoProgram->UploadUniformMat4("projection", camera.GetProjectionMatrix());
 	renderQuad->Draw();
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
+	glClear(GL_COLOR_BUFFER_BIT);
+	ssaoTex->Bind(0);
+	ssaoBlurProgram->Bind();
+	renderQuad->Draw();
 }
 
 void Renderer::LightingPass()
@@ -140,50 +153,16 @@ void Renderer::LightingPass()
 	gAlbedoSpec->Bind(2);
 	gDepth->Bind(3);
 	ssaoTex->Bind(4);
+	ssaoBlurTex->Bind(5);
 
 	deferredProgram->Bind();
-	for (unsigned int i = 0; i < kernelsPoint.size(); ++i)
-		deferredProgram->UploadUniformFloat3("samples[" + std::to_string(i) + "]", kernelsPoint[i]);
 	deferredProgram->UploadUniformInt("renderMode", renderMode);
-
-	//glActiveTexture(GL_TEXTURE3);
-	//glBindTexture(GL_TEXTURE_2D, gDepth);
-
 	renderQuad->Draw();
 }
 
-void Renderer::SetSkybox()
+void Renderer::InitSkybox()
 {
-	std::string vsSky = R"(
-		#version 330 core
-		layout (location = 0) in vec3 aPos;
-
-		out vec3 TexCoords;
-
-		uniform mat4 projViewMatrix;
-		
-
-		void main()
-		{
-			TexCoords = aPos;
-			gl_Position = projViewMatrix * vec4(aPos, 1.0);
-		})";
-
-	std::string fsSky = R"(
-		#version 330 core
-		layout (location = 2) out vec4 gAlbedoSpec;	
-		//out vec4 FragColor;
-
-		in vec3 TexCoords;
-
-		uniform samplerCube skybox;
-		
-		void main()
-		{    
-			gAlbedoSpec = texture(skybox, TexCoords);
-		})";
-
-	skyProgram.reset(Shadow::CreateShader(vsSky, fsSky));
+	skyProgram.reset(Shadow::LoadProgram("Assets/Programs/skybox.program"));
 	skyProgram->UploadUniformInt("skybox", 0);
 
 	skybox = Resources::CreateCubemap();
@@ -195,7 +174,7 @@ void Renderer::SetSkybox()
 	skybox->SetNegativeZ("Assets/skybox/back.jpg");
 }
 
-void Renderer::CreateDeferredProgram()
+void Renderer::InitDeferredProgram()
 {
 	deferredProgram.reset(Shadow::LoadProgram("Assets/Programs/deferred.program"));
 
@@ -205,9 +184,9 @@ void Renderer::CreateDeferredProgram()
 	deferredProgram->UploadUniformInt("gAlbedoSpec", 2);
 	deferredProgram->UploadUniformInt("gDepth", 3);
 	deferredProgram->UploadUniformInt("gSSAO", 4);
+	deferredProgram->UploadUniformInt("gSSAOBlur", 5);
 
-	GenerateNoiseTexture();
-	kernelsPoint = GenerateKernelPoints(64);
+	
 	
 
 	//Create gBuffer ==
@@ -264,21 +243,46 @@ void Renderer::GenerateNoiseTexture()
 	noiseTex.reset(Resources::CreateTextureFromArray(ssaoNoise, 4, 4));
 }
 
+void Renderer::InitBlurSSAO()
+{
+	float w = Application::Get().GetWindow().GetWidth();
+	float h = Application::Get().GetWindow().GetHeight();
+
+	glGenFramebuffers(1, &ssaoBlurFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
+	ssaoBlurTex.reset(Resources::CreateEmptyTexture(w, h, GL_RED, GL_RED, GL_FLOAT));
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoBlurTex->GetID(), 0);
+
+	ssaoBlurProgram.reset(Shadow::LoadProgram("Assets/Programs/blurSSAO.program"));
+	ssaoBlurProgram->Bind();
+	ssaoBlurProgram->UploadUniformInt("ssaoInput", 0);
+}
+
 void Renderer::InitSSAO()
 {
+	GenerateNoiseTexture();
+	kernelsPoint = GenerateKernelPoints(64);
+
 	glGenFramebuffers(1, &ssaoFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
 
 	float w = Application::Get().GetWindow().GetWidth();
 	float h = Application::Get().GetWindow().GetHeight();
 
-	ssaoTex.reset(Resources::CreateEmptyTexture(w, h, GL_RED, GL_RED, GL_FLOAT));
+	ssaoTex.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA16F, GL_RGBA, GL_FLOAT));
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoTex->GetID(), 0);
+	// - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
+	unsigned int attachments[1] = { GL_COLOR_ATTACHMENT0};
+	glDrawBuffers(1, attachments);
 
 	ssaoProgram.reset(Shadow::LoadProgram("Assets/Programs/ssao.program"));
 
 	ssaoProgram->Bind();
+	ssaoProgram->UploadUniformInt("gPosition",0);
+	ssaoProgram->UploadUniformInt("gNormal",1);
+	ssaoProgram->UploadUniformInt("texNoise",2);
  	ssaoProgram->UploadUniformFloat3("samples", kernelsPoint);
+	ssaoProgram->UploadUniformMat4("projection", camera.GetProjectionMatrix());
 }
 
 float lerp(float a, float b, float f)
@@ -335,7 +339,7 @@ void Renderer::OnImGuiRender()
 	ImGui::Begin("Renderer");
 	camera.OnImGuiRender();
 
-	const char* items[] = { "Final", "Normal", "Depth", "Position", "Albedo"};
+	const char* items[] = { "Final", "Normal", "Depth", "Position", "Albedo", "SSAO", "SSAOBlur"};
 	ImGui::Combo("Render mode", &renderMode, items, IM_ARRAYSIZE(items));
 	ImGui::Text("Light position:");
 	ImGui::PushItemWidth(100);

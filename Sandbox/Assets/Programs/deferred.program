@@ -24,26 +24,31 @@
 		uniform sampler2D gAlbedoSpec;
 		uniform sampler2D gDepth;
 		uniform sampler2D gSSAO;
-		
-		uniform vec3 samples[64];	
+		uniform sampler2D gSSAOBlur;
 		uniform int renderMode;
 		
 		void main()
 		{   
-
-			 //float AmbientOcclusion = texture(ssao, TexCoords).r;
-
 			if(renderMode == 1)
 				FragColor.xyz = texture(gNormal, TexCoords).xyz;
 			else if(renderMode == 2)
 				FragColor.xyz = texture(gDepth, TexCoords).xyz;
 			else if(renderMode == 3)
-				FragColor.xyz = texture(gPosition, TexCoords).xyz;
+				FragColor.xyz = vec3(texture(gPosition, TexCoords).z);
 			else if(renderMode == 4)
-				FragColor.xyz = texture(gSSAO, TexCoords).xyz;
+				FragColor.xyz = texture(gAlbedoSpec, TexCoords).xyz;
+			else if(renderMode == 5)
+			{
+				FragColor.xyz = vec3(texture(gSSAO, TexCoords).xyz);
+			}
+			else if(renderMode == 6)
+			{
+				FragColor.xyz = vec3(texture(gSSAOBlur, TexCoords).xyz);
+			}
 			else
 			{
-				FragColor.xyz = texture(gAlbedoSpec, TexCoords).xyz;
+				float AmbientOcclusion = texture(gSSAOBlur, TexCoords).r;
+				FragColor.xyz = texture(gAlbedoSpec, TexCoords).xyz * AmbientOcclusion;
 			}
 			FragColor.w = 1;
 		}

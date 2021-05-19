@@ -24,13 +24,11 @@ Material::Material()
 		layout (location = 4) in vec3 aBitangent;
 
 		uniform mat4 Model;
+		uniform mat4 view;
 		uniform mat4 projViewMatrix;
 		uniform Material material;
 		uniform vec3 lightPos;
 		uniform vec3 viewPos;
-
-		out vec3 pos;
-		
 
 		out VS_OUT {
 		vec3 FragPos;
@@ -40,18 +38,16 @@ Material::Material()
 		vec3 TangentFragPos;
 		} vs_out;
 
+		out vec3 vNormal;
+
 		void main()
 		{
-
-			pos = aPos;
-			mat4 model = mat4(1.0);
-
 			//vNormal = mat3(transpose(inverse(Model))) * aNormal;  
 			
-			vs_out.FragPos = vec3(model * vec4(aPos, 1.0));   
+			vs_out.FragPos = vec3(view * Model * vec4(aPos, 1.0));   
 			vs_out.TexCoords = aUV;
 			
-			mat3 normalMatrix = transpose(inverse(mat3(model)));
+			mat3 normalMatrix = transpose(inverse(mat3(view * Model)));
 			vec3 T = normalize(normalMatrix * aTangent);
 			vec3 N = normalize(normalMatrix * aNormal);
 			T = normalize(T - dot(T, N) * N);
@@ -62,8 +58,8 @@ Material::Material()
 			vs_out.TangentViewPos  = TBN * viewPos;
 			vs_out.TangentFragPos  = TBN * vs_out.FragPos;
 
-			gl_Position =  projViewMatrix * vec4(aPos, 1.0);
-
+			gl_Position =  projViewMatrix * Model * vec4(aPos, 1.0);
+			vNormal = normalize(normalMatrix * aNormal);
 		})";
 
 	fs = R"(
@@ -92,8 +88,6 @@ Material::Material()
 
 	void main()
 	{
-
-		
 		// Normal ===============
 		vec3 normal = texture(normalTex, fs_in.TexCoords).rgb;
 		// transform normal vector to range [-1,1]
@@ -116,10 +110,12 @@ Material::Material()
 		float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
 		vec3 specular = vec3(0.2) * spec;
 
-		gAlbedoSpec =  vec4(ambient + diffuse + specular, 1.0);
-		gNormal = normal;
+		//gAlbedoSpec =  vec4(ambient + diffuse + specular, 1.0);
+		gAlbedoSpec = texture(albedoTex, fs_in.TexCoords);
+		//gAlbedoSpec = vec4(vec3(0.8),1.0);
+		//gNormal = normal;
+		gNormal = vNormal;
 		gPosition = fs_in.FragPos;
-
 	})";
 
 	program.reset(Shadow::CreateShader(vs, fs));

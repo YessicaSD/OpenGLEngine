@@ -52,9 +52,9 @@ public:
 private:
 	//Init ==
 	void InitSSAO();
-	void CreateDeferredProgram();
+	void InitDeferredProgram();
 	void GenerateNoiseTexture();
-
+	void InitBlurSSAO();
 	//Update ==
 	void ForwardRendering();
 	void DeferredRendering();
@@ -63,7 +63,7 @@ private:
 	void LightingPass();
 	void CameraUpdate();
 	//Other ==
-	void SetSkybox();
+	void InitSkybox();
 
 	std::vector<glm::vec3> GenerateKernelPoints(int number);
 
@@ -75,6 +75,7 @@ private:
 	std::shared_ptr<Program> skyProgram;
 	std::unique_ptr<Program> deferredProgram;
 	std::unique_ptr<Program> ssaoProgram;
+	std::unique_ptr<Program> ssaoBlurProgram;
 
 	std::unique_ptr<Material> material;
 	std::vector<glm::vec3> kernelsPoint;
@@ -91,11 +92,13 @@ private:
 	std::unique_ptr<Texture> gAlbedoSpec;
 	std::unique_ptr<Texture> gDepth;
 	std::unique_ptr<Texture> ssaoTex;
+	std::unique_ptr<Texture> ssaoBlurTex;
 
 	static RendererAPI* rendererAPI;
 
 	unsigned int gBuffer;
 	unsigned int ssaoFBO;
+	unsigned int ssaoBlurFBO;
 	int renderMode = 0;
 };
 
