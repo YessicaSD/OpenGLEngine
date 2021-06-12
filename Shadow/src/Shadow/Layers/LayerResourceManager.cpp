@@ -12,6 +12,10 @@
 
 #include "Platform/OpenGL/OpenGLTexture.h"
 #include "Platform/OpenGL/OpenGLPrimitive.h"
+#include "Platform/OpenGL/OpenGLProgram.h"
+#include "Platform/OpenGL/OpenGLTextureCube.h"
+#include "Platform/OpenGL/AllBuffers/OpenGLFBO.h"
+#include "Platform/OpenGL/AllBuffers/OpenGLRBO.h"
 
 #include "imgui.h"
 
@@ -63,6 +67,20 @@ Model* Resources::GetQuad()
 	return nullptr;
 }
 
+std::shared_ptr<Model> Resources::GetCube()
+{
+	if (instance->cubeModel.use_count() != 0)
+		return instance->cubeModel;
+
+	switch (Renderer::GetRendererAPI())
+	{
+		case RendererAPI::RenderAPIType::NONE:	SW_CORE_ASSERT(false, "not render api using"); return nullptr; break;
+		case RendererAPI::RenderAPIType::OPENGL: instance->cubeModel.reset(OpenGLPrimitive::GetCube());
+	}
+
+	return nullptr;
+}
+
 Texture* Resources::LoadTexture(std::string path)
 {
 	switch (Renderer::GetRendererAPI())
@@ -108,13 +126,66 @@ Texture* Resources::CreateEmptyTexture(int width, int height, int internalFormat
 	
 }
 
+Program* Resources::CreateShader(std::string& vertexSource, std::string& fragmentSource)
+{
+
+	switch (Renderer::GetRendererAPI())
+	{
+	case RendererAPI::RenderAPIType::NONE:
+		SW_CORE_ASSERT(false, "not render api using");
+		return nullptr;
+		break;
+
+	case RendererAPI::RenderAPIType::OPENGL:
+		return new OpenGLProgram(vertexSource, fragmentSource);
+		break;
+
+	default:
+		return nullptr;
+		break;
+	}
+}
+
 
 Cubemap* Resources::CreateCubemap()
 {
 	switch (Renderer::GetRendererAPI())
 	{
 	case RendererAPI::RenderAPIType::NONE:	SW_CORE_ASSERT(false, "not render api using"); return nullptr; break;
-	case RendererAPI::RenderAPIType::OPENGL: return new Cubemap(); break;
+	case RendererAPI::RenderAPIType::OPENGL: return new OpenGLTextureCube(); break;
+	}
+
+	return nullptr;
+}
+
+Cubemap* Resources::CreateCubemapFromTexture(Texture* texture)
+{
+	switch (Renderer::GetRendererAPI())
+	{
+		case RendererAPI::RenderAPIType::NONE:	SW_CORE_ASSERT(false, "not render api using"); return nullptr; break;
+		case RendererAPI::RenderAPIType::OPENGL: return new OpenGLTextureCube(texture); break;
+	}
+
+	return nullptr;
+}
+
+FBO* Resources::CreateFBO()
+{
+	switch (Renderer::GetRendererAPI())
+	{
+		case RendererAPI::RenderAPIType::NONE:	SW_CORE_ASSERT(false, "not render api using"); return nullptr; break;
+		case RendererAPI::RenderAPIType::OPENGL: return new OpenGLFBO(); break;
+	}
+
+	return nullptr;
+}
+
+RBO* Resources::CreateRBO()
+{
+	switch (Renderer::GetRendererAPI())
+	{
+		case RendererAPI::RenderAPIType::NONE:	SW_CORE_ASSERT(false, "not render api using"); return nullptr; break;
+		case RendererAPI::RenderAPIType::OPENGL: return new OpenGLRBO(); break;
 	}
 
 	return nullptr;
@@ -144,6 +215,13 @@ void Resources::OnMainTopBar()
 void Resources::Init()
 {
 	CreateNoTextureTexture();
+	instance->cubeToTexture.reset(LoadProgram("Assets/Programs/BuildCubeMap.glsl"));
+	instance->cubeToTexture->Bind();
+	instance->cubeToTexture->UploadUniformInt("equirectangularMap", 0);
+	GetCube();
+	instance->bakeFBO.reset(CreateFBO());
+	instance->bakeRBO.reset(CreateRBO());
+
 }
 
 void Resources::CreateNoTextureTexture()

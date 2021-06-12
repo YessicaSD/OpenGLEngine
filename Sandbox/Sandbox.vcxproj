@@ -138,6 +138,9 @@
       <Project>{4B0E0CD1-37B0-36A7-206B-4AFB0CACBDF7}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Programs\BuildCubeMap.glsl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

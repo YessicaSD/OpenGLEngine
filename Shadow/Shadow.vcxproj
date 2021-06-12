@@ -140,12 +140,15 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Platform\OpenGL\AllBuffers\OpenGLRBO.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLDataType.h" />
+    <ClInclude Include="src\Platform\OpenGL\AllBuffers\OpenGLFBO.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLPrimitive.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLProgram.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLTextureCube.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
     <ClInclude Include="src\Platform\Window\WindowWindows.h" />
     <ClInclude Include="src\Platform\Window\WindowsInput.h" />
@@ -171,9 +174,12 @@
     <ClInclude Include="src\Shadow\Random.h" />
     <ClInclude Include="src\Shadow\Renderer\Buffer.h" />
     <ClInclude Include="src\Shadow\Renderer\Camera.h" />
+    <ClInclude Include="src\Shadow\Renderer\RenderBufferObjects.h" />
     <ClInclude Include="src\Shadow\Renderer\RendererAPI.h" />
     <ClInclude Include="src\Shadow\Renderer\ShaderData.h" />
     <ClInclude Include="src\Shadow\Renderer\VertexArray.h" />
+    <ClInclude Include="src\Shadow\Resources\Environment.h" />
+    <ClInclude Include="src\Shadow\Renderer\FrameBufferObject.h" />
     <ClInclude Include="src\Shadow\Resources\Resource.h" />
     <ClInclude Include="src\Shadow\Resources\ResourceCubemap.h" />
     <ClInclude Include="src\Shadow\Resources\ResourceMaterial.h" />
@@ -189,12 +195,15 @@
     <ClInclude Include="vendor\stb\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Platform\OpenGL\AllBuffers\OpenGLRBO.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLDataType.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\AllBuffers\OpenGLFBO.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLPrimitive.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLProgram.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLTextureCube.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\Platform\Window\WindowWindows.cpp" />
     <ClCompile Include="src\Platform\Window\WindowsInput.cpp" />
@@ -213,6 +222,7 @@
     <ClCompile Include="src\Shadow\Renderer\RendererAPI.cpp" />
     <ClCompile Include="src\Shadow\Renderer\ShaderData.cpp" />
     <ClCompile Include="src\Shadow\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\Shadow\Resources\Environment.cpp" />
     <ClCompile Include="src\Shadow\Resources\ResourceCubemap.cpp" />
     <ClCompile Include="src\Shadow\Resources\ResourceMaterial.cpp" />
     <ClCompile Include="src\Shadow\Resources\ResourceMesh.cpp" />

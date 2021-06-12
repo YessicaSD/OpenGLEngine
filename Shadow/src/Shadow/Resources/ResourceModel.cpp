@@ -14,7 +14,6 @@ void Model::Draw()
 {
     for (auto mesh = meshes.begin(); mesh != meshes.end(); mesh++)
     {
-        
         Renderer::Submit(mesh->vertexArray);
     }
 }

@@ -6,6 +6,7 @@ NAMESPACE_BEGAN
 namespace OpenGLPrimitive
 {
 	Model* GetQuad();
+	Model* GetCube();
 }
 
 NAMESPACE_END

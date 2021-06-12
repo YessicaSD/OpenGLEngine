@@ -94,7 +94,7 @@ void Renderer::GeometryPass()
 
 	glDepthMask(GL_FALSE);
 
-	skybox->Bind();
+	skyboxHDR->Bind();
 	skyProgram->Bind();
 	glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
 	skyProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectionMatrix() * view);
@@ -172,6 +172,9 @@ void Renderer::InitSkybox()
 	skybox->SetNegativeY("Assets/skybox/bottom.jpg");
 	skybox->SetPositiveZ("Assets/skybox/front.jpg");
 	skybox->SetNegativeZ("Assets/skybox/back.jpg");
+
+	hdrTexture.reset(Resources::LoadTexture("Assets/skybox/kiara_1_dawn_1k.hdr"));
+	skyboxHDR.reset(Resources::CreateCubemapFromTexture(hdrTexture.get()));
 }
 
 void Renderer::InitDeferredProgram()
@@ -186,9 +189,6 @@ void Renderer::InitDeferredProgram()
 	deferredProgram->UploadUniformInt("gSSAO", 4);
 	deferredProgram->UploadUniformInt("gSSAOBlur", 5);
 
-	
-	
-
 	//Create gBuffer ==
 	glGenFramebuffers(1, &gBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
@@ -200,19 +200,19 @@ void Renderer::InitDeferredProgram()
 	//glDepthFunc(GL_NOTEQUAL);
 	// - position color buffer
 	gPosition.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA16F, GL_RGBA, GL_FLOAT));
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition->GetID(), 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition->GetHandle(), 0);
 
 	// - normal color buffer
 	gNormal.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA16F, GL_RGBA, GL_FLOAT));
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal->GetID(), 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal->GetHandle(), 0);
 
 	// - color + specular color buffer
 	gAlbedoSpec.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE));
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec->GetID(), 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec->GetHandle(), 0);
 
 	// - depth buffer
 	gDepth.reset(Resources::CreateEmptyTexture(w, h, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT));
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, gDepth->GetID(), 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, gDepth->GetHandle(), 0);
 
 	// - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
 	unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
@@ -251,7 +251,7 @@ void Renderer::InitBlurSSAO()
 	glGenFramebuffers(1, &ssaoBlurFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
 	ssaoBlurTex.reset(Resources::CreateEmptyTexture(w, h, GL_RED, GL_RED, GL_FLOAT));
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoBlurTex->GetID(), 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoBlurTex->GetHandle(), 0);
 
 	ssaoBlurProgram.reset(Shadow::LoadProgram("Assets/Programs/blurSSAO.program"));
 	ssaoBlurProgram->Bind();
@@ -270,7 +270,7 @@ void Renderer::InitSSAO()
 	float h = Application::Get().GetWindow().GetHeight();
 
 	ssaoTex.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA16F, GL_RGBA, GL_FLOAT));
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoTex->GetID(), 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoTex->GetHandle(), 0);
 	// - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
 	unsigned int attachments[1] = { GL_COLOR_ATTACHMENT0};
 	glDrawBuffers(1, attachments);
@@ -308,6 +308,11 @@ std::vector<glm::vec3> Renderer::GenerateKernelPoints(int number)
 		ssaoKernel.push_back(sample);
 	}
 	return ssaoKernel;
+}
+
+void Renderer::SetViewPort(int x, int y, int width, int height)
+{
+	glViewport(x, y, width, height);
 }
 
 void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray)

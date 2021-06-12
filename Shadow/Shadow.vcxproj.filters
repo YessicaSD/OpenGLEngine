@@ -183,6 +183,12 @@
     <ClInclude Include="vendor\stb\stb_image.h">
       <Filter>vendor\stb</Filter>
     </ClInclude>
+    <ClInclude Include="src\Shadow\Resources\Environment.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLTextureCube.h" />
+    <ClInclude Include="src\Shadow\Renderer\FrameBufferObject.h" />
+    <ClInclude Include="src\Platform\OpenGL\AllBuffers\OpenGLFBO.h" />
+    <ClInclude Include="src\Platform\OpenGL\AllBuffers\OpenGLRBO.h" />
+    <ClInclude Include="src\Shadow\Renderer\RenderBufferObjects.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
@@ -281,5 +287,9 @@
     <ClCompile Include="vendor\stb\stb_image.cpp">
       <Filter>vendor\stb</Filter>
     </ClCompile>
+    <ClCompile Include="src\Shadow\Resources\Environment.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLTextureCube.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\AllBuffers\OpenGLFBO.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\AllBuffers\OpenGLRBO.cpp" />
   </ItemGroup>
 </Project>

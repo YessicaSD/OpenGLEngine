@@ -33,33 +33,25 @@ Material::Material()
 		out VS_OUT {
 		vec3 FragPos;
 		vec2 TexCoords;
-		vec3 TangentLightPos;
-		vec3 TangentViewPos;
-		vec3 TangentFragPos;
+		mat3 TBN;
 		} vs_out;
 
 		out vec3 vNormal;
 
 		void main()
 		{
-			//vNormal = mat3(transpose(inverse(Model))) * aNormal;  
-			
 			vs_out.FragPos = vec3(view * Model * vec4(aPos, 1.0));   
 			vs_out.TexCoords = aUV;
 			
-			mat3 normalMatrix = transpose(inverse(mat3(view * Model)));
-			vec3 T = normalize(normalMatrix * aTangent);
-			vec3 N = normalize(normalMatrix * aNormal);
+			vec3 T = normalize(vec3(Model * vec4(aTangent, 0.0)));
+			vec3 N = normalize(vec3(Model * vec4(aNormal, 0.0)));
 			T = normalize(T - dot(T, N) * N);
 			vec3 B = cross(N, T);
-			
-			mat3 TBN = transpose(mat3(T, B, N));    
-			vs_out.TangentLightPos = TBN * lightPos;
-			vs_out.TangentViewPos  = TBN * viewPos;
-			vs_out.TangentFragPos  = TBN * vs_out.FragPos;
+
+			vs_out.TBN = mat3(T, B, N);
 
 			gl_Position =  projViewMatrix * Model * vec4(aPos, 1.0);
-			vNormal = normalize(normalMatrix * aNormal);
+			
 		})";
 
 	fs = R"(
@@ -71,9 +63,7 @@ Material::Material()
 	in VS_OUT {
 	vec3 FragPos;
 	vec2 TexCoords;
-	vec3 TangentLightPos;
-	vec3 TangentViewPos;
-	vec3 TangentFragPos;
+	mat3 TBN;
 	} fs_in;
 
 	//out vec4 FragColor;
@@ -88,43 +78,19 @@ Material::Material()
 
 	void main()
 	{
-		// Normal ===============
-		vec3 normal = texture(normalTex, fs_in.TexCoords).rgb;
-		// transform normal vector to range [-1,1]
-		normal = normalize(normal * 2.0 - 1.0);  
-		
-		// get diffuse color
-		vec3 color = texture(albedoTex, fs_in.TexCoords).rgb;
-		// ambient
-		vec3 ambient = 0.1 * color;
-		
-		// diffuse
-		vec3 lightDir = normalize(fs_in.TangentLightPos - fs_in.TangentFragPos);
-		float diff = max(dot(lightDir, normal), 0.0);
-		vec3 diffuse = diff * color;
-		
-		// specular
-		vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
-		vec3 reflectDir = reflect(-lightDir, normal);
-		vec3 halfwayDir = normalize(lightDir + viewDir);  
-		float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
-		vec3 specular = vec3(0.2) * spec;
-
-		//gAlbedoSpec =  vec4(ambient + diffuse + specular, 1.0);
+		vec3 tangentNormal = normalize(texture(normalTex, fs_in.TexCoords).xyz * 2.0 - 1.0);
+		gNormal = normalize(fs_in.TBN * tangentNormal);		
 		gAlbedoSpec = texture(albedoTex, fs_in.TexCoords);
-		//gAlbedoSpec = vec4(vec3(0.8),1.0);
-		//gNormal = normal;
-		gNormal = vNormal;
 		gPosition = fs_in.FragPos;
 	})";
 
-	program.reset(Shadow::CreateShader(vs, fs));
+	program.reset(Shadow::Resources::CreateShader(vs, fs));
 	Init();
 }
 
 Material::Material(std::string vs, std::string fs)
 {
-	program.reset(Shadow::CreateShader(vs, fs));
+	program.reset(Shadow::Resources::CreateShader(vs, fs));
 	Init();
 }
 

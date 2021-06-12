@@ -40,6 +40,7 @@ public:
 	static inline RendererAPI::RenderAPIType GetRendererAPI() { return RendererAPI::GetAPI(); };
 	inline static void SetClearColor(const glm::vec4& color) { rendererAPI->SetClearColor(color); };
 	inline static void ClearScreen() { rendererAPI->ClearScreen(); };
+	static void SetViewPort(int x, int y, int width, int height);
 	static void Submit(const std::shared_ptr<VertexArray>& vertexArray);
 	virtual void OnImGuiRender() override;
 
@@ -86,6 +87,8 @@ private:
 
 	Texture* tex = nullptr;
 	Cubemap* skybox = nullptr;
+	std::unique_ptr<Cubemap> skyboxHDR;
+	std::unique_ptr<Texture> hdrTexture;
 	std::unique_ptr<Texture> noiseTex;
 	std::unique_ptr<Texture> gPosition;
 	std::unique_ptr<Texture> gNormal;

@@ -11,8 +11,24 @@ OpenGLTexture::OpenGLTexture(const std::string& path)
 	: path(path)
 {
 	int channels;
-	stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
-	SW_ASSERT(data, "Failed to load image!");
+	void* data = nullptr;
+	bool isHDR = stbi_is_hdr(path.c_str());
+	if (isHDR)
+	{
+		stbi_set_flip_vertically_on_load(true);
+		data = stbi_loadf(path.c_str(), &width, &height, &channels, 0);
+	}
+	else
+	{
+		stbi_set_flip_vertically_on_load(false);
+		data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+	}
+
+	if (!data)
+		SW_LOG_ERROR("Failed to load image!" + path);
+
+	
+	//SW_ASSERT(data, "Failed to load image!");
 
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);
@@ -24,14 +40,11 @@ OpenGLTexture::OpenGLTexture(const std::string& path)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	if(channels == 4)
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	else
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-	glGenerateMipmap(GL_TEXTURE_2D);
 
-	
+	glTexImage2D(GL_TEXTURE_2D, 0, isHDR ? GL_RGB16F : GL_RGBA, width, height, 0, channels == 4 ? GL_RGBA : GL_RGB,
+				 isHDR ? GL_FLOAT : GL_UNSIGNED_BYTE, data);
 
+	//glGenerateMipmap(GL_TEXTURE_2D);
 	stbi_image_free(data);
 }
 
@@ -110,7 +123,7 @@ void OpenGLTexture::Bind(uint32_t slot)
 	glBindTexture(GL_TEXTURE_2D, textureID);
 }
 
-int OpenGLTexture::GetID()
+int OpenGLTexture::GetHandle()
 {
 	return textureID;
 }

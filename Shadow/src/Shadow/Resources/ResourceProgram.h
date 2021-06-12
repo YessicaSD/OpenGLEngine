@@ -12,6 +12,13 @@ struct ProgramAttribute
 	ShaderDataType type;
 	std::string name;
 };
+struct ProgramUniforms
+{
+	unsigned int location;
+	ShaderDataType type;
+	std::string name;
+};
+
 class Program : public Resource
 {
 public:
@@ -33,9 +40,10 @@ protected:
 
 protected:
 	std::vector<ProgramAttribute> attributes;
+	std::vector<ProgramUniforms> uniforms;
 };
 
-Program* CreateShader(std::string& vs, std::string& fs);
+
 Program* LoadProgram(const char* vsPath, const char* fsPath, const char* gsPath = nullptr);
 Program* LoadProgram(const char* path);
 NAMESPACE_END
