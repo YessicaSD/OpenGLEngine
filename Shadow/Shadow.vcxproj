@@ -178,7 +178,7 @@
     <ClInclude Include="src\Shadow\Renderer\RendererAPI.h" />
     <ClInclude Include="src\Shadow\Renderer\ShaderData.h" />
     <ClInclude Include="src\Shadow\Renderer\VertexArray.h" />
-    <ClInclude Include="src\Shadow\Resources\Environment.h" />
+    <ClInclude Include="src\Shadow\Renderer\Environment.h" />
     <ClInclude Include="src\Shadow\Renderer\FrameBufferObject.h" />
     <ClInclude Include="src\Shadow\Resources\Resource.h" />
     <ClInclude Include="src\Shadow\Resources\ResourceCubemap.h" />
@@ -222,7 +222,7 @@
     <ClCompile Include="src\Shadow\Renderer\RendererAPI.cpp" />
     <ClCompile Include="src\Shadow\Renderer\ShaderData.cpp" />
     <ClCompile Include="src\Shadow\Renderer\VertexArray.cpp" />
-    <ClCompile Include="src\Shadow\Resources\Environment.cpp" />
+    <ClCompile Include="src\Shadow\Renderer\Environment.cpp" />
     <ClCompile Include="src\Shadow\Resources\ResourceCubemap.cpp" />
     <ClCompile Include="src\Shadow\Resources\ResourceMaterial.cpp" />
     <ClCompile Include="src\Shadow\Resources\ResourceMesh.cpp" />

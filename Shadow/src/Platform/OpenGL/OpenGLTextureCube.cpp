@@ -59,13 +59,7 @@ OpenGLTextureCube::OpenGLTextureCube()
 OpenGLTextureCube::OpenGLTextureCube(Texture* texture)
 {
 	Init();
-	int size = 512;
-	for (unsigned int i = 0; i < 6; ++i)
-	{
-		// note that we store each face with 16 bit floating point values
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F,
-			size, size, 0, GL_RGB, GL_FLOAT, nullptr);
-	}
+	SetTexturesSize(512, 512);
 
 	glm::mat4 captureViews[] =
 	{
@@ -84,8 +78,9 @@ OpenGLTextureCube::OpenGLTextureCube(Texture* texture)
 	Resources::instance->bakeRBO->DefineDepthStorageSize(512);
 	Resources::instance->bakeRBO->BindDepthToFrameBuffer();
 
-	texture->Bind(0);
+	
 	Resources::instance->cubeToTexture->Bind();
+	texture->Bind(0);
 	Resources::instance->cubeToTexture->UploadUniformMat4("projection", captureProjection);
 	Renderer::SetViewPort(0, 0, 512, 512);
 	
@@ -156,6 +151,15 @@ void OpenGLTextureCube::SetNegativeZ(std::string path)
 	SetCubeTexture(path, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z);
 }
 
+void OpenGLTextureCube::SetTexturesSize(int width, int height)
+{
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+		// note that we store each face with 16 bit floating point values
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F,
+			width, height, 0, GL_RGB, GL_FLOAT, nullptr);
+	}
+}
 
 NAMESPACE_END
 

@@ -46,6 +46,7 @@ private:
 	std::vector<Texture*> textures;
 	std::shared_ptr<Texture> noTextureTex;
 	std::unique_ptr<Program> cubeToTexture;
+	std::unique_ptr<Program> irradianceProgram;
 	std::shared_ptr<Model> cubeModel;
 	std::shared_ptr<Model> quadModel;
 
@@ -53,6 +54,7 @@ private:
 	std::unique_ptr<RBO> bakeRBO;
 
 	friend class OpenGLTextureCube;
+	friend class Environment;
 };
 
 NAMESPACE_END

@@ -8,7 +8,7 @@
 #include "Shadow/Renderer/RendererAPI.h"
 #include "Shadow/Renderer/Camera.h"
 #include "Shadow/Resources/ResourceMaterial.h"
-
+#include "Shadow/Renderer/Environment.h"
 
 NAMESPACE_BEGAN
 class Model;
@@ -96,6 +96,8 @@ private:
 	std::unique_ptr<Texture> gDepth;
 	std::unique_ptr<Texture> ssaoTex;
 	std::unique_ptr<Texture> ssaoBlurTex;
+
+	std::unique_ptr<Environment> environment;
 
 	static RendererAPI* rendererAPI;
 

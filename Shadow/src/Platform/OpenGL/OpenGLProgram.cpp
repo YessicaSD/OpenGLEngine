@@ -121,7 +121,6 @@ void OpenGLProgram::LoadAttributes()
 	int count;
 	glGetProgramiv(programID, GL_ACTIVE_UNIFORMS, &count);
 	SW_LOG_TRACE("Uniforms Info ========");
-	printf("Active Uniforms: %d\n", count);
 
 	for (int i = 0; i < count; i++)
 	{
@@ -132,11 +131,8 @@ void OpenGLProgram::LoadAttributes()
 
 		glGetActiveUniform(programID, (GLuint)i, bufSize, &length, &size, &type, name);
 		SW_LOG_TRACE("Uniform {0} Type: {1} Name: {2}\n", i, type, name);
-		printf("Uniform #%d Type: %u Name: %s\n", i, type, name);
 	}
 
-
-	LogAttributes();
 }
 
 void OpenGLProgram::Bind()

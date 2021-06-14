@@ -24,6 +24,7 @@ public:
 	virtual void SetPositiveZ(std::string path);
 	virtual void SetNegativeZ(std::string path);
 
+	virtual void SetTexturesSize(int width, int height) override;
 private:
 	void Init();
 	void GenerateTexture();

@@ -17,5 +17,10 @@ public:
 	virtual void SetPositiveZ(std::string path) = 0;
 	virtual void SetNegativeZ(std::string path) = 0;
 
+	/// <summary>
+	/// The texture needs to bind before
+	/// </summary>
+	virtual void SetTexturesSize(int width, int height) = 0;
+
 };
 NAMESPACE_END

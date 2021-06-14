@@ -215,6 +215,7 @@ void Resources::OnMainTopBar()
 void Resources::Init()
 {
 	CreateNoTextureTexture();
+	instance->irradianceProgram.reset(LoadProgram("Assets/Programs/Irradiance.glsl"));
 	instance->cubeToTexture.reset(LoadProgram("Assets/Programs/BuildCubeMap.glsl"));
 	instance->cubeToTexture->Bind();
 	instance->cubeToTexture->UploadUniformInt("equirectangularMap", 0);

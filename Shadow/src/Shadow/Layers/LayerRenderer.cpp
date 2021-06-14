@@ -94,7 +94,8 @@ void Renderer::GeometryPass()
 
 	glDepthMask(GL_FALSE);
 
-	skyboxHDR->Bind();
+	//skyboxHDR->Bind();
+	environment->GetIrradiance()->Bind();
 	skyProgram->Bind();
 	glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
 	skyProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectionMatrix() * view);
@@ -175,6 +176,9 @@ void Renderer::InitSkybox()
 
 	hdrTexture.reset(Resources::LoadTexture("Assets/skybox/kiara_1_dawn_1k.hdr"));
 	skyboxHDR.reset(Resources::CreateCubemapFromTexture(hdrTexture.get()));
+
+	environment.reset(new Environment());
+	environment->SetSkybox(skyboxHDR.get());
 }
 
 void Renderer::InitDeferredProgram()
