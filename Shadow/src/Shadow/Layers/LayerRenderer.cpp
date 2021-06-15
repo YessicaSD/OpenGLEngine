@@ -22,6 +22,7 @@ Renderer::Renderer()
 
 Renderer::~Renderer()
 {
+	environment.reset();
 }
 
 void Renderer::BeginScene()
@@ -94,8 +95,8 @@ void Renderer::GeometryPass()
 
 	glDepthMask(GL_FALSE);
 
-	//skyboxHDR->Bind();
-	environment->GetIrradiance()->Bind();
+	skyboxHDR->Bind();
+	//environment->GetIrradiance()->Bind();
 	skyProgram->Bind();
 	glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
 	skyProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectionMatrix() * view);
@@ -178,7 +179,7 @@ void Renderer::InitSkybox()
 	skyboxHDR.reset(Resources::CreateCubemapFromTexture(hdrTexture.get()));
 
 	environment.reset(new Environment());
-	environment->SetSkybox(skyboxHDR.get());
+	environment->SetSkybox(skyboxHDR);
 }
 
 void Renderer::InitDeferredProgram()

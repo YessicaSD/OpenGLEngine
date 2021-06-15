@@ -87,8 +87,8 @@ private:
 
 	Texture* tex = nullptr;
 	Cubemap* skybox = nullptr;
-	std::unique_ptr<Cubemap> skyboxHDR;
-	std::unique_ptr<Texture> hdrTexture;
+	std::shared_ptr<Cubemap> skyboxHDR;
+	std::shared_ptr<Texture> hdrTexture;
 	std::unique_ptr<Texture> noiseTex;
 	std::unique_ptr<Texture> gPosition;
 	std::unique_ptr<Texture> gNormal;
@@ -97,7 +97,7 @@ private:
 	std::unique_ptr<Texture> ssaoTex;
 	std::unique_ptr<Texture> ssaoBlurTex;
 
-	std::unique_ptr<Environment> environment;
+	std::shared_ptr<Environment> environment;
 
 	static RendererAPI* rendererAPI;
 

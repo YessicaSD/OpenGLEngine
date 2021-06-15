@@ -9,9 +9,15 @@
 
 NAMESPACE_BEGAN
 
-void Environment::SetSkybox(Cubemap* skybox)
+Environment::~Environment()
 {
-	this->skybox.reset(skybox);
+	skybox.reset();
+	irradiance.reset();
+}
+
+void Environment::SetSkybox(std::shared_ptr<Cubemap> skybox)
+{
+	this->skybox = skybox;
 
 	glm::mat4 captureViews[] =
 	{
