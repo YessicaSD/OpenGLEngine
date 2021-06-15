@@ -7,6 +7,7 @@ class OpenGLRBO : public RBO
 {
 public:
 	OpenGLRBO();
+	~OpenGLRBO();
 	/// <summary>
 	/// To use this function the frame buffer needs to be bind before
 	/// </summary>

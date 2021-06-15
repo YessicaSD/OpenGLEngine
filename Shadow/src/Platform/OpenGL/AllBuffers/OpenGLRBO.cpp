@@ -15,6 +15,11 @@ void OpenGLRBO::BindDepthToFrameBuffer()
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, handle);
 }
 
+OpenGLRBO::~OpenGLRBO()
+{
+	glDeleteRenderbuffers(1, &handle);
+}
+
 void OpenGLRBO::Bind()
 {
 	glBindRenderbuffer(GL_RENDERBUFFER, handle);

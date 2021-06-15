@@ -10,6 +10,7 @@ class Material : public Resource
 {
 public:
 	Material();
+	~Material();
 	Material(std::string vs, std::string fs);
 	void UseMaterial();
 	std::shared_ptr<Program> GetProgram() { return program; };

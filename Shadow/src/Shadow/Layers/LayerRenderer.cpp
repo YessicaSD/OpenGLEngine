@@ -23,6 +23,14 @@ Renderer::Renderer()
 Renderer::~Renderer()
 {
 	environment.reset();
+	materialGun.reset();
+	gAlbedoSpec.reset();
+	gNormal.reset();
+	gMetal.reset();
+	gRoughness.reset();
+	gFBO.reset();
+
+	SW_CORE_INFO("Deleting renderer");
 }
 
 void Renderer::BeginScene()
@@ -43,7 +51,9 @@ void Renderer::Init()
 	InitSSAO();
 	InitBlurSSAO();
 
-	model = Resources::LoadModel("Assets/backpack/backpack.obj");
+	model.reset(Resources::LoadModel("Assets/backpack/backpack.obj"));
+	gunModel.reset(Resources::LoadModel("Assets/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX"));
+
 	cube = Resources::LoadModel("Assets/cube.fbx");
 	renderQuad.reset(Resources::GetQuad());
 
@@ -51,13 +61,25 @@ void Renderer::Init()
 	material->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/backpack/diffuse.jpg"));
 	material->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/backpack/normal.png"));
 
-	std::shared_ptr<Program> program = material->GetProgram();
-	program->Bind();
-	program->UploadUniformMat4("Model", glm::mat4(1.0));
-	program->UploadUniformFloat3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-	program->UploadUniformFloat3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
-	program->UploadUniformFloat3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-	program->UploadUniformFloat("material.shininess", 32.0f);
+	materialGun = std::make_unique<Material>();
+	materialGun->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_A.tga"));
+	materialGun->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_M.tga"));
+	//materialGun->SetTexture(TextureType::ROUGHNESS, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_N.tga"));
+	//materialGun->SetTexture(TextureType::METAL, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_R.tga"));
+
+	geometryPassProgram.reset(LoadProgram("Assets/Programs/GeometryPass.glsl"));
+	geometryPassProgram->Bind();
+	geometryPassProgram->UploadUniformInt("albedoTex", 0);
+	geometryPassProgram->UploadUniformInt("normalTex", 1);
+	geometryPassProgram->UploadUniformInt("roughnessTex", 3);
+	geometryPassProgram->UploadUniformInt("metalTex", 4);
+	geometryPassProgram->UploadUniformInt("aoTex", 2);
+
+	geometryPassProgram->UploadUniformMat4("Model", glm::mat4(1.0));
+	geometryPassProgram->UploadUniformFloat3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+	geometryPassProgram->UploadUniformFloat3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+	geometryPassProgram->UploadUniformFloat3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+	geometryPassProgram->UploadUniformFloat("material.shininess", 32.0f);
 
 	
 }
@@ -89,7 +111,7 @@ void Renderer::DeferredRendering()
 
 void Renderer::GeometryPass()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+	gFBO->Bind();
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -106,20 +128,25 @@ void Renderer::GeometryPass()
 	// Draw in the g-buffer ====
 
 	 // activate the texture unit first before binding texture
-	material->UseMaterial();
-	std::shared_ptr<Program> program = material->GetProgram();
-	program->UploadUniformMat4("projViewMatrix", camera.GetProjectViewMatrix());
-	program->UploadUniformInt("u_Texture", 0);
-	program->UploadUniformMat4("Model", glm::mat4(1.0));
-	program->UploadUniformMat4("view", camera.GetViewMatrix());
-	program->UploadUniformFloat3("lightPos", lightPos);
-	program->UploadUniformFloat3("viewPos", camera.GetPosition());
-	model->Draw();
-	glm::mat4 tranformation = glm::mat4(1.0);
-	tranformation = glm::translate(tranformation, glm::vec3(0.0,-2.0,0.0));
-	tranformation = glm::scale(tranformation, glm::vec3(5.0,0.5,5.0));
-	program->UploadUniformMat4("Model", tranformation);
-	cube->Draw();
+	materialGun->UseMaterial();
+	geometryPassProgram->Bind();
+	geometryPassProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectViewMatrix());
+	
+	glm::mat4 model = glm::mat4(1.0);
+	model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0,1.0,0.0));
+	model = glm::scale(model, glm::vec3(0.1));
+	geometryPassProgram->UploadUniformMat4("Model", model);
+	geometryPassProgram->UploadUniformMat4("view", camera.GetViewMatrix());
+	geometryPassProgram->UploadUniformFloat3("lightPos", lightPos);
+	geometryPassProgram->UploadUniformFloat3("viewPos", camera.GetPosition());
+	gunModel->Draw();
+
+
+	//glm::mat4 tranformation = glm::mat4(1.0);
+	//tranformation = glm::translate(tranformation, glm::vec3(0.0,-2.0,0.0));
+	//tranformation = glm::scale(tranformation, glm::vec3(5.0,0.5,5.0));
+	//program->UploadUniformMat4("Model", tranformation);
+	//cube->Draw();
 }
 
 void Renderer::SSAOPass()
@@ -195,14 +222,14 @@ void Renderer::InitDeferredProgram()
 	deferredProgram->UploadUniformInt("gSSAOBlur", 5);
 
 	//Create gBuffer ==
-	glGenFramebuffers(1, &gBuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+	gFBO.reset(Resources::CreateFBO());
+	gFBO->Bind();
 	glEnable(GL_DEPTH_TEST);
 
 	float w = Application::Get().GetWindow().GetWidth();
 	float h = Application::Get().GetWindow().GetHeight();
 
-	//glDepthFunc(GL_NOTEQUAL);
+	glDepthFunc(GL_LEQUAL);
 	// - position color buffer
 	gPosition.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA16F, GL_RGBA, GL_FLOAT));
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition->GetHandle(), 0);
@@ -215,13 +242,22 @@ void Renderer::InitDeferredProgram()
 	gAlbedoSpec.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE));
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec->GetHandle(), 0);
 
+	// roughness color buffer
+	gRoughness.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE));
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, gRoughness->GetHandle(), 0);
+
+	// metal color buffer
+	gMetal.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE));
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, gMetal->GetHandle(), 0);
+
 	// - depth buffer
 	gDepth.reset(Resources::CreateEmptyTexture(w, h, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT));
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, gDepth->GetHandle(), 0);
 
 	// - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-	unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-	glDrawBuffers(3, attachments);
+	const int size = 5;
+	unsigned int attachments[size] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4 };
+	glDrawBuffers(size, attachments);
 
 
 	// finally check if framebuffer is complete

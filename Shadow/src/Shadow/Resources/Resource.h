@@ -9,6 +9,7 @@ class Resource
 {
 public:
 	std::string name;
+	~Resource() = default;
 
 private:
 	unsigned int uid = 0;

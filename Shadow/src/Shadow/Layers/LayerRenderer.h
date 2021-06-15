@@ -9,6 +9,8 @@
 #include "Shadow/Renderer/Camera.h"
 #include "Shadow/Resources/ResourceMaterial.h"
 #include "Shadow/Renderer/Environment.h"
+#include "Shadow/Renderer/FrameBufferObject.h"
+
 
 NAMESPACE_BEGAN
 class Model;
@@ -77,11 +79,15 @@ private:
 	std::unique_ptr<Program> deferredProgram;
 	std::unique_ptr<Program> ssaoProgram;
 	std::unique_ptr<Program> ssaoBlurProgram;
+	std::unique_ptr<Program> geometryPassProgram;
+
 
 	std::unique_ptr<Material> material;
+	std::unique_ptr<Material> materialGun;
 	std::vector<glm::vec3> kernelsPoint;
 
-	Model* model = nullptr;
+	std::unique_ptr<Model> model = nullptr;
+	std::unique_ptr<Model> gunModel;
 	Model* cube = nullptr;
 	std::unique_ptr<Model> renderQuad = nullptr;
 
@@ -91,8 +97,10 @@ private:
 	std::shared_ptr<Texture> hdrTexture;
 	std::unique_ptr<Texture> noiseTex;
 	std::unique_ptr<Texture> gPosition;
-	std::unique_ptr<Texture> gNormal;
 	std::unique_ptr<Texture> gAlbedoSpec;
+	std::unique_ptr<Texture> gNormal;
+	std::unique_ptr<Texture> gRoughness;
+	std::unique_ptr<Texture> gMetal;
 	std::unique_ptr<Texture> gDepth;
 	std::unique_ptr<Texture> ssaoTex;
 	std::unique_ptr<Texture> ssaoBlurTex;
@@ -101,7 +109,7 @@ private:
 
 	static RendererAPI* rendererAPI;
 
-	unsigned int gBuffer;
+	std::unique_ptr<FBO> gFBO;
 	unsigned int ssaoFBO;
 	unsigned int ssaoBlurFBO;
 	int renderMode = 0;
