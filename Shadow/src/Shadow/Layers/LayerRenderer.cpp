@@ -44,6 +44,7 @@ void Renderer::EndScene()
 
 void Renderer::Init()
 {
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	Renderer::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 
 	InitSkybox();
@@ -63,25 +64,19 @@ void Renderer::Init()
 
 	materialGun = std::make_unique<Material>();
 	materialGun->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_A.tga"));
-	materialGun->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_M.tga"));
-	//materialGun->SetTexture(TextureType::ROUGHNESS, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_N.tga"));
-	//materialGun->SetTexture(TextureType::METAL, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_R.tga"));
+	materialGun->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_N.tga"));
+	materialGun->SetTexture(TextureType::ROUGHNESS, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_R.tga"));
+	materialGun->SetTexture(TextureType::METAL, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_M.tga"));
 
 	geometryPassProgram.reset(LoadProgram("Assets/Programs/GeometryPass.glsl"));
 	geometryPassProgram->Bind();
 	geometryPassProgram->UploadUniformInt("albedoTex", 0);
 	geometryPassProgram->UploadUniformInt("normalTex", 1);
-	geometryPassProgram->UploadUniformInt("roughnessTex", 3);
-	geometryPassProgram->UploadUniformInt("metalTex", 4);
-	geometryPassProgram->UploadUniformInt("aoTex", 2);
+	geometryPassProgram->UploadUniformInt("roughnessTex", 2);
+	geometryPassProgram->UploadUniformInt("metalTex", 3);
 
 	geometryPassProgram->UploadUniformMat4("Model", glm::mat4(1.0));
-	geometryPassProgram->UploadUniformFloat3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-	geometryPassProgram->UploadUniformFloat3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
-	geometryPassProgram->UploadUniformFloat3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-	geometryPassProgram->UploadUniformFloat("material.shininess", 32.0f);
 
-	
 }
 
 void Renderer::OnUpdate()
@@ -117,8 +112,9 @@ void Renderer::GeometryPass()
 
 	glDepthMask(GL_FALSE);
 
-	skyboxHDR->Bind();
+	//skyboxHDR->Bind();
 	//environment->GetIrradiance()->Bind();
+	environment->GetPrefilter()->Bind();
 	skyProgram->Bind();
 	glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
 	skyProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectionMatrix() * view);
@@ -183,6 +179,8 @@ void Renderer::LightingPass()
 	gDepth->Bind(3);
 	ssaoTex->Bind(4);
 	ssaoBlurTex->Bind(5);
+	gRoughness->Bind(6);
+	gMetal->Bind(7);
 
 	deferredProgram->Bind();
 	deferredProgram->UploadUniformInt("renderMode", renderMode);
@@ -220,6 +218,8 @@ void Renderer::InitDeferredProgram()
 	deferredProgram->UploadUniformInt("gDepth", 3);
 	deferredProgram->UploadUniformInt("gSSAO", 4);
 	deferredProgram->UploadUniformInt("gSSAOBlur", 5);
+	deferredProgram->UploadUniformInt("gRoughness", 6);
+	deferredProgram->UploadUniformInt("gMetal", 7);
 
 	//Create gBuffer ==
 	gFBO.reset(Resources::CreateFBO());
@@ -385,7 +385,7 @@ void Renderer::OnImGuiRender()
 	ImGui::Begin("Renderer");
 	camera.OnImGuiRender();
 
-	const char* items[] = { "Final", "Normal", "Depth", "Position", "Albedo", "SSAO", "SSAOBlur"};
+	const char* items[] = { "Final", "Normal", "Depth", "Position", "Albedo", "SSAO", "SSAOBlur", "Roughness", "Metal"};
 	ImGui::Combo("Render mode", &renderMode, items, IM_ARRAYSIZE(items));
 	ImGui::Text("Light position:");
 	ImGui::PushItemWidth(100);

@@ -19,6 +19,7 @@ void Environment::SetSkybox(std::shared_ptr<Cubemap> skybox)
 {
 	this->skybox = skybox;
 
+	// Create Irradiance ==================
 	glm::mat4 captureViews[] =
 	{
 	   glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
@@ -57,8 +58,39 @@ void Environment::SetSkybox(std::shared_ptr<Cubemap> skybox)
 		Resources::instance->cubeModel->Draw();
 	}
 
+	// Create pre-filter map ===========================
+
+	prefilter.reset(Resources::CreateCubemap());
+	prefilter->SetTexturesSize(128, 128);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // be sure to set minification filter to mip_linear 
+	prefilter->GenerateMipmap();
+	Resources::instance->prefilterProgram->Bind();
+	this->skybox->Bind();
+	Resources::instance->prefilterProgram->UploadUniformMat4("projection", captureProjection);
+	unsigned int maxMipLevels = 5;
+	for (unsigned int mip = 0; mip < maxMipLevels; ++mip)
+	{
+		// reisze framebuffer according to mip-level size.
+		unsigned int mipWidth = 128 * std::pow(0.5, mip);
+		unsigned int mipHeight = 128 * std::pow(0.5, mip);
+
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
+		Renderer::SetViewPort(0, 0, mipWidth, mipHeight);
+
+		float roughness = (float)mip / (float)(maxMipLevels - 1);
+		Resources::instance->prefilterProgram->UploadUniformFloat("roughness", roughness);
+		for (unsigned int i = 0; i < 6; ++i)
+		{
+			Resources::instance->prefilterProgram->UploadUniformMat4("view", captureViews[i]);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, prefilter->GetHandle(), mip);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			Resources::instance->cubeModel->Draw();
+		}
+	}
+
 	Window& window = Application::Get().GetWindow();
 	Renderer::SetViewPort(0, 0, window.GetWidth(), window.GetHeight());
+
 }
 NAMESPACE_END
 

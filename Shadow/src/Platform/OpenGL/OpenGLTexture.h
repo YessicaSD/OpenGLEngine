@@ -16,7 +16,7 @@ public:
 	virtual uint32_t GetHeight() override;
 	virtual void Bind(uint32_t slot) override;
 	virtual int GetHandle() override;
-
+	virtual void GenerateMipmap() override;
 private:
 	int width = 0, height = 0;
 	unsigned int textureID;

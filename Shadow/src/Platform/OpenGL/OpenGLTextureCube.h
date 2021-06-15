@@ -25,6 +25,8 @@ public:
 	virtual void SetNegativeZ(std::string path);
 
 	virtual void SetTexturesSize(int width, int height) override;
+
+	virtual void GenerateMipmap() override;
 private:
 	void Init();
 	void GenerateTexture();

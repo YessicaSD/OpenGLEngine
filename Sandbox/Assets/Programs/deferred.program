@@ -25,6 +25,9 @@
 		uniform sampler2D gDepth;
 		uniform sampler2D gSSAO;
 		uniform sampler2D gSSAOBlur;
+		uniform sampler2D gRoughness;
+		uniform sampler2D gMetal;
+
 		uniform int renderMode;
 		
 		void main()
@@ -34,7 +37,7 @@
 			else if(renderMode == 2)
 				FragColor.xyz = texture(gDepth, TexCoords).xyz;
 			else if(renderMode == 3)
-				FragColor.xyz = vec3(texture(gPosition, TexCoords).z);
+				FragColor.xyz = texture(gPosition, TexCoords).xyz;
 			else if(renderMode == 4)
 				FragColor.xyz = texture(gAlbedoSpec, TexCoords).xyz;
 			else if(renderMode == 5)
@@ -43,7 +46,15 @@
 			}
 			else if(renderMode == 6)
 			{
-				FragColor.xyz = vec3(texture(gSSAOBlur, TexCoords).xyz);
+				FragColor.xyz = vec3(texture(gSSAOBlur, TexCoords).r);
+			}
+			else if(renderMode == 7)
+			{
+				FragColor.xyz = texture(gRoughness, TexCoords).xyz;
+			}
+			else if (renderMode == 8)
+			{
+				FragColor.xyz = texture(gMetal, TexCoords).xyz;
 			}
 			else
 			{

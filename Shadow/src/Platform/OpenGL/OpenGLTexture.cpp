@@ -128,6 +128,11 @@ int OpenGLTexture::GetHandle()
 	return textureID;
 }
 
+void OpenGLTexture::GenerateMipmap()
+{
+	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+}
+
 NAMESPACE_END
 
 

@@ -161,5 +161,9 @@ void OpenGLTextureCube::SetTexturesSize(int width, int height)
 	}
 }
 
+void OpenGLTextureCube::GenerateMipmap()
+{
+	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+}
 NAMESPACE_END
 

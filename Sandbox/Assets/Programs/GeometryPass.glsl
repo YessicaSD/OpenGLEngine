@@ -1,12 +1,5 @@
 #if defined(VERTEX_SHADER)
 
-		struct Material {
-			vec3 ambient;
-			vec3 diffuse;
-			vec3 specular;
-			float shininess;
-		}; 
-
 		layout (location = 0) in vec3 aPos;
 		layout (location = 1) in vec3 aNormal;
 		layout (location = 2) in vec2 aUV;
@@ -16,7 +9,6 @@
 		uniform mat4 Model;
 		uniform mat4 view;
 		uniform mat4 projViewMatrix;
-		uniform Material material;
 		uniform vec3 lightPos;
 		uniform vec3 viewPos;
 
@@ -58,8 +50,6 @@
 	mat3 TBN;
 	} fs_in;
 
-	//out vec4 FragColor;
-
 	uniform sampler2D albedoTex;
 	uniform sampler2D normalTex;
 	uniform sampler2D roughnessTex;
@@ -72,6 +62,8 @@
 		vec3 tangentNormal = normalize(texture(normalTex, fs_in.TexCoords).xyz * 2.0 - 1.0);
 		gNormal = normalize(fs_in.TBN * tangentNormal);		
 		gAlbedoSpec = texture(albedoTex, fs_in.TexCoords);
+		gRoughness = texture(roughnessTex, fs_in.TexCoords);
+		gMetal = texture(metalTex,fs_in.TexCoords);
 		gPosition = fs_in.FragPos;
 	};
 #endif

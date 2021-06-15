@@ -142,6 +142,7 @@
     <None Include="Assets\Programs\BuildCubeMap.glsl" />
     <None Include="Assets\Programs\GeometryPass.glsl" />
     <None Include="Assets\Programs\Irradiance.glsl" />
+    <None Include="Assets\Programs\Prefilter.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

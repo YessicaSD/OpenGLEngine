@@ -219,6 +219,9 @@ void Resources::Init()
 	instance->cubeToTexture.reset(LoadProgram("Assets/Programs/BuildCubeMap.glsl"));
 	instance->cubeToTexture->Bind();
 	instance->cubeToTexture->UploadUniformInt("equirectangularMap", 0);
+	instance->prefilterProgram.reset(LoadProgram("Assets/Programs/Prefilter.glsl"));
+	instance->prefilterProgram->Bind();
+	instance->prefilterProgram->UploadUniformInt("environmentMap", 0);
 	GetCube();
 	instance->bakeFBO.reset(CreateFBO());
 	instance->bakeRBO.reset(CreateRBO());
