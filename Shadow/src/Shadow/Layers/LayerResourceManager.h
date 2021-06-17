@@ -57,6 +57,7 @@ private:
 
 	friend class OpenGLTextureCube;
 	friend class Environment;
+	friend class Renderer;
 };
 
 NAMESPACE_END

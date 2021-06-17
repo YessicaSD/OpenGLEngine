@@ -141,6 +141,7 @@
   <ItemGroup>
     <None Include="Assets\Programs\brdf.glsl" />
     <None Include="Assets\Programs\BuildCubeMap.glsl" />
+    <None Include="Assets\Programs\deferred.program" />
     <None Include="Assets\Programs\GeometryPass.glsl" />
     <None Include="Assets\Programs\Irradiance.glsl" />
     <None Include="Assets\Programs\Prefilter.glsl" />

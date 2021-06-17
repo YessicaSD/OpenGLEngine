@@ -58,6 +58,8 @@ private:
 	void InitDeferredProgram();
 	void GenerateNoiseTexture();
 	void InitBlurSSAO();
+	void InitBrdf();
+
 	//Update ==
 	void ForwardRendering();
 	void DeferredRendering();
@@ -82,7 +84,7 @@ private:
 	std::unique_ptr<Program> ssaoProgram;
 	std::unique_ptr<Program> ssaoBlurProgram;
 	std::unique_ptr<Program> geometryPassProgram;
-
+	std::unique_ptr<Program> brdfProgram;
 
 	std::unique_ptr<Material> material;
 	std::unique_ptr<Material> materialGun;
@@ -91,7 +93,7 @@ private:
 	std::unique_ptr<Model> model = nullptr;
 	std::unique_ptr<Model> gunModel;
 	Model* cube = nullptr;
-	std::unique_ptr<Model> renderQuad = nullptr;
+	std::shared_ptr<Model> renderQuad = nullptr;
 
 	Texture* tex = nullptr;
 	Cubemap* skybox = nullptr;
@@ -101,9 +103,9 @@ private:
 	std::unique_ptr<Texture> gPosition;
 	std::unique_ptr<Texture> gAlbedoSpec;
 	std::unique_ptr<Texture> gNormal;
-	std::unique_ptr<Texture> gRoughness;
-	std::unique_ptr<Texture> gMetal;
+	std::unique_ptr<Texture> gData;
 	std::unique_ptr<Texture> gDepth;
+	std::unique_ptr<Texture> brdfLutTexture;
 	std::unique_ptr<Texture> ssaoTex;
 	std::unique_ptr<Texture> ssaoBlurTex;
 

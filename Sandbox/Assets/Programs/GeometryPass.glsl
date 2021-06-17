@@ -43,8 +43,7 @@
 	layout (location = 0) out vec3 gPosition;
 	layout (location = 1) out vec3 gNormal;
 	layout (location = 2) out vec4 gAlbedoSpec;		
-	layout (location = 3) out vec4 gRoughness;		
-	layout (location = 4) out vec4 gMetal;		
+	layout (location = 3) out vec4 gData;			
 
 
 	in VS_OUT {
@@ -68,8 +67,8 @@
 		gNormal = normalize(fs_in.TBN * texNormal);		
 		//gNormal = normalize(fs_in.oNormal);		
 		gAlbedoSpec = texture(albedoTex, fs_in.TexCoords);
-		gRoughness = texture(roughnessTex, fs_in.TexCoords);
-		gMetal = texture(metalTex,fs_in.TexCoords);
+		gData.r = texture(roughnessTex, fs_in.TexCoords).r;
+		gData.g = texture(metalTex,fs_in.TexCoords).g;
 		gPosition = fs_in.FragPos;
 	};
 #endif

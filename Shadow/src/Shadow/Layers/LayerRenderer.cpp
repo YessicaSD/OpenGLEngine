@@ -26,8 +26,7 @@ Renderer::~Renderer()
 	materialGun.reset();
 	gAlbedoSpec.reset();
 	gNormal.reset();
-	gMetal.reset();
-	gRoughness.reset();
+	gData.reset();
 	gFBO.reset();
 
 	SW_CORE_INFO("Deleting renderer");
@@ -52,6 +51,7 @@ void Renderer::Init()
 	InitDeferredProgram();
 	InitSSAO();
 	InitBlurSSAO();
+	
 
 	model.reset(Resources::LoadModel("Assets/backpack/backpack.obj"));
 	gunModel.reset(Resources::LoadModel("Assets/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX"));
@@ -78,9 +78,11 @@ void Renderer::Init()
 
 	geometryPassProgram->UploadUniformMat4("Model", glm::mat4(1.0));
 
-	lights.push_back(new PointLight({ 1.0,0.0,0.0 }));
-	lights.push_back(new PointLight({ 0.0,0.0,0.0 }));
-	lights.push_back(new PointLight({ 0.0,1.0,0.0 }));
+	lights.push_back(new PointLight({ 5.0,0.0,5.0 }));
+	lights.push_back(new PointLight({ 5.0,1.0,5.0 }));
+	lights.push_back(new PointLight({ 5.0,2.0,5.0 }));
+
+	InitBrdf();
 
 }
 
@@ -186,8 +188,10 @@ void Renderer::LightingPass()
 	gDepth->Bind(3);
 	ssaoTex->Bind(4);
 	ssaoBlurTex->Bind(5);
-	gRoughness->Bind(6);
-	gMetal->Bind(7);
+	gData->Bind(6);
+	environment->GetIrradiance()->Bind(7);
+	environment->GetPrefilter()->Bind(8);
+	brdfLutTexture->Bind(9);
 
 	deferredProgram->Bind();
 	deferredProgram->UploadUniformInt("renderMode", renderMode);
@@ -245,8 +249,10 @@ void Renderer::InitDeferredProgram()
 	deferredProgram->UploadUniformInt("gDepth", 3);
 	deferredProgram->UploadUniformInt("gSSAO", 4);
 	deferredProgram->UploadUniformInt("gSSAOBlur", 5);
-	deferredProgram->UploadUniformInt("gRoughness", 6);
-	deferredProgram->UploadUniformInt("gMetal", 7);
+	deferredProgram->UploadUniformInt("gData", 6);
+	deferredProgram->UploadUniformInt("irradianceMap", 7);
+	deferredProgram->UploadUniformInt("prefilterMap", 8);
+	deferredProgram->UploadUniformInt("brdfLUT", 9);
 
 	//Create gBuffer ==
 	gFBO.reset(Resources::CreateFBO());
@@ -270,12 +276,9 @@ void Renderer::InitDeferredProgram()
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec->GetHandle(), 0);
 
 	// roughness color buffer
-	gRoughness.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA, GL_RGB, GL_FLOAT));
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, gRoughness->GetHandle(), 0);
+	gData.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA, GL_RGB, GL_FLOAT));
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, gData->GetHandle(), 0);
 
-	// metal color buffer
-	gMetal.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA, GL_RGB, GL_FLOAT));
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, gMetal->GetHandle(), 0);
 
 	// - depth buffer
 	gDepth.reset(Resources::CreateEmptyTexture(w, h, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT));
@@ -324,6 +327,29 @@ void Renderer::InitBlurSSAO()
 	ssaoBlurProgram.reset(Shadow::LoadProgram("Assets/Programs/blurSSAO.program"));
 	ssaoBlurProgram->Bind();
 	ssaoBlurProgram->UploadUniformInt("ssaoInput", 0);
+}
+
+void Renderer::InitBrdf()
+{
+	brdfProgram.reset(Shadow::LoadProgram("Assets/Programs/brdf.glsl"));
+
+	brdfLutTexture.reset(Resources::CreateEmptyTexture(512, 512, GL_RG16F, GL_RG, GL_FLOAT));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	Resources::instance->bakeFBO->Bind();
+	Resources::instance->bakeRBO->Bind();
+	Resources::instance->bakeRBO->BindDepthToFrameBuffer();
+	Resources::instance->bakeRBO->DefineDepthStorageSize(512);
+
+	SetViewPort(0, 0, 512, 512);
+
+	brdfProgram->Bind();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	renderQuad->Draw();
+
+	Window& window = Application::Get().GetWindow();
+	Renderer::SetViewPort(0, 0, window.GetWidth(), window.GetHeight());
 }
 
 void Renderer::InitSSAO()

@@ -32,11 +32,11 @@
 	uniform sampler2D gDepth;
 	uniform sampler2D gSSAO;
 	uniform sampler2D gSSAOBlur;
-	uniform sampler2D gRoughness;
-	uniform sampler2D gMetal;
+	uniform sampler2D gData;
 
 	uniform samplerCube irradianceMap;
 	uniform samplerCube prefilterMap;
+	uniform sampler2D   brdfLUT;  
 	uniform Light lights[10];
 	uniform int numLights = 0;
 
@@ -81,11 +81,11 @@ float LinearizeDepth(float depth)
 			}
 			else if(renderMode == 7)
 			{
-				FragColor.xyz = texture(gRoughness, TexCoords).xyz;
+				FragColor.xyz = vec3(texture(gData, TexCoords).x);
 			}
 			else if (renderMode == 8)
 			{
-				FragColor.xyz = texture(gMetal, TexCoords).xyz;
+				FragColor.xyz = vec3(texture(gData, TexCoords).y);
 			}
 			else
 			{
@@ -152,10 +152,10 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 
 void CalculateFinalRender()
 {
-	float roughness = texture(gRoughness, TexCoords).r;
+	float roughness = texture(gData, TexCoords).r;
 	WorldPos = texture(gPosition, TexCoords).xyz;
 	vec3 albedo =  pow(texture(gAlbedoSpec, TexCoords).xyz, vec3(2.2));
-	float metallic = texture(gMetal, TexCoords).r;
+	float metallic = texture(gData, TexCoords).g;
 	vec3 Normal =  texture(gNormal, TexCoords).xyz;
 	float ao = texture(gSSAO,TexCoords).r; 
 	vec3 N = Normal; 
