@@ -10,7 +10,7 @@
 #include "Shadow/Resources/ResourceMaterial.h"
 #include "Shadow/Renderer/Environment.h"
 #include "Shadow/Renderer/FrameBufferObject.h"
-
+#include "Shadow/Renderer/Light.h"
 
 NAMESPACE_BEGAN
 class Model;
@@ -68,6 +68,8 @@ private:
 	//Other ==
 	void InitSkybox();
 
+	void SendLights(std::shared_ptr<Program> program);
+
 	std::vector<glm::vec3> GenerateKernelPoints(int number);
 
 private:
@@ -76,7 +78,7 @@ private:
 	RenderMethod renderMethod = DEFERRED;
 
 	std::shared_ptr<Program> skyProgram;
-	std::unique_ptr<Program> deferredProgram;
+	std::shared_ptr<Program> deferredProgram;
 	std::unique_ptr<Program> ssaoProgram;
 	std::unique_ptr<Program> ssaoBlurProgram;
 	std::unique_ptr<Program> geometryPassProgram;
@@ -104,6 +106,8 @@ private:
 	std::unique_ptr<Texture> gDepth;
 	std::unique_ptr<Texture> ssaoTex;
 	std::unique_ptr<Texture> ssaoBlurTex;
+
+	std::vector<Light*> lights;
 
 	std::shared_ptr<Environment> environment;
 

@@ -45,6 +45,7 @@ void Renderer::EndScene()
 void Renderer::Init()
 {
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
 	Renderer::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 
 	InitSkybox();
@@ -76,6 +77,10 @@ void Renderer::Init()
 	geometryPassProgram->UploadUniformInt("metalTex", 3);
 
 	geometryPassProgram->UploadUniformMat4("Model", glm::mat4(1.0));
+
+	lights.push_back(new PointLight({ 1.0,0.0,0.0 }));
+	lights.push_back(new PointLight({ 0.0,0.0,0.0 }));
+	lights.push_back(new PointLight({ 0.0,1.0,0.0 }));
 
 }
 
@@ -121,6 +126,7 @@ void Renderer::GeometryPass()
 	cube->Draw();
 	glDepthMask(GL_TRUE);
 
+	glDepthRangef(0, 10000.0);
 	// Draw in the g-buffer ====
 
 	 // activate the texture unit first before binding texture
@@ -129,7 +135,7 @@ void Renderer::GeometryPass()
 	geometryPassProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectViewMatrix());
 	
 	glm::mat4 model = glm::mat4(1.0);
-	model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0,1.0,0.0));
+	model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0,1.0,0.0));
 	model = glm::scale(model, glm::vec3(0.1));
 	geometryPassProgram->UploadUniformMat4("Model", model);
 	geometryPassProgram->UploadUniformMat4("view", camera.GetViewMatrix());
@@ -158,6 +164,7 @@ void Renderer::SSAOPass()
 	gNormal->Bind(1);
 	noiseTex->Bind(2);
 	ssaoProgram->Bind();
+	ssaoProgram->UploadUniformMat4("view", camera.GetViewMatrix());
 	renderQuad->Draw();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
@@ -184,6 +191,8 @@ void Renderer::LightingPass()
 
 	deferredProgram->Bind();
 	deferredProgram->UploadUniformInt("renderMode", renderMode);
+	deferredProgram->UploadUniformFloat3("camPos", camera.GetPosition());
+	SendLights(deferredProgram);
 	renderQuad->Draw();
 }
 
@@ -205,6 +214,24 @@ void Renderer::InitSkybox()
 
 	environment.reset(new Environment());
 	environment->SetSkybox(skyboxHDR);
+}
+
+void Renderer::SendLights(std::shared_ptr<Program> program)
+{
+	program->UploadUniformInt("numLights", lights.size());
+	for (int i = 0; i < lights.size(); i++)
+	{
+		Light* clight = lights[i];
+		program->UploadUniformInt("lights[" + std::to_string(i) + "].type", (int)clight->type);
+		program->UploadUniformFloat3("lights[" + std::to_string(i) + "].position", clight->position);
+		program->UploadUniformFloat3("lights[" + std::to_string(i) + "].color", clight->color);
+
+		if (clight->type == LightTypes::DIRECTIONAL)
+		{
+			DirectionalLight* dLight = (DirectionalLight*)clight;
+			program->UploadUniformFloat3("lights[" + std::to_string(i) + "].direction", dLight->direction);
+		}
+	}
 }
 
 void Renderer::InitDeferredProgram()
@@ -235,19 +262,19 @@ void Renderer::InitDeferredProgram()
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition->GetHandle(), 0);
 
 	// - normal color buffer
-	gNormal.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA16F, GL_RGBA, GL_FLOAT));
+	gNormal.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA16F, GL_RGB, GL_FLOAT));
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal->GetHandle(), 0);
 
 	// - color + specular color buffer
-	gAlbedoSpec.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE));
+	gAlbedoSpec.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA, GL_RGB, GL_UNSIGNED_BYTE));
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec->GetHandle(), 0);
 
 	// roughness color buffer
-	gRoughness.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE));
+	gRoughness.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA, GL_RGB, GL_FLOAT));
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, gRoughness->GetHandle(), 0);
 
 	// metal color buffer
-	gMetal.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE));
+	gMetal.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA, GL_RGB, GL_FLOAT));
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, gMetal->GetHandle(), 0);
 
 	// - depth buffer
@@ -388,11 +415,35 @@ void Renderer::OnImGuiRender()
 	const char* items[] = { "Final", "Normal", "Depth", "Position", "Albedo", "SSAO", "SSAOBlur", "Roughness", "Metal"};
 	ImGui::Combo("Render mode", &renderMode, items, IM_ARRAYSIZE(items));
 	ImGui::Text("Light position:");
+	ImGui::BeginGroup();
 	ImGui::PushItemWidth(100);
-	ImGui::DragFloat("#lightx", &lightPos.x);  ImGui::SameLine();
-	ImGui::DragFloat("#lighty", &lightPos.y); ImGui::SameLine();
-	ImGui::DragFloat("#lightz", &lightPos.z);
+	int i = 0;
+	for each (Light* light in lights)
+	{
+		ImGui::Text("Position:");
+		std::string label = "##lightx"; label += std::to_string(i);
+		ImGui::DragFloat(label.c_str(), &light->position.x);  ImGui::SameLine();
+		label = "##lighty"; label += std::to_string(i);
+		ImGui::DragFloat(label.c_str(), &light->position.y); ImGui::SameLine();
+		label = "##lightz"; label += std::to_string(i);
+		ImGui::DragFloat(label.c_str(), &light->position.z);
+
+		ImGui::Text("Color:");
+		label = "##colorr"; label += std::to_string(i);
+		ImGui::ColorPicker3(label.c_str(), &light->color.x);
+		//ImGui::DragFloat(label.c_str(), &light->color.x);  ImGui::SameLine();
+		//label = "##colorg"; label += std::to_string(i);
+		//ImGui::DragFloat(label.c_str(), &light->color.y); ImGui::SameLine();
+		//label = "##colorb"; label += std::to_string(i);
+		//ImGui::DragFloat(label.c_str(), &light->color.z);
+
+
+		i++;
+	}
 	ImGui::PopItemWidth();
+	ImGui::EndGroup();
+	
+	
 	ImGui::End();
 }
 

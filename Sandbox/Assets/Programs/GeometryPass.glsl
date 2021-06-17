@@ -16,21 +16,24 @@
 		vec3 FragPos;
 		vec2 TexCoords;
 		mat3 TBN;
+		vec3 oNormal;
 		} vs_out;
 
 		out vec3 vNormal;
 
 		void main()
 		{
-			vs_out.FragPos = vec3(view * Model * vec4(aPos, 1.0));   
+			vs_out.FragPos = vec3(Model * vec4(aPos, 1.0));   
 			vs_out.TexCoords = aUV;
-			
-			vec3 T = normalize(vec3(Model * vec4(aTangent, 0.0)));
+						vec3 T = normalize(vec3(Model * vec4(aTangent, 0.0)));
 			vec3 N = normalize(vec3(Model * vec4(aNormal, 0.0)));
 			T = normalize(T - dot(T, N) * N);
 			vec3 B = cross(N, T);
 
 			vs_out.TBN = mat3(T, B, N);
+
+
+			vs_out.oNormal = aNormal;
 
 			gl_Position =  projViewMatrix * Model * vec4(aPos, 1.0);
 			
@@ -48,6 +51,7 @@
 	vec3 FragPos;
 	vec2 TexCoords;
 	mat3 TBN;
+	vec3 oNormal;
 	} fs_in;
 
 	uniform sampler2D albedoTex;
@@ -59,8 +63,10 @@
 
 	void main()
 	{
-		vec3 tangentNormal = normalize(texture(normalTex, fs_in.TexCoords).xyz * 2.0 - 1.0);
-		gNormal = normalize(fs_in.TBN * tangentNormal);		
+		vec3 texNormal = texture(normalTex, fs_in.TexCoords).rgb;
+		texNormal = texNormal * 2.0 - 1.0;
+		gNormal = normalize(fs_in.TBN * texNormal);		
+		//gNormal = normalize(fs_in.oNormal);		
 		gAlbedoSpec = texture(albedoTex, fs_in.TexCoords);
 		gRoughness = texture(roughnessTex, fs_in.TexCoords);
 		gMetal = texture(metalTex,fs_in.TexCoords);

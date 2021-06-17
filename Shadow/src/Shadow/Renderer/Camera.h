@@ -5,7 +5,7 @@ NAMESPACE_BEGAN
 class Camera
 {
 public:
-	Camera(float fov = 45.0f, float aspectRatio = 800.0f/ 600.0f , float nearPlan = 0.1f, float farPlane = 100.0f);
+	Camera(float fov = 45.0f, float aspectRatio = 800.0f/ 600.0f , float nearPlan = 0.1f, float farPlane = 10000.0f);
 	
 	//Setters
 	void SetOrbit(glm::vec3 lookPosition = {0,0,0});

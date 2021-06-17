@@ -189,6 +189,7 @@
     <ClInclude Include="src\Platform\OpenGL\AllBuffers\OpenGLFBO.h" />
     <ClInclude Include="src\Platform\OpenGL\AllBuffers\OpenGLRBO.h" />
     <ClInclude Include="src\Shadow\Renderer\RenderBufferObjects.h" />
+    <ClInclude Include="src\Shadow\Renderer\Light.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
@@ -291,5 +292,6 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLTextureCube.cpp" />
     <ClCompile Include="src\Platform\OpenGL\AllBuffers\OpenGLFBO.cpp" />
     <ClCompile Include="src\Platform\OpenGL\AllBuffers\OpenGLRBO.cpp" />
+    <ClCompile Include="src\Shadow\Renderer\Light.cpp" />
   </ItemGroup>
 </Project>

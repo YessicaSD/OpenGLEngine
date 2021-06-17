@@ -100,6 +100,7 @@ Program* LoadProgram(const char* path)
 			SW_LOG_ERROR("ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ: ensure the path is correct. The given path is " + std::string(path));
 		}
 
+		SW_LOG_INFO("Loading program with path" + std::string(path));
 		return new OpenGLProgram(vs, fs);
 	}
 		
