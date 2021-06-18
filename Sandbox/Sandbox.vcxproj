@@ -139,6 +139,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Programs\BlurBloom.glsl" />
     <None Include="Assets\Programs\brdf.glsl" />
     <None Include="Assets\Programs\BuildCubeMap.glsl" />
     <None Include="Assets\Programs\deferred.program" />

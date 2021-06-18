@@ -191,10 +191,28 @@ void Renderer::InitHdrFBO()
 	unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 	glDrawBuffers(2, attachments);
 
+	blurBloomProgram.reset(LoadProgram("Assets/Programs/BlurBloom.glsl"));
+	blurBloomProgram->Bind();
+	blurBloomProgram->UploadUniformInt("image", 0);
+	for (unsigned int i = 0; i < 2; i++)
+	{
+		pingpongFBO[i] = Resources::CreateFBO();
+		pingpongFBO[i]->Bind();
+		pingpongBuffer[i] = Resources::CreateEmptyTexture(w, h, GL_RGBA16F, GL_RGBA, GL_FLOAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongBuffer[i]->GetHandle(), 0
+		);
+		unsigned int attachments[1] = { GL_COLOR_ATTACHMENT0 };
+		glDrawBuffers(1, attachments);
+	}
+
 	finalBloom.reset(LoadProgram("Assets/Programs/FinalBloom.glsl"));
 	finalBloom->Bind();
 	finalBloom->UploadUniformInt("scene", 0);
-	finalBloom->UploadUniformInt("bloomBlur", 0);
+	finalBloom->UploadUniformInt("bloomBlur", 1);
 }
 
 void Renderer::InitSSAO()
@@ -301,6 +319,29 @@ void Renderer::OnUpdate()
 	}
 }
 
+void Renderer::SSAOPass()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	//ssaoProgram->UploadUniformInt("gPosition", 0);
+	//ssaoProgram->UploadUniformInt("gNormal", 1);
+	//ssaoProgram->UploadUniformInt("texNoise", 2);
+
+	gPosition->Bind(0);
+	gNormal->Bind(1);
+	noiseTex->Bind(2);
+	ssaoProgram->Bind();
+	ssaoProgram->UploadUniformMat4("view", camera.GetViewMatrix());
+	renderQuad->Draw();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
+	glClear(GL_COLOR_BUFFER_BIT);
+	ssaoTex->Bind(0);
+	ssaoBlurProgram->Bind();
+	renderQuad->Draw();
+}
+
 void Renderer::ForwardRendering()
 {
 
@@ -376,43 +417,34 @@ void Renderer::LightingPass()
 
 void Renderer::BloomPass()
 {
+	bool horizontal = true, first_iteration = true;
+	int amount = 10;
+	blurBloomProgram->Bind();
+	for (unsigned int i = 0; i < amount; i++)
+	{
+		pingpongFBO[horizontal]->Bind();
+		blurBloomProgram->UploadUniformInt("horizontal", horizontal);
+		first_iteration ? highlightsTex->Bind(0) : pingpongBuffer[!horizontal]->Bind(0);
+		renderQuad->Draw();
+		horizontal = !horizontal;
+		if (first_iteration)
+			first_iteration = false;
+	}
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	finalBloom->Bind();
+
 	renderTex->Bind(0);
-	highlightsTex->Bind(1);
+	pingpongBuffer[!horizontal]->Bind(1);
+	//highlightsTex->Bind(1);
+	finalBloom->UploadUniformFloat("exposure", bloomRange);
+	finalBloom->UploadUniformInt("mode", finalMode);
+
 	renderQuad->Draw();
 }
 #pragma endregion
-
-
-
-
-
-void Renderer::SSAOPass()
-{
-	glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	//ssaoProgram->UploadUniformInt("gPosition", 0);
-	//ssaoProgram->UploadUniformInt("gNormal", 1);
-	//ssaoProgram->UploadUniformInt("texNoise", 2);
-
-	gPosition->Bind(0);
-	gNormal->Bind(1);
-	noiseTex->Bind(2);
-	ssaoProgram->Bind();
-	ssaoProgram->UploadUniformMat4("view", camera.GetViewMatrix());
-	renderQuad->Draw();
-
-	glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
-	glClear(GL_COLOR_BUFFER_BIT);
-	ssaoTex->Bind(0);
-	ssaoBlurProgram->Bind();
-	renderQuad->Draw();
-}
-
 
 void Renderer::SendLights(std::shared_ptr<Program> program)
 {
@@ -513,6 +545,12 @@ void Renderer::OnImGuiRender()
 
 	const char* items[] = { "Final", "Normal", "Depth", "Position", "Albedo", "SSAO", "SSAOBlur", "Roughness", "Metal", "brdf", "irradiance", "prefilterMap"};
 	ImGui::Combo("Render mode", &renderMode, items, IM_ARRAYSIZE(items));
+
+	const char* items2[] = { "Final", "Scene", "HightLight" };
+	ImGui::Combo("Render mode Bloom", &finalMode, items2, IM_ARRAYSIZE(items2));
+
+	ImGui::SliderFloat("Bloom range", &bloomRange, 0, 1.0);
+
 	ImGui::Text("Light position:");
 	ImGui::BeginGroup();
 	ImGui::PushItemWidth(100);
@@ -530,15 +568,10 @@ void Renderer::OnImGuiRender()
 		ImGui::Text("Color:");
 		label = "##colorr"; label += std::to_string(i);
 		ImGui::ColorPicker3(label.c_str(), &light->color.x);
-		//ImGui::DragFloat(label.c_str(), &light->color.x);  ImGui::SameLine();
-		//label = "##colorg"; label += std::to_string(i);
-		//ImGui::DragFloat(label.c_str(), &light->color.y); ImGui::SameLine();
-		//label = "##colorb"; label += std::to_string(i);
-		//ImGui::DragFloat(label.c_str(), &light->color.z);
-
-
 		i++;
 	}
+
+
 	ImGui::PopItemWidth();
 	ImGui::EndGroup();
 	

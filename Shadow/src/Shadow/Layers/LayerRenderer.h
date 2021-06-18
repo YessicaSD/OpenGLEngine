@@ -87,6 +87,7 @@ private:
 	std::unique_ptr<Program> ssaoBlurProgram;
 	std::unique_ptr<Program> geometryPassProgram;
 	std::unique_ptr<Program> brdfProgram;
+	std::unique_ptr<Program> blurBloomProgram;
 	std::unique_ptr<Program> finalBloom;
 
 	std::unique_ptr<Material> material;
@@ -123,8 +124,9 @@ private:
 	std::unique_ptr<FBO> gFBO;
 
 	std::unique_ptr<FBO> brdfFBO;
-
 	std::unique_ptr<FBO> hdrFBO;
+	FBO* pingpongFBO[2];
+	Texture* pingpongBuffer[2];
 	std::unique_ptr<Texture> renderTex;
 	std::unique_ptr<Texture> highlightsTex;
 
@@ -132,6 +134,8 @@ private:
 	unsigned int ssaoFBO;
 	unsigned int ssaoBlurFBO;
 	int renderMode = 0;
+	int finalMode = 0;
+	float bloomRange = 0.2;
 };
 
 
