@@ -1,7 +1,8 @@
 #ifdef VERTEX_SHADER
 
 layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec2 aTexCoords;
+layout (location = 1) in vec3 aNormal;
+layout (location = 2) in vec2 aTexCoords;
 
 out vec2 TexCoords;
 
@@ -13,8 +14,7 @@ void main()
 #endif
 
 #ifdef FRAGMENT_SHADER
-
-out vec2 FragColor;
+layout (location = 0) out vec3 FragColor;
 in vec2 TexCoords;
 
 const float PI = 3.14159265359;
@@ -124,6 +124,7 @@ vec2 IntegrateBRDF(float NdotV, float roughness)
 void main() 
 {
     vec2 integratedBRDF = IntegrateBRDF(TexCoords.x, TexCoords.y);
-    FragColor = integratedBRDF;
+    FragColor = vec3(integratedBRDF, 0.0);
+    //FragColor = vec3(1.0,0.0,0.0);
 }
 #endif 

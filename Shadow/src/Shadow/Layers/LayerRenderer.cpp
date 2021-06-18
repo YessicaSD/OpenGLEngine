@@ -47,17 +47,19 @@ void Renderer::Init()
 
 	Renderer::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 
+	cube = Resources::LoadModel("Assets/cube.fbx");
+	renderQuad.reset(Resources::GetQuad());
+
 	InitSkybox();
+	
 	InitDeferredProgram();
 	InitSSAO();
 	InitBlurSSAO();
-	
 
 	model.reset(Resources::LoadModel("Assets/backpack/backpack.obj"));
 	gunModel.reset(Resources::LoadModel("Assets/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX"));
 
-	cube = Resources::LoadModel("Assets/cube.fbx");
-	renderQuad.reset(Resources::GetQuad());
+	
 
 	material = std::make_unique<Material>();
 	material->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/backpack/diffuse.jpg"));
@@ -83,7 +85,6 @@ void Renderer::Init()
 	lights.push_back(new PointLight({ 5.0,2.0,5.0 }));
 
 	InitBrdf();
-
 }
 
 void Renderer::OnUpdate()
@@ -120,8 +121,9 @@ void Renderer::GeometryPass()
 	glDepthMask(GL_FALSE);
 
 	//skyboxHDR->Bind();
+	environment->GetSkybox();
 	//environment->GetIrradiance()->Bind();
-	environment->GetPrefilter()->Bind();
+	//environment->GetPrefilter()->Bind();
 	skyProgram->Bind();
 	glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
 	skyProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectionMatrix() * view);
@@ -189,9 +191,10 @@ void Renderer::LightingPass()
 	ssaoTex->Bind(4);
 	ssaoBlurTex->Bind(5);
 	gData->Bind(6);
-	environment->GetIrradiance()->Bind(7);
-	environment->GetPrefilter()->Bind(8);
-	brdfLutTexture->Bind(9);
+	brdfLutTexture->Bind(7);
+	environment->GetIrradiance()->Bind(8);
+	environment->GetPrefilter()->Bind(9);
+	
 
 	deferredProgram->Bind();
 	deferredProgram->UploadUniformInt("renderMode", renderMode);
@@ -250,9 +253,10 @@ void Renderer::InitDeferredProgram()
 	deferredProgram->UploadUniformInt("gSSAO", 4);
 	deferredProgram->UploadUniformInt("gSSAOBlur", 5);
 	deferredProgram->UploadUniformInt("gData", 6);
-	deferredProgram->UploadUniformInt("irradianceMap", 7);
-	deferredProgram->UploadUniformInt("prefilterMap", 8);
-	deferredProgram->UploadUniformInt("brdfLUT", 9);
+	deferredProgram->UploadUniformInt("brdfLUT", 7);
+	deferredProgram->UploadUniformInt("irradianceMap", 8);
+	deferredProgram->UploadUniformInt("prefilterMap", 9);
+
 
 	//Create gBuffer ==
 	gFBO.reset(Resources::CreateFBO());
@@ -333,22 +337,36 @@ void Renderer::InitBrdf()
 {
 	brdfProgram.reset(Shadow::LoadProgram("Assets/Programs/brdf.glsl"));
 
-	brdfLutTexture.reset(Resources::CreateEmptyTexture(512, 512, GL_RG16F, GL_RG, GL_FLOAT));
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	Renderer::SetViewPort(0, 0, 512, 512);
 
+	//brdfFBO.reset(Resources::CreateFBO());
+	//brdfFBO->Bind();
+		
 	Resources::instance->bakeFBO->Bind();
 	Resources::instance->bakeRBO->Bind();
 	Resources::instance->bakeRBO->BindDepthToFrameBuffer();
 	Resources::instance->bakeRBO->DefineDepthStorageSize(512);
 
-	SetViewPort(0, 0, 512, 512);
-
-	brdfProgram->Bind();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	renderQuad->Draw();
 
 	Window& window = Application::Get().GetWindow();
+	float w = window.GetWidth();
+	float h = window.GetHeight();
+
+	brdfLutTexture.reset(Resources::CreateEmptyTexture(w, h, GL_RG16F, GL_RG, GL_FLOAT, false));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLutTexture->GetHandle(), 0);
+
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glDepthMask(GL_FALSE);
+	glViewport(0, 0, 512, 512);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	brdfProgram->Bind();
+	renderQuad->Draw();
+
 	Renderer::SetViewPort(0, 0, window.GetWidth(), window.GetHeight());
 }
 
@@ -438,7 +456,7 @@ void Renderer::OnImGuiRender()
 	ImGui::Begin("Renderer");
 	camera.OnImGuiRender();
 
-	const char* items[] = { "Final", "Normal", "Depth", "Position", "Albedo", "SSAO", "SSAOBlur", "Roughness", "Metal"};
+	const char* items[] = { "Final", "Normal", "Depth", "Position", "Albedo", "SSAO", "SSAOBlur", "Roughness", "Metal", "brdf", "irradiance", "prefilterMap"};
 	ImGui::Combo("Render mode", &renderMode, items, IM_ARRAYSIZE(items));
 	ImGui::Text("Light position:");
 	ImGui::BeginGroup();

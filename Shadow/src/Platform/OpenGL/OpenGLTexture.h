@@ -6,7 +6,7 @@ NAMESPACE_BEGAN
 class OpenGLTexture : public Texture
 {
 public:
-	OpenGLTexture(int width, int height, int internalFormat, int format, int type);
+	OpenGLTexture(int width, int height, int internalFormat, int format, int type, bool defineParameteri = true);
 	OpenGLTexture(const std::string& path);
 	/// <param name="mipLevelCount"> has to be greater than 0</param>
 	OpenGLTexture(unsigned int* array, int width, int height, int layerCount = 2, unsigned int mipLevelCount = 1);

@@ -48,13 +48,17 @@ OpenGLTexture::OpenGLTexture(const std::string& path)
 	stbi_image_free(data);
 }
 
-OpenGLTexture::OpenGLTexture(int w, int h, int internalFormat, int format, int type)
+OpenGLTexture::OpenGLTexture(int w, int h, int internalFormat, int format, int type, bool defineParameteri)
 {
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, w, h, 0, format, type, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	if (defineParameteri)
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
+
 
 	width = w;
 	height = h;

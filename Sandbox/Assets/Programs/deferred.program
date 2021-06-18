@@ -33,10 +33,11 @@
 	uniform sampler2D gSSAO;
 	uniform sampler2D gSSAOBlur;
 	uniform sampler2D gData;
+	uniform sampler2D brdfLUT;  
 
 	uniform samplerCube irradianceMap;
 	uniform samplerCube prefilterMap;
-	uniform sampler2D   brdfLUT;  
+
 	uniform Light lights[10];
 	uniform int numLights = 0;
 
@@ -69,8 +70,10 @@ float LinearizeDepth(float depth)
 				
 			else if(renderMode == 3)
 				FragColor.xyz = texture(gPosition, TexCoords).xyz;
+
 			else if(renderMode == 4)
 				FragColor.xyz = texture(gAlbedoSpec, TexCoords).xyz;
+
 			else if(renderMode == 5)
 			{
 				FragColor.xyz = vec3(texture(gSSAO, TexCoords).xyz);
@@ -86,6 +89,18 @@ float LinearizeDepth(float depth)
 			else if (renderMode == 8)
 			{
 				FragColor.xyz = vec3(texture(gData, TexCoords).y);
+			}
+			else if(renderMode == 9)
+			{
+				FragColor.xyz = vec3(texture(brdfLUT, TexCoords).rg, 0.0);
+			}
+			else if (renderMode == 10)
+			{
+				FragColor.xyz = vec3(texture(irradianceMap, texture(gPosition, TexCoords).xyz).xyz);
+			}
+			else if (renderMode == 11)
+			{
+				FragColor.xyz = vec3(texture(prefilterMap, texture(gPosition, TexCoords).xyz).xyz);
 			}
 			else
 			{

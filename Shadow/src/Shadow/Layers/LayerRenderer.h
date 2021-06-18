@@ -106,6 +106,8 @@ private:
 	std::unique_ptr<Texture> gData;
 	std::unique_ptr<Texture> gDepth;
 	std::unique_ptr<Texture> brdfLutTexture;
+	std::unique_ptr<Texture> depthbrdf;
+
 	std::unique_ptr<Texture> ssaoTex;
 	std::unique_ptr<Texture> ssaoBlurTex;
 
@@ -116,6 +118,7 @@ private:
 	static RendererAPI* rendererAPI;
 
 	std::unique_ptr<FBO> gFBO;
+	std::unique_ptr<FBO> brdfFBO;
 	unsigned int ssaoFBO;
 	unsigned int ssaoBlurFBO;
 	int renderMode = 0;

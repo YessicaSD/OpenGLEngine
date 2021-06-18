@@ -114,12 +114,12 @@ Texture* Resources::CreateTextureFromArray(std::vector<glm::vec3>& array, int wi
 	return nullptr;
 }
 
-Texture* Resources::CreateEmptyTexture(int width, int height, int internalFormat, int format, int type)
+Texture* Resources::CreateEmptyTexture(int width, int height, int internalFormat, int format, int type, bool defineParameteri)
 {
 	switch (Renderer::GetRendererAPI())
 	{
 		case RendererAPI::RenderAPIType::NONE:	SW_CORE_ASSERT(false, "not render api using"); return nullptr; break;
-		case RendererAPI::RenderAPIType::OPENGL: return new OpenGLTexture(width, height, internalFormat, format, type); break;
+		case RendererAPI::RenderAPIType::OPENGL: return new OpenGLTexture(width, height, internalFormat, format, type, defineParameteri); break;
 	}
 
 	return nullptr;
