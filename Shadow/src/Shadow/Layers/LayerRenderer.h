@@ -59,11 +59,13 @@ private:
 	void GenerateNoiseTexture();
 	void InitBlurSSAO();
 	void InitBrdf();
+	void InitHdrFBO();
 
 	//Update ==
 	void ForwardRendering();
 	void DeferredRendering();
 	void GeometryPass();
+	void BloomPass();
 	void SSAOPass();
 	void LightingPass();
 	void CameraUpdate();
@@ -85,6 +87,7 @@ private:
 	std::unique_ptr<Program> ssaoBlurProgram;
 	std::unique_ptr<Program> geometryPassProgram;
 	std::unique_ptr<Program> brdfProgram;
+	std::unique_ptr<Program> finalBloom;
 
 	std::unique_ptr<Material> material;
 	std::unique_ptr<Material> materialGun;
@@ -118,7 +121,14 @@ private:
 	static RendererAPI* rendererAPI;
 
 	std::unique_ptr<FBO> gFBO;
+
 	std::unique_ptr<FBO> brdfFBO;
+
+	std::unique_ptr<FBO> hdrFBO;
+	std::unique_ptr<Texture> renderTex;
+	std::unique_ptr<Texture> highlightsTex;
+
+
 	unsigned int ssaoFBO;
 	unsigned int ssaoBlurFBO;
 	int renderMode = 0;

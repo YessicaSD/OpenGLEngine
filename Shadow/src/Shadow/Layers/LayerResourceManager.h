@@ -48,6 +48,7 @@ private:
 	std::unique_ptr<Program> cubeToTexture;
 	std::unique_ptr<Program> irradianceProgram;
 	std::unique_ptr<Program> prefilterProgram;
+	std::unique_ptr<Program> brdfProgram;
 
 	std::shared_ptr<Model> cubeModel;
 	std::shared_ptr<Model> quadModel;

@@ -20,6 +20,7 @@ RendererAPI* Renderer::rendererAPI = new OpenGLRendererAPI;
 Renderer::Renderer()
 {}
 
+
 Renderer::~Renderer()
 {
 	environment.reset();
@@ -51,15 +52,14 @@ void Renderer::Init()
 	renderQuad.reset(Resources::GetQuad());
 
 	InitSkybox();
-	
 	InitDeferredProgram();
 	InitSSAO();
 	InitBlurSSAO();
+	InitHdrFBO();
+	
 
 	model.reset(Resources::LoadModel("Assets/backpack/backpack.obj"));
 	gunModel.reset(Resources::LoadModel("Assets/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX"));
-
-	
 
 	material = std::make_unique<Material>();
 	material->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/backpack/diffuse.jpg"));
@@ -87,121 +87,7 @@ void Renderer::Init()
 	InitBrdf();
 }
 
-void Renderer::OnUpdate()
-{
-	CameraUpdate();
-	switch (renderMethod)
-	{
-		case Shadow::FORWARD:
-			ForwardRendering();
-			break;
-		case Shadow::DEFERRED:
-			DeferredRendering();
-			break;
-	}
-}
-
-void Renderer::ForwardRendering()
-{
-
-}
-void Renderer::DeferredRendering()
-{
-	GeometryPass();
-	SSAOPass();
-	LightingPass();
-}
-
-void Renderer::GeometryPass()
-{
-	gFBO->Bind();
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glDepthMask(GL_FALSE);
-
-	//skyboxHDR->Bind();
-	environment->GetSkybox();
-	//environment->GetIrradiance()->Bind();
-	//environment->GetPrefilter()->Bind();
-	skyProgram->Bind();
-	glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
-	skyProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectionMatrix() * view);
-	cube->Draw();
-	glDepthMask(GL_TRUE);
-
-	glDepthRangef(0, 10000.0);
-	// Draw in the g-buffer ====
-
-	 // activate the texture unit first before binding texture
-	materialGun->UseMaterial();
-	geometryPassProgram->Bind();
-	geometryPassProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectViewMatrix());
-	
-	glm::mat4 model = glm::mat4(1.0);
-	model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0,1.0,0.0));
-	model = glm::scale(model, glm::vec3(0.1));
-	geometryPassProgram->UploadUniformMat4("Model", model);
-	geometryPassProgram->UploadUniformMat4("view", camera.GetViewMatrix());
-	geometryPassProgram->UploadUniformFloat3("lightPos", lightPos);
-	geometryPassProgram->UploadUniformFloat3("viewPos", camera.GetPosition());
-	gunModel->Draw();
-
-
-	//glm::mat4 tranformation = glm::mat4(1.0);
-	//tranformation = glm::translate(tranformation, glm::vec3(0.0,-2.0,0.0));
-	//tranformation = glm::scale(tranformation, glm::vec3(5.0,0.5,5.0));
-	//program->UploadUniformMat4("Model", tranformation);
-	//cube->Draw();
-}
-
-void Renderer::SSAOPass()
-{
-	glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	//ssaoProgram->UploadUniformInt("gPosition", 0);
-	//ssaoProgram->UploadUniformInt("gNormal", 1);
-	//ssaoProgram->UploadUniformInt("texNoise", 2);
-
-	gPosition->Bind(0);
-	gNormal->Bind(1);
-	noiseTex->Bind(2);
-	ssaoProgram->Bind();
-	ssaoProgram->UploadUniformMat4("view", camera.GetViewMatrix());
-	renderQuad->Draw();
-
-	glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
-	glClear(GL_COLOR_BUFFER_BIT);
-	ssaoTex->Bind(0);
-	ssaoBlurProgram->Bind();
-	renderQuad->Draw();
-}
-
-void Renderer::LightingPass()
-{
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	// Draw in the screen ===
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	gPosition->Bind(0);
-	gNormal->Bind(1);
-	gAlbedoSpec->Bind(2);
-	gDepth->Bind(3);
-	ssaoTex->Bind(4);
-	ssaoBlurTex->Bind(5);
-	gData->Bind(6);
-	brdfLutTexture->Bind(7);
-	environment->GetIrradiance()->Bind(8);
-	environment->GetPrefilter()->Bind(9);
-	
-
-	deferredProgram->Bind();
-	deferredProgram->UploadUniformInt("renderMode", renderMode);
-	deferredProgram->UploadUniformFloat3("camPos", camera.GetPosition());
-	SendLights(deferredProgram);
-	renderQuad->Draw();
-}
+#pragma region Init
 
 void Renderer::InitSkybox()
 {
@@ -223,22 +109,119 @@ void Renderer::InitSkybox()
 	environment->SetSkybox(skyboxHDR);
 }
 
-void Renderer::SendLights(std::shared_ptr<Program> program)
+void Renderer::InitBlurSSAO()
 {
-	program->UploadUniformInt("numLights", lights.size());
-	for (int i = 0; i < lights.size(); i++)
-	{
-		Light* clight = lights[i];
-		program->UploadUniformInt("lights[" + std::to_string(i) + "].type", (int)clight->type);
-		program->UploadUniformFloat3("lights[" + std::to_string(i) + "].position", clight->position);
-		program->UploadUniformFloat3("lights[" + std::to_string(i) + "].color", clight->color);
+	float w = Application::Get().GetWindow().GetWidth();
+	float h = Application::Get().GetWindow().GetHeight();
 
-		if (clight->type == LightTypes::DIRECTIONAL)
-		{
-			DirectionalLight* dLight = (DirectionalLight*)clight;
-			program->UploadUniformFloat3("lights[" + std::to_string(i) + "].direction", dLight->direction);
-		}
-	}
+	glGenFramebuffers(1, &ssaoBlurFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
+	ssaoBlurTex.reset(Resources::CreateEmptyTexture(w, h, GL_RED, GL_RED, GL_FLOAT));
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoBlurTex->GetHandle(), 0);
+
+	ssaoBlurProgram.reset(Shadow::LoadProgram("Assets/Programs/blurSSAO.program"));
+	ssaoBlurProgram->Bind();
+	ssaoBlurProgram->UploadUniformInt("ssaoInput", 0);
+}
+
+void Renderer::InitBrdf()
+{
+	brdfProgram.reset(Shadow::LoadProgram("Assets/Programs/brdf.glsl"));
+
+	Renderer::SetViewPort(0, 0, 512, 512);
+
+	//brdfFBO.reset(Resources::CreateFBO());
+	//brdfFBO->Bind();
+
+	Resources::instance->bakeFBO->Bind();
+	Resources::instance->bakeRBO->Bind();
+	Resources::instance->bakeRBO->BindDepthToFrameBuffer();
+	Resources::instance->bakeRBO->DefineDepthStorageSize(512);
+
+
+	Window& window = Application::Get().GetWindow();
+	float w = window.GetWidth();
+	float h = window.GetHeight();
+
+	brdfLutTexture.reset(Resources::CreateEmptyTexture(w, h, GL_RG16F, GL_RG, GL_FLOAT, false));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLutTexture->GetHandle(), 0);
+
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glDepthMask(GL_FALSE);
+	glViewport(0, 0, 512, 512);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	brdfProgram->Bind();
+	renderQuad->Draw();
+
+	Renderer::SetViewPort(0, 0, window.GetWidth(), window.GetHeight());
+}
+
+void Renderer::InitHdrFBO()
+{
+	Window& window = Application::Get().GetWindow();
+	float w = window.GetWidth();
+	float h = window.GetHeight();
+
+	hdrFBO.reset(Resources::CreateFBO());
+	hdrFBO->Bind();
+
+	renderTex.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA16F, GL_RGBA, GL_FLOAT));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	// attach texture to framebuffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTex->GetHandle(), 0);
+
+	highlightsTex.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA16F, GL_RGBA, GL_FLOAT));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	// attach texture to framebuffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, highlightsTex->GetHandle(), 0);
+
+	unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	glDrawBuffers(2, attachments);
+
+	finalBloom.reset(LoadProgram("Assets/Programs/FinalBloom.glsl"));
+	finalBloom->Bind();
+	finalBloom->UploadUniformInt("scene", 0);
+	finalBloom->UploadUniformInt("bloomBlur", 0);
+}
+
+void Renderer::InitSSAO()
+{
+	GenerateNoiseTexture();
+	kernelsPoint = GenerateKernelPoints(64);
+
+	glGenFramebuffers(1, &ssaoFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
+
+	float w = Application::Get().GetWindow().GetWidth();
+	float h = Application::Get().GetWindow().GetHeight();
+
+	ssaoTex.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA16F, GL_RGBA, GL_FLOAT));
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoTex->GetHandle(), 0);
+	// - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
+	unsigned int attachments[1] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers(1, attachments);
+
+	ssaoProgram.reset(Shadow::LoadProgram("Assets/Programs/ssao.program"));
+
+	ssaoProgram->Bind();
+	ssaoProgram->UploadUniformInt("gPosition", 0);
+	ssaoProgram->UploadUniformInt("gNormal", 1);
+	ssaoProgram->UploadUniformInt("texNoise", 2);
+	ssaoProgram->UploadUniformFloat3("samples", kernelsPoint);
+	ssaoProgram->UploadUniformMat4("projection", camera.GetProjectionMatrix());
 }
 
 void Renderer::InitDeferredProgram()
@@ -300,6 +283,155 @@ void Renderer::InitDeferredProgram()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
+#pragma endregion
+
+#pragma region rending
+
+void Renderer::OnUpdate()
+{
+	CameraUpdate();
+	switch (renderMethod)
+	{
+	case Shadow::FORWARD:
+		ForwardRendering();
+		break;
+	case Shadow::DEFERRED:
+		DeferredRendering();
+		break;
+	}
+}
+
+void Renderer::ForwardRendering()
+{
+
+}
+void Renderer::DeferredRendering()
+{
+	GeometryPass();
+	SSAOPass();
+	LightingPass();
+	BloomPass();
+}
+
+void Renderer::GeometryPass()
+{
+	gFBO->Bind();
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glDepthMask(GL_FALSE);
+
+	//skyboxHDR->Bind();
+	environment->GetSkybox();
+	//environment->GetIrradiance()->Bind();
+	//environment->GetPrefilter()->Bind();
+	skyProgram->Bind();
+	glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
+	skyProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectionMatrix() * view);
+	cube->Draw();
+	glDepthMask(GL_TRUE);
+
+	glDepthRangef(0, 10000.0);
+	// Draw in the g-buffer ====
+
+	 // activate the texture unit first before binding texture
+	materialGun->UseMaterial();
+	geometryPassProgram->Bind();
+	geometryPassProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectViewMatrix());
+
+	glm::mat4 model = glm::mat4(1.0);
+	model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
+	model = glm::scale(model, glm::vec3(0.1));
+	geometryPassProgram->UploadUniformMat4("Model", model);
+	geometryPassProgram->UploadUniformMat4("view", camera.GetViewMatrix());
+	geometryPassProgram->UploadUniformFloat3("lightPos", lightPos);
+	geometryPassProgram->UploadUniformFloat3("viewPos", camera.GetPosition());
+	gunModel->Draw();
+}
+
+void Renderer::LightingPass()
+{
+	hdrFBO->Bind();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	gPosition->Bind(0);
+	gNormal->Bind(1);
+	gAlbedoSpec->Bind(2);
+	gDepth->Bind(3);
+	ssaoTex->Bind(4);
+	ssaoBlurTex->Bind(5);
+	gData->Bind(6);
+	brdfLutTexture->Bind(7);
+	environment->GetIrradiance()->Bind(8);
+	environment->GetPrefilter()->Bind(9);
+
+
+	deferredProgram->Bind();
+	deferredProgram->UploadUniformInt("renderMode", renderMode);
+	deferredProgram->UploadUniformFloat3("camPos", camera.GetPosition());
+	SendLights(deferredProgram);
+	renderQuad->Draw();
+}
+
+
+void Renderer::BloomPass()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	finalBloom->Bind();
+	renderTex->Bind(0);
+	highlightsTex->Bind(1);
+	renderQuad->Draw();
+}
+#pragma endregion
+
+
+
+
+
+void Renderer::SSAOPass()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	//ssaoProgram->UploadUniformInt("gPosition", 0);
+	//ssaoProgram->UploadUniformInt("gNormal", 1);
+	//ssaoProgram->UploadUniformInt("texNoise", 2);
+
+	gPosition->Bind(0);
+	gNormal->Bind(1);
+	noiseTex->Bind(2);
+	ssaoProgram->Bind();
+	ssaoProgram->UploadUniformMat4("view", camera.GetViewMatrix());
+	renderQuad->Draw();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
+	glClear(GL_COLOR_BUFFER_BIT);
+	ssaoTex->Bind(0);
+	ssaoBlurProgram->Bind();
+	renderQuad->Draw();
+}
+
+
+void Renderer::SendLights(std::shared_ptr<Program> program)
+{
+	program->UploadUniformInt("numLights", lights.size());
+	for (int i = 0; i < lights.size(); i++)
+	{
+		Light* clight = lights[i];
+		program->UploadUniformInt("lights[" + std::to_string(i) + "].type", (int)clight->type);
+		program->UploadUniformFloat3("lights[" + std::to_string(i) + "].position", clight->position);
+		program->UploadUniformFloat3("lights[" + std::to_string(i) + "].color", clight->color);
+
+		if (clight->type == LightTypes::DIRECTIONAL)
+		{
+			DirectionalLight* dLight = (DirectionalLight*)clight;
+			program->UploadUniformFloat3("lights[" + std::to_string(i) + "].direction", dLight->direction);
+		}
+	}
+}
+
 
 void Renderer::GenerateNoiseTexture()
 {
@@ -318,84 +450,7 @@ void Renderer::GenerateNoiseTexture()
 	noiseTex.reset(Resources::CreateTextureFromArray(ssaoNoise, 4, 4));
 }
 
-void Renderer::InitBlurSSAO()
-{
-	float w = Application::Get().GetWindow().GetWidth();
-	float h = Application::Get().GetWindow().GetHeight();
 
-	glGenFramebuffers(1, &ssaoBlurFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
-	ssaoBlurTex.reset(Resources::CreateEmptyTexture(w, h, GL_RED, GL_RED, GL_FLOAT));
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoBlurTex->GetHandle(), 0);
-
-	ssaoBlurProgram.reset(Shadow::LoadProgram("Assets/Programs/blurSSAO.program"));
-	ssaoBlurProgram->Bind();
-	ssaoBlurProgram->UploadUniformInt("ssaoInput", 0);
-}
-
-void Renderer::InitBrdf()
-{
-	brdfProgram.reset(Shadow::LoadProgram("Assets/Programs/brdf.glsl"));
-
-	Renderer::SetViewPort(0, 0, 512, 512);
-
-	//brdfFBO.reset(Resources::CreateFBO());
-	//brdfFBO->Bind();
-		
-	Resources::instance->bakeFBO->Bind();
-	Resources::instance->bakeRBO->Bind();
-	Resources::instance->bakeRBO->BindDepthToFrameBuffer();
-	Resources::instance->bakeRBO->DefineDepthStorageSize(512);
-
-
-	Window& window = Application::Get().GetWindow();
-	float w = window.GetWidth();
-	float h = window.GetHeight();
-
-	brdfLutTexture.reset(Resources::CreateEmptyTexture(w, h, GL_RG16F, GL_RG, GL_FLOAT, false));
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLutTexture->GetHandle(), 0);
-
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glDepthMask(GL_FALSE);
-	glViewport(0, 0, 512, 512);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	brdfProgram->Bind();
-	renderQuad->Draw();
-
-	Renderer::SetViewPort(0, 0, window.GetWidth(), window.GetHeight());
-}
-
-void Renderer::InitSSAO()
-{
-	GenerateNoiseTexture();
-	kernelsPoint = GenerateKernelPoints(64);
-
-	glGenFramebuffers(1, &ssaoFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
-
-	float w = Application::Get().GetWindow().GetWidth();
-	float h = Application::Get().GetWindow().GetHeight();
-
-	ssaoTex.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA16F, GL_RGBA, GL_FLOAT));
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoTex->GetHandle(), 0);
-	// - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-	unsigned int attachments[1] = { GL_COLOR_ATTACHMENT0};
-	glDrawBuffers(1, attachments);
-
-	ssaoProgram.reset(Shadow::LoadProgram("Assets/Programs/ssao.program"));
-
-	ssaoProgram->Bind();
-	ssaoProgram->UploadUniformInt("gPosition",0);
-	ssaoProgram->UploadUniformInt("gNormal",1);
-	ssaoProgram->UploadUniformInt("texNoise",2);
- 	ssaoProgram->UploadUniformFloat3("samples", kernelsPoint);
-	ssaoProgram->UploadUniformMat4("projection", camera.GetProjectionMatrix());
-}
 
 float lerp(float a, float b, float f)
 {

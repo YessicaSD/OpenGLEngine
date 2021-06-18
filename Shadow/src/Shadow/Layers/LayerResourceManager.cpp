@@ -225,7 +225,7 @@ void Resources::Init()
 	GetCube();
 	instance->bakeFBO.reset(CreateFBO());
 	instance->bakeRBO.reset(CreateRBO());
-
+	instance->brdfProgram.reset(LoadProgram("Assets/Programs/brdf.glsl"));
 }
 
 void Resources::CreateNoTextureTexture()
