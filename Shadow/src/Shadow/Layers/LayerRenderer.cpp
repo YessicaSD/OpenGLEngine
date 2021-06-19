@@ -11,7 +11,7 @@
 #include <imgui_node_editor.h>
 #include "Shadow/Application.h"
 #include <glm/ext/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale
-
+#include <glm/gtc/matrix_inverse.hpp>
 
 NAMESPACE_BEGAN
 RendererAPI* Renderer::rendererAPI = new OpenGLRendererAPI;
@@ -85,6 +85,10 @@ void Renderer::Init()
 	lights.push_back(new PointLight({ 5.0,2.0,5.0 }));
 
 	InitBrdf();
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+
 }
 
 #pragma region Init
@@ -143,7 +147,7 @@ void Renderer::InitBrdf()
 	float w = window.GetWidth();
 	float h = window.GetHeight();
 
-	brdfLutTexture.reset(Resources::CreateEmptyTexture(w, h, GL_RG16F, GL_RG, GL_FLOAT, false));
+	brdfLutTexture.reset(Resources::CreateEmptyTexture(512, 512, GL_RG16F, GL_RG, GL_FLOAT, false));
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -151,14 +155,13 @@ void Renderer::InitBrdf()
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLutTexture->GetHandle(), 0);
 
 	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glDepthMask(GL_FALSE);
 	glViewport(0, 0, 512, 512);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	brdfProgram->Bind();
 	renderQuad->Draw();
 
-	Renderer::SetViewPort(0, 0, window.GetWidth(), window.GetHeight());
+	Renderer::SetViewPort(0, 0, w, h);
 }
 
 void Renderer::InitHdrFBO()
@@ -262,12 +265,11 @@ void Renderer::InitDeferredProgram()
 	//Create gBuffer ==
 	gFBO.reset(Resources::CreateFBO());
 	gFBO->Bind();
-	glEnable(GL_DEPTH_TEST);
 
 	float w = Application::Get().GetWindow().GetWidth();
 	float h = Application::Get().GetWindow().GetHeight();
 
-	glDepthFunc(GL_LEQUAL);
+	
 	// - position color buffer
 	gPosition.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA16F, GL_RGBA, GL_FLOAT));
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition->GetHandle(), 0);
@@ -362,10 +364,13 @@ void Renderer::GeometryPass()
 
 	glDepthMask(GL_FALSE);
 
-	//skyboxHDR->Bind();
-	environment->GetSkybox();
-	//environment->GetIrradiance()->Bind();
-	//environment->GetPrefilter()->Bind();
+	switch (skyboxIndex)
+	{
+		case 0: environment->GetSkybox()->Bind();  break;
+		case 1: environment->GetIrradiance()->Bind(); break;
+		case 2: environment->GetPrefilter()->Bind(); break;
+	}
+
 	skyProgram->Bind();
 	glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
 	skyProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectionMatrix() * view);
@@ -379,11 +384,15 @@ void Renderer::GeometryPass()
 	materialGun->UseMaterial();
 	geometryPassProgram->Bind();
 	geometryPassProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectViewMatrix());
-
+	geometryPassProgram->UploadUniformFloat4("activeTextures", materialGun->GetActiveTextures());
+	geometryPassProgram->UploadUniformFloat3("color", materialGun->GetColor());
+	geometryPassProgram->UploadUniformFloat2("rmValue", materialGun->GetRoughnessMetalness());
+	
 	glm::mat4 model = glm::mat4(1.0);
 	model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
 	model = glm::scale(model, glm::vec3(0.1));
 	geometryPassProgram->UploadUniformMat4("Model", model);
+	geometryPassProgram->UploadUniformMat3("normalMatrix", glm::inverseTranspose(glm::mat3x3(model)));
 	geometryPassProgram->UploadUniformMat4("view", camera.GetViewMatrix());
 	geometryPassProgram->UploadUniformFloat3("lightPos", lightPos);
 	geometryPassProgram->UploadUniformFloat3("viewPos", camera.GetPosition());
@@ -402,6 +411,7 @@ void Renderer::LightingPass()
 	ssaoTex->Bind(4);
 	ssaoBlurTex->Bind(5);
 	gData->Bind(6);
+	//brdfLutTexture->Bind(7);
 	environment->GetBRDF()->Bind(7);
 	environment->GetIrradiance()->Bind(8);
 	environment->GetPrefilter()->Bind(9);
@@ -550,11 +560,26 @@ void Renderer::OnImGuiRender()
 	const char* items2[] = { "Final", "Scene", "HightLight" };
 	ImGui::Combo("Render mode Bloom", &finalMode, items2, IM_ARRAYSIZE(items2));
 
+	const char* items3[] = { "Skybox", "Irradiance", "Prefilter" };
+	ImGui::Combo("Change skybox", &skyboxIndex, items3, IM_ARRAYSIZE(items3));
+
 	ImGui::SliderFloat("Bloom range", &bloomRange, 0, 50.0);
 
 	ImGui::SliderInt("Bloom Blur range", &bloomBlurRange, 1, 100);
 
 	ImGui::Checkbox("SSAO", &SSAO);
+
+	std::shared_ptr<Material> currMaterial = materialGun;
+	ImGui::Checkbox("Active Color texture ", (bool*)&currMaterial->GetActiveTextures().x);
+	ImGui::ColorPicker3("Color", &currMaterial->GetColor().x);
+
+	ImGui::Checkbox("Active Roughness Texture", (bool*)&currMaterial->GetActiveTextures().z);
+	ImGui::DragFloat("Roughness", &currMaterial->GetRoughnessMetalness().x, 0.1,0.0,1.0);
+
+	ImGui::Checkbox("Active Metal Texture", (bool*)&currMaterial->GetActiveTextures().w);
+	ImGui::DragFloat("Metalness", &currMaterial->GetRoughnessMetalness().y, 0.1, 0.0, 1.0);
+
+	ImGui::Checkbox("Active Normal Texture", (bool*)&currMaterial->GetActiveTextures().y);
 
 	ImGui::Text("Light position:");
 	ImGui::BeginGroup();

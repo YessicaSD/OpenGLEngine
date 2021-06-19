@@ -9,8 +9,8 @@
 		uniform mat4 Model;
 		uniform mat4 view;
 		uniform mat4 projViewMatrix;
-		uniform vec3 lightPos;
 		uniform vec3 viewPos;
+		uniform mat3 normalMatrix;
 
 		out VS_OUT {
 		vec3 FragPos;
@@ -32,8 +32,8 @@
 
 			vs_out.TBN = mat3(T, B, N);
 
-
-			vs_out.oNormal = aNormal;
+			vs_out.oNormal = normalMatrix * aNormal;
+			//vs_out.oNormal = transpose(inverse(mat3(Model))) * aNormal;
 
 			gl_Position =  projViewMatrix * Model * vec4(aPos, 1.0);
 			
@@ -57,17 +57,33 @@
 	uniform sampler2D normalTex;
 	uniform sampler2D roughnessTex;
 	uniform sampler2D metalTex;
+
+	uniform vec4 activeTextures;
+	uniform vec3 color;
+	uniform vec2 rmValue;
 	
 	in vec3 vNormal;
 
 	void main()
 	{
-		vec3 texNormal = texture(normalTex, fs_in.TexCoords).rgb;
-		texNormal = texNormal * 2.0 - 1.0;
-		gNormal = normalize(fs_in.TBN * texNormal);		
-		//gNormal = normalize(fs_in.oNormal);		
-		gAlbedoSpec = texture(albedoTex, fs_in.TexCoords);
-		gData.r = texture(roughnessTex, fs_in.TexCoords).r;
+		gAlbedoSpec = vec4(color, 1.0);
+		if(activeTextures[0] == 1)
+			gAlbedoSpec = texture(albedoTex, fs_in.TexCoords);
+
+		gNormal = normalize(fs_in.oNormal);	
+		if(activeTextures[1] == 1)
+		{
+			vec3 texNormal = texture(normalTex, fs_in.TexCoords).rgb;
+			texNormal = texNormal * 2.0 - 1.0;
+			gNormal = normalize(fs_in.TBN * texNormal);		
+		}
+		
+		gData.r = rmValue.x;
+		if(activeTextures[2] == 1)
+			gData.r = texture(roughnessTex, fs_in.TexCoords).r;
+
+		gData.g = rmValue.y;
+		if(activeTextures[3] == 1)	
 		gData.g = texture(metalTex,fs_in.TexCoords).g;
 		gPosition = fs_in.FragPos;
 	};

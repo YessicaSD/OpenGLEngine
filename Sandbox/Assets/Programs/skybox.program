@@ -30,6 +30,6 @@ layout (location = 0) in vec3 aPos;
 			gData.r = 1.0;
 			gData.g = 0.0;
 			gNormal = vec3(0.0);
-			gAlbedoSpec = texture(skybox, TexCoords);
+			gAlbedoSpec = textureLod(skybox, TexCoords, 0.0);
 		}
 #endif 

@@ -14,7 +14,7 @@ public:
 
 	virtual uint32_t GetWidth() override;
 	virtual uint32_t GetHeight() override;
-	virtual void Bind(uint32_t slot) override;
+	virtual void Bind(uint32_t slot = 0) override;
 	virtual int GetHandle() override;
 
 	virtual void SetPositiveX(std::string path);

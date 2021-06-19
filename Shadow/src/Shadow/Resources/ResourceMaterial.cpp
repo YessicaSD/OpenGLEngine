@@ -16,6 +16,7 @@ Material::~Material()
 	for (int i = 0; i < TextureType::MAX_TEXTURE; i++)
 	{
 			textures[i].reset();
+			texturesActive[i] = false;
 	}
 }
 
@@ -40,6 +41,7 @@ void Material::SetTexture(TextureType::TextureType textureType, Texture* texture
 	{
 	case TextureType::ALBEDO:
 		textures[TextureType::ALBEDO].reset(texture);
+
 		break;
 	case TextureType::NORMAL:
 		textures[TextureType::NORMAL].reset(texture);
@@ -54,6 +56,10 @@ void Material::SetTexture(TextureType::TextureType textureType, Texture* texture
 		SW_LOG_WARN("Could not set the texture");
 		break;
 	}
+
+	if(textureType < TextureType::MAX_TEXTURE)
+		texturesActive[textureType] = true;
+
 }
 
 void Material::Init()

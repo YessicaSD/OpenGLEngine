@@ -91,7 +91,7 @@ private:
 	std::unique_ptr<Program> finalBloom;
 
 	std::unique_ptr<Material> material;
-	std::unique_ptr<Material> materialGun;
+	std::shared_ptr<Material> materialGun;
 	std::vector<glm::vec3> kernelsPoint;
 
 	std::unique_ptr<Model> model = nullptr;
@@ -138,6 +138,7 @@ private:
 	float bloomRange = 0.2;
 	int bloomBlurRange = 1;
 	bool SSAO = true;
+	int skyboxIndex = 0;
 };
 
 
