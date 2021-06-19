@@ -11,6 +11,7 @@
 #include "Shadow/Renderer/Environment.h"
 #include "Shadow/Renderer/FrameBufferObject.h"
 #include "Shadow/Renderer/Light.h"
+#include "Shadow/Scene/Entity.h"
 
 NAMESPACE_BEGAN
 class Model;
@@ -78,7 +79,7 @@ private:
 
 private:
 	Camera camera;
-	glm::vec3 lightPos = { 0.5,1.0,0.3 };
+	std::vector<Entity> entities;
 	RenderMethod renderMethod = DEFERRED;
 
 	std::shared_ptr<Program> skyProgram;
@@ -90,12 +91,12 @@ private:
 	std::unique_ptr<Program> blurBloomProgram;
 	std::unique_ptr<Program> finalBloom;
 
-	std::unique_ptr<Material> material;
+	std::shared_ptr<Material> material;
 	std::shared_ptr<Material> materialGun;
 	std::vector<glm::vec3> kernelsPoint;
 
-	std::unique_ptr<Model> model = nullptr;
-	std::unique_ptr<Model> gunModel;
+	std::shared_ptr<Model> model = nullptr;
+	std::shared_ptr<Model> gunModel;
 	Model* cube = nullptr;
 	std::shared_ptr<Model> renderQuad = nullptr;
 

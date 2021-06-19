@@ -190,6 +190,7 @@
     <ClInclude Include="src\Platform\OpenGL\AllBuffers\OpenGLRBO.h" />
     <ClInclude Include="src\Shadow\Renderer\RenderBufferObjects.h" />
     <ClInclude Include="src\Shadow\Renderer\Light.h" />
+    <ClInclude Include="src\Shadow\Scene\Entity.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
@@ -293,5 +294,6 @@
     <ClCompile Include="src\Platform\OpenGL\AllBuffers\OpenGLFBO.cpp" />
     <ClCompile Include="src\Platform\OpenGL\AllBuffers\OpenGLRBO.cpp" />
     <ClCompile Include="src\Shadow\Renderer\Light.cpp" />
+    <ClCompile Include="src\Shadow\Scene\Entity.cpp" />
   </ItemGroup>
 </Project>

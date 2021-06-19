@@ -10,7 +10,6 @@
 		uniform mat4 view;
 		uniform mat4 projViewMatrix;
 		uniform vec3 viewPos;
-		uniform mat3 normalMatrix;
 
 		out VS_OUT {
 		vec3 FragPos;
@@ -32,8 +31,8 @@
 
 			vs_out.TBN = mat3(T, B, N);
 
-			vs_out.oNormal = normalMatrix * aNormal;
-			//vs_out.oNormal = transpose(inverse(mat3(Model))) * aNormal;
+			//vs_out.oNormal = normalMatrix * aNormal;
+			vs_out.oNormal = transpose(inverse(mat3(Model))) * aNormal;
 
 			gl_Position =  projViewMatrix * Model * vec4(aPos, 1.0);
 			

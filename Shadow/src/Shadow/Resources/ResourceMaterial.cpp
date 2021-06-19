@@ -61,7 +61,6 @@ void Material::SetTexture(TextureType::TextureType textureType, Texture* texture
 		texturesActive[textureType] = true;
 
 }
-
 void Material::Init()
 {
 }

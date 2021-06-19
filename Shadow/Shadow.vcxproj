@@ -188,6 +188,7 @@
     <ClInclude Include="src\Shadow\Resources\ResourceModel.h" />
     <ClInclude Include="src\Shadow\Resources\ResourceProgram.h" />
     <ClInclude Include="src\Shadow\Resources\ResourceTexture.h" />
+    <ClInclude Include="src\Shadow\Scene\Entity.h" />
     <ClInclude Include="src\Shadow\Window.h" />
     <ClInclude Include="src\swpch.h" />
     <ClInclude Include="vendor\pcg\pcg_extras.hpp" />
@@ -231,6 +232,7 @@
     <ClCompile Include="src\Shadow\Resources\ResourceModel.cpp" />
     <ClCompile Include="src\Shadow\Resources\ResourceProgram.cpp" />
     <ClCompile Include="src\Shadow\Resources\ResourceTexture.cpp" />
+    <ClCompile Include="src\Shadow\Scene\Entity.cpp" />
     <ClCompile Include="src\swpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

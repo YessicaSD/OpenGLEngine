@@ -71,14 +71,17 @@ void Renderer::Init()
 	materialGun->SetTexture(TextureType::ROUGHNESS, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_R.tga"));
 	materialGun->SetTexture(TextureType::METAL, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_M.tga"));
 
+	entities.push_back(Entity(gunModel, materialGun));
+
 	geometryPassProgram.reset(LoadProgram("Assets/Programs/GeometryPass.glsl"));
 	geometryPassProgram->Bind();
 	geometryPassProgram->UploadUniformInt("albedoTex", 0);
 	geometryPassProgram->UploadUniformInt("normalTex", 1);
 	geometryPassProgram->UploadUniformInt("roughnessTex", 2);
 	geometryPassProgram->UploadUniformInt("metalTex", 3);
-
 	geometryPassProgram->UploadUniformMat4("Model", glm::mat4(1.0));
+
+	
 
 	lights.push_back(new PointLight({ 5.0,0.0,5.0 }));
 	lights.push_back(new PointLight({ 5.0,1.0,5.0 }));
@@ -377,26 +380,22 @@ void Renderer::GeometryPass()
 	cube->Draw();
 	glDepthMask(GL_TRUE);
 
-	glDepthRangef(0, 10000.0);
 	// Draw in the g-buffer ====
-
-	 // activate the texture unit first before binding texture
-	materialGun->UseMaterial();
 	geometryPassProgram->Bind();
 	geometryPassProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectViewMatrix());
-	geometryPassProgram->UploadUniformFloat4("activeTextures", materialGun->GetActiveTextures());
-	geometryPassProgram->UploadUniformFloat3("color", materialGun->GetColor());
-	geometryPassProgram->UploadUniformFloat2("rmValue", materialGun->GetRoughnessMetalness());
-	
-	glm::mat4 model = glm::mat4(1.0);
-	model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
-	model = glm::scale(model, glm::vec3(0.1));
-	geometryPassProgram->UploadUniformMat4("Model", model);
-	geometryPassProgram->UploadUniformMat3("normalMatrix", glm::inverseTranspose(glm::mat3x3(model)));
 	geometryPassProgram->UploadUniformMat4("view", camera.GetViewMatrix());
-	geometryPassProgram->UploadUniformFloat3("lightPos", lightPos);
 	geometryPassProgram->UploadUniformFloat3("viewPos", camera.GetPosition());
-	gunModel->Draw();
+
+	for each (Entity var in entities)
+	{
+		std::shared_ptr<Material> currMat = var.GetMaterial();
+		currMat->UseMaterial();
+		geometryPassProgram->UploadUniformFloat4("activeTextures", currMat->GetActiveTextures());
+		geometryPassProgram->UploadUniformFloat3("color", currMat->GetColor());
+		geometryPassProgram->UploadUniformFloat2("rmValue", currMat->GetRoughnessMetalness());
+		geometryPassProgram->UploadUniformMat4("Model", var.GetModel());
+		var.Draw();
+	}
 }
 
 void Renderer::LightingPass()

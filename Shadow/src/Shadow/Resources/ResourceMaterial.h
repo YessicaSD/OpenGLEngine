@@ -18,6 +18,7 @@ public:
 	glm::vec4& GetActiveTextures() { return texturesActive; };
 	glm::vec3& GetColor() { return color; };
 	glm::vec2& GetRoughnessMetalness() { return rmData; };
+
 private:
 	void Init();
 private:
