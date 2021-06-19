@@ -402,7 +402,7 @@ void Renderer::LightingPass()
 	ssaoTex->Bind(4);
 	ssaoBlurTex->Bind(5);
 	gData->Bind(6);
-	brdfLutTexture->Bind(7);
+	environment->GetBRDF()->Bind(7);
 	environment->GetIrradiance()->Bind(8);
 	environment->GetPrefilter()->Bind(9);
 
@@ -410,6 +410,8 @@ void Renderer::LightingPass()
 	deferredProgram->Bind();
 	deferredProgram->UploadUniformInt("renderMode", renderMode);
 	deferredProgram->UploadUniformFloat3("camPos", camera.GetPosition());
+	deferredProgram->UploadUniformInt("activeSSAO", SSAO);
+
 	SendLights(deferredProgram);
 	renderQuad->Draw();
 }
@@ -418,9 +420,8 @@ void Renderer::LightingPass()
 void Renderer::BloomPass()
 {
 	bool horizontal = true, first_iteration = true;
-	int amount = 10;
 	blurBloomProgram->Bind();
-	for (unsigned int i = 0; i < amount; i++)
+	for (unsigned int i = 0; i < bloomBlurRange; i++)
 	{
 		pingpongFBO[horizontal]->Bind();
 		blurBloomProgram->UploadUniformInt("horizontal", horizontal);
@@ -549,7 +550,11 @@ void Renderer::OnImGuiRender()
 	const char* items2[] = { "Final", "Scene", "HightLight" };
 	ImGui::Combo("Render mode Bloom", &finalMode, items2, IM_ARRAYSIZE(items2));
 
-	ImGui::SliderFloat("Bloom range", &bloomRange, 0, 1.0);
+	ImGui::SliderFloat("Bloom range", &bloomRange, 0, 50.0);
+
+	ImGui::SliderInt("Bloom Blur range", &bloomBlurRange, 1, 100);
+
+	ImGui::Checkbox("SSAO", &SSAO);
 
 	ImGui::Text("Light position:");
 	ImGui::BeginGroup();

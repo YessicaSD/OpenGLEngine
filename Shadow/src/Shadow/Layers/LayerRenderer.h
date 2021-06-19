@@ -136,6 +136,8 @@ private:
 	int renderMode = 0;
 	int finalMode = 0;
 	float bloomRange = 0.2;
+	int bloomBlurRange = 1;
+	bool SSAO = true;
 };
 
 

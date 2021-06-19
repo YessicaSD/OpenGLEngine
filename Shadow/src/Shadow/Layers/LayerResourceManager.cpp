@@ -223,6 +223,7 @@ void Resources::Init()
 	instance->prefilterProgram->Bind();
 	instance->prefilterProgram->UploadUniformInt("environmentMap", 0);
 	GetCube();
+	instance->quadModel.reset(GetQuad());
 	instance->bakeFBO.reset(CreateFBO());
 	instance->bakeRBO.reset(CreateRBO());
 	instance->brdfProgram.reset(LoadProgram("Assets/Programs/brdf.glsl"));

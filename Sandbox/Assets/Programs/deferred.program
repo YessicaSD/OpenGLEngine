@@ -35,10 +35,10 @@ layout (location = 1) out vec4 BrightColor;
 	uniform sampler2D gSSAOBlur;
 	uniform sampler2D gData;
 	uniform sampler2D brdfLUT;  
-
 	uniform samplerCube irradianceMap;
 	uniform samplerCube prefilterMap;
 
+	uniform int activeSSAO ;
 	uniform Light lights[10];
 	uniform int numLights = 0;
 
@@ -218,12 +218,12 @@ void CalculateFinalRender()
     vec2 brdf  = texture(brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
     vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
+	if(activeSSAO == 0)
+		ao = 1.0;
+
  	vec3 ambient = (kD * diffuse + specular) * ao;
     vec3 color = ambient + Lo;
-	
-    //color = color / (color + vec3(1.0));
-    //color = pow(color, vec3(1.0/2.2));  
-   
+
     FragColor = vec4(color, 1.0);
 
 	float brightness = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
