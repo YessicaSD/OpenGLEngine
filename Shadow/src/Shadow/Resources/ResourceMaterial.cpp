@@ -61,8 +61,17 @@ void Material::SetTexture(TextureType::TextureType textureType, Texture* texture
 		texturesActive[textureType] = true;
 
 }
+void Material::SetActiveTextures(bool activeTex[4])
+{
+	texturesActive = glm::vec4(activeTex[0], activeTex[1], activeTex[2], activeTex[3]);
+}
 void Material::Init()
 {
+	for (int i = 0; i < TextureType::MAX_TEXTURE; i++)
+	{
+		textures[i].reset();
+		texturesActive[i] = false;
+	}
 }
 
 NAMESPACE_END

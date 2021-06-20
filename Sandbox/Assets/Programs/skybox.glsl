@@ -10,7 +10,7 @@ layout (location = 0) in vec3 aPos;
 		void main()
 		{
 			TexCoords = aPos;
-			gl_Position = projViewMatrix * vec4(aPos, 1.0);
+			gl_Position = (projViewMatrix * vec4(aPos, 1.0)).xyww;
 		}
 #endif
 
@@ -30,6 +30,9 @@ layout (location = 0) in vec3 aPos;
 			gData.r = 1.0;
 			gData.g = 0.0;
 			gNormal = vec3(0.0);
-			gAlbedoSpec = textureLod(skybox, TexCoords, 0.0);
+
+			vec3 envColor = textureLod(skybox, TexCoords, 0.0).xyz;
+
+			gAlbedoSpec = vec4(envColor, 0.0);
 		}
 #endif 

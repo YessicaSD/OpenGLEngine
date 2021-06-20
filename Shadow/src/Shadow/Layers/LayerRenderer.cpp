@@ -48,7 +48,7 @@ void Renderer::Init()
 
 	Renderer::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 
-	cube = Resources::LoadModel("Assets/cube.fbx");
+	cube.reset(Resources::LoadModel("Assets/cube.fbx"));
 	renderQuad.reset(Resources::GetQuad());
 
 	InitSkybox();
@@ -56,32 +56,34 @@ void Renderer::Init()
 	InitSSAO();
 	InitBlurSSAO();
 	InitHdrFBO();
-	
+	InitGeometrypass();
 
 	model.reset(Resources::LoadModel("Assets/backpack/backpack.obj"));
 	gunModel.reset(Resources::LoadModel("Assets/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX"));
 
-	material = std::make_unique<Material>();
+	material.reset(new Material());
 	material->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/backpack/diffuse.jpg"));
 	material->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/backpack/normal.png"));
 
-	materialGun = std::make_unique<Material>();
+	materialGun.reset(new Material());
 	materialGun->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_A.tga"));
 	materialGun->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_N.tga"));
 	materialGun->SetTexture(TextureType::ROUGHNESS, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_R.tga"));
 	materialGun->SetTexture(TextureType::METAL, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_M.tga"));
 
-	entities.push_back(Entity(gunModel, materialGun));
+	Entity newEntity = Entity(gunModel, materialGun);
+	newEntity.SetScale(0.1);
+	newEntity.SetRotation(glm::vec3(360, 0.0, 180.0));
 
-	geometryPassProgram.reset(LoadProgram("Assets/Programs/GeometryPass.glsl"));
-	geometryPassProgram->Bind();
-	geometryPassProgram->UploadUniformInt("albedoTex", 0);
-	geometryPassProgram->UploadUniformInt("normalTex", 1);
-	geometryPassProgram->UploadUniformInt("roughnessTex", 2);
-	geometryPassProgram->UploadUniformInt("metalTex", 3);
-	geometryPassProgram->UploadUniformMat4("Model", glm::mat4(1.0));
+	entities.push_back(newEntity);
 
-	
+	std::shared_ptr<Material> cubeMaterial = std::make_shared<Material>(Material());
+	newEntity = Entity(cube, cubeMaterial);
+	newEntity.SetScale(1.0);
+	newEntity.SetRotation(glm::vec3(360, 0.0, 180.0));
+
+	entities.push_back(newEntity);
+
 
 	lights.push_back(new PointLight({ 5.0,0.0,5.0 }));
 	lights.push_back(new PointLight({ 5.0,1.0,5.0 }));
@@ -98,7 +100,7 @@ void Renderer::Init()
 
 void Renderer::InitSkybox()
 {
-	skyProgram.reset(Shadow::LoadProgram("Assets/Programs/skybox.program"));
+	skyProgram.reset(Shadow::LoadProgram("Assets/Programs/skybox.glsl"));
 	skyProgram->UploadUniformInt("skybox", 0);
 
 	skybox = Resources::CreateCubemap();
@@ -109,6 +111,7 @@ void Renderer::InitSkybox()
 	skybox->SetPositiveZ("Assets/skybox/front.jpg");
 	skybox->SetNegativeZ("Assets/skybox/back.jpg");
 
+	//hdrTexture.reset(Resources::LoadTexture("Assets/skybox/christmas_photo_studio_01_4k.hdr"));
 	hdrTexture.reset(Resources::LoadTexture("Assets/skybox/kiara_1_dawn_1k.hdr"));
 	skyboxHDR.reset(Resources::CreateCubemapFromTexture(hdrTexture.get()));
 
@@ -221,6 +224,17 @@ void Renderer::InitHdrFBO()
 	finalBloom->UploadUniformInt("bloomBlur", 1);
 }
 
+void Renderer::InitGeometrypass()
+{
+	geometryPassProgram.reset(LoadProgram("Assets/Programs/GeometryPass.glsl"));
+	geometryPassProgram->Bind();
+	geometryPassProgram->UploadUniformInt("albedoTex", 0);
+	geometryPassProgram->UploadUniformInt("normalTex", 1);
+	geometryPassProgram->UploadUniformInt("roughnessTex", 2);
+	geometryPassProgram->UploadUniformInt("metalTex", 3);
+	geometryPassProgram->UploadUniformMat4("Model", glm::mat4(1.0));
+}
+
 void Renderer::InitSSAO()
 {
 	GenerateNoiseTexture();
@@ -238,7 +252,7 @@ void Renderer::InitSSAO()
 	unsigned int attachments[1] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers(1, attachments);
 
-	ssaoProgram.reset(Shadow::LoadProgram("Assets/Programs/ssao.program"));
+	ssaoProgram.reset(Shadow::LoadProgram("Assets/Programs/ssao.glsl"));
 
 	ssaoProgram->Bind();
 	ssaoProgram->UploadUniformInt("gPosition", 0);
@@ -250,7 +264,7 @@ void Renderer::InitSSAO()
 
 void Renderer::InitDeferredProgram()
 {
-	deferredProgram.reset(Shadow::LoadProgram("Assets/Programs/deferred.program"));
+	deferredProgram.reset(Shadow::LoadProgram("Assets/Programs/deferred.glsl"));
 
 	deferredProgram->Bind();
 	deferredProgram->UploadUniformInt("gPosition", 0);
@@ -274,7 +288,7 @@ void Renderer::InitDeferredProgram()
 
 	
 	// - position color buffer
-	gPosition.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA16F, GL_RGBA, GL_FLOAT));
+	gPosition.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA16F, GL_RGB, GL_FLOAT));
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition->GetHandle(), 0);
 
 	// - normal color buffer
@@ -282,7 +296,7 @@ void Renderer::InitDeferredProgram()
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal->GetHandle(), 0);
 
 	// - color + specular color buffer
-	gAlbedoSpec.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA, GL_RGB, GL_UNSIGNED_BYTE));
+	gAlbedoSpec.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE));
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec->GetHandle(), 0);
 
 	// roughness color buffer
@@ -337,6 +351,7 @@ void Renderer::SSAOPass()
 	gNormal->Bind(1);
 	noiseTex->Bind(2);
 	ssaoProgram->Bind();
+	ssaoProgram->UploadUniformInt("rangeCheckActive", ssaoRangeCheck);
 	ssaoProgram->UploadUniformMat4("view", camera.GetViewMatrix());
 	renderQuad->Draw();
 
@@ -344,6 +359,7 @@ void Renderer::SSAOPass()
 	glClear(GL_COLOR_BUFFER_BIT);
 	ssaoTex->Bind(0);
 	ssaoBlurProgram->Bind();
+	
 	renderQuad->Draw();
 }
 
@@ -353,6 +369,7 @@ void Renderer::ForwardRendering()
 }
 void Renderer::DeferredRendering()
 {
+	
 	GeometryPass();
 	SSAOPass();
 	LightingPass();
@@ -365,20 +382,7 @@ void Renderer::GeometryPass()
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glDepthMask(GL_FALSE);
-
-	switch (skyboxIndex)
-	{
-		case 0: environment->GetSkybox()->Bind();  break;
-		case 1: environment->GetIrradiance()->Bind(); break;
-		case 2: environment->GetPrefilter()->Bind(); break;
-	}
-
-	skyProgram->Bind();
-	glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
-	skyProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectionMatrix() * view);
-	cube->Draw();
-	glDepthMask(GL_TRUE);
+	EnvironmentMap();
 
 	// Draw in the g-buffer ====
 	geometryPassProgram->Bind();
@@ -398,6 +402,27 @@ void Renderer::GeometryPass()
 	}
 }
 
+void Renderer::EnvironmentMap()
+{
+	gFBO->Bind();
+	glDepthMask(GL_FALSE);
+	glDepthFunc(GL_LEQUAL);
+
+	switch (skyboxIndex)
+	{
+		case 0: environment->GetSkybox()->Bind();  break;
+		case 1: environment->GetIrradiance()->Bind(); break;
+		case 2: environment->GetPrefilter()->Bind(); break;
+	}
+
+	skyProgram->Bind();
+	glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
+	skyProgram->UploadUniformMat4("projViewMatrix", camera.GetProjectionMatrix() * view);
+	cube->Draw();
+	glDepthFunc(GL_LESS);
+	glDepthMask(GL_TRUE);
+}
+
 void Renderer::LightingPass()
 {
 	hdrFBO->Bind();
@@ -415,12 +440,12 @@ void Renderer::LightingPass()
 	environment->GetIrradiance()->Bind(8);
 	environment->GetPrefilter()->Bind(9);
 
-
 	deferredProgram->Bind();
 	deferredProgram->UploadUniformInt("renderMode", renderMode);
 	deferredProgram->UploadUniformFloat3("camPos", camera.GetPosition());
 	deferredProgram->UploadUniformInt("activeSSAO", SSAO);
-
+	deferredProgram->UploadUniformFloat("bloomThreshold", bloomThreshold);
+	deferredProgram->UploadUniformFloat("ssaoIntesity", ssaoIntesity);
 	SendLights(deferredProgram);
 	renderQuad->Draw();
 }
@@ -447,8 +472,15 @@ void Renderer::BloomPass()
 	finalBloom->Bind();
 
 	renderTex->Bind(0);
-	pingpongBuffer[!horizontal]->Bind(1);
-	//highlightsTex->Bind(1);
+	if (bloomBlurRange != 0)
+	{
+		pingpongBuffer[!horizontal]->Bind(1);
+	}
+	else
+	{
+		highlightsTex->Bind(1);
+	}
+	
 	finalBloom->UploadUniformFloat("exposure", bloomRange);
 	finalBloom->UploadUniformInt("mode", finalMode);
 
@@ -519,6 +551,52 @@ std::vector<glm::vec3> Renderer::GenerateKernelPoints(int number)
 	return ssaoKernel;
 }
 
+void Renderer::EntitiesUI()
+{
+	ImGui::Begin("Entities");
+	for (int i=0; i< entities.size(); i++)
+	{
+		Entity& var = entities[i];
+		std::string name = "Entity" + std::to_string(i);
+		if (ImGui::CollapsingHeader(name.c_str()))
+		{
+			name = "##position" + std::to_string(i);
+			glm::vec3 aux = var.GetPosition();
+			ImGui::DragFloat3(name.c_str(), &aux.x, 0.1);
+			var.SetPosition(aux);
+
+			name = "##rotation" + std::to_string(i);
+			aux = var.GetRotation();
+			ImGui::DragFloat3(name.c_str(), &aux.x,0.1);
+			var.SetRotation(aux);
+
+			name = "##scale" + std::to_string(i);
+			aux = var.GetScale();
+			ImGui::DragFloat3(name.c_str(), &aux.x, 0.1);
+			var.SetScale(aux);
+
+			std::shared_ptr<Material> currMaterial = var.GetMaterial();
+			glm::vec4 activeTex = currMaterial->GetActiveTextures();
+			bool value[4] = { activeTex.x, activeTex.y, activeTex.z, activeTex.w };
+
+			ImGui::Checkbox("Active Color texture ", &value[0]);
+			ImGui::ColorPicker3("Color", &currMaterial->GetColor().x);
+
+			ImGui::Checkbox("Active Roughness Texture", &value[2]);
+			ImGui::DragFloat("Roughness", &currMaterial->GetRoughnessMetalness().x, 0.1, 0.0, 1.0);
+
+			ImGui::Checkbox("Active Metal Texture", &value[3]);
+			ImGui::DragFloat("Metalness", &currMaterial->GetRoughnessMetalness().y, 0.1, 0.0, 1.0);
+
+			ImGui::Checkbox("Active Normal Texture", &value[1]);
+
+			currMaterial->SetActiveTextures(value);
+		}
+
+	}
+	ImGui::End();
+}
+
 void Renderer::SetViewPort(int x, int y, int width, int height)
 {
 	glViewport(x, y, width, height);
@@ -564,21 +642,16 @@ void Renderer::OnImGuiRender()
 
 	ImGui::SliderFloat("Bloom range", &bloomRange, 0, 50.0);
 
-	ImGui::SliderInt("Bloom Blur range", &bloomBlurRange, 1, 100);
+	ImGui::SliderInt("Bloom Blur range", &bloomBlurRange, 0, 100);
 
-	ImGui::Checkbox("SSAO", &SSAO);
+	ImGui::SliderFloat("Bloom threshold", &bloomThreshold, 0.0,1.0);
 
-	std::shared_ptr<Material> currMaterial = materialGun;
-	ImGui::Checkbox("Active Color texture ", (bool*)&currMaterial->GetActiveTextures().x);
-	ImGui::ColorPicker3("Color", &currMaterial->GetColor().x);
-
-	ImGui::Checkbox("Active Roughness Texture", (bool*)&currMaterial->GetActiveTextures().z);
-	ImGui::DragFloat("Roughness", &currMaterial->GetRoughnessMetalness().x, 0.1,0.0,1.0);
-
-	ImGui::Checkbox("Active Metal Texture", (bool*)&currMaterial->GetActiveTextures().w);
-	ImGui::DragFloat("Metalness", &currMaterial->GetRoughnessMetalness().y, 0.1, 0.0, 1.0);
-
-	ImGui::Checkbox("Active Normal Texture", (bool*)&currMaterial->GetActiveTextures().y);
+	if (ImGui::CollapsingHeader("SSAO"))
+	{
+		ImGui::Checkbox("Active SSAO", &SSAO);
+		ImGui::Checkbox("Range check", &ssaoRangeCheck);
+		ImGui::SliderFloat("SSAO intensity", &ssaoIntesity, 0.0,10.0);
+	}
 
 	ImGui::Text("Light position:");
 	ImGui::BeginGroup();
@@ -606,6 +679,8 @@ void Renderer::OnImGuiRender()
 	
 	
 	ImGui::End();
+
+	EntitiesUI();
 }
 
 void Renderer::CameraUpdate()

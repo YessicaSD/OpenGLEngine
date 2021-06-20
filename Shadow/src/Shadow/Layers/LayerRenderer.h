@@ -61,11 +61,13 @@ private:
 	void InitBlurSSAO();
 	void InitBrdf();
 	void InitHdrFBO();
+	void InitGeometrypass();
 
 	//Update ==
 	void ForwardRendering();
 	void DeferredRendering();
 	void GeometryPass();
+	void EnvironmentMap();
 	void BloomPass();
 	void SSAOPass();
 	void LightingPass();
@@ -76,6 +78,9 @@ private:
 	void SendLights(std::shared_ptr<Program> program);
 
 	std::vector<glm::vec3> GenerateKernelPoints(int number);
+
+	//UI
+	void EntitiesUI();
 
 private:
 	Camera camera;
@@ -95,10 +100,10 @@ private:
 	std::shared_ptr<Material> materialGun;
 	std::vector<glm::vec3> kernelsPoint;
 
-	std::shared_ptr<Model> model = nullptr;
+	std::shared_ptr<Model> model;
 	std::shared_ptr<Model> gunModel;
-	Model* cube = nullptr;
-	std::shared_ptr<Model> renderQuad = nullptr;
+	std::shared_ptr<Model> cube;
+	std::shared_ptr<Model> renderQuad;
 
 	Texture* tex = nullptr;
 	Cubemap* skybox = nullptr;
@@ -112,7 +117,6 @@ private:
 	std::unique_ptr<Texture> gDepth;
 	std::unique_ptr<Texture> brdfLutTexture;
 	std::unique_ptr<Texture> depthbrdf;
-
 	std::unique_ptr<Texture> ssaoTex;
 	std::unique_ptr<Texture> ssaoBlurTex;
 
@@ -140,6 +144,9 @@ private:
 	int bloomBlurRange = 1;
 	bool SSAO = true;
 	int skyboxIndex = 0;
+	float bloomThreshold = 1.0;
+	bool ssaoRangeCheck = true;
+	float ssaoIntesity = 1.0;
 };
 
 

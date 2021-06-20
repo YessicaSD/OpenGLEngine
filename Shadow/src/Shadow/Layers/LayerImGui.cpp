@@ -96,11 +96,6 @@ void LayerImGui::OnDetach()
     ImGui::DestroyContext();
 }
 
-void LayerImGui::OnImGuiRender()
-{
-    static bool show = true;
-    ImGui::ShowDemoWindow(&show);
-}
 
 
 

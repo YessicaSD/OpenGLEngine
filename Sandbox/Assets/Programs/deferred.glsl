@@ -37,6 +37,8 @@ layout (location = 1) out vec4 BrightColor;
 	uniform sampler2D brdfLUT;  
 	uniform samplerCube irradianceMap;
 	uniform samplerCube prefilterMap;
+	uniform float bloomThreshold = 1.0;
+	uniform float ssaoIntesity = 1.0;
 
 	uniform int activeSSAO ;
 	uniform Light lights[10];
@@ -50,12 +52,12 @@ layout (location = 1) out vec4 BrightColor;
 	const float PI = 3.14159265359;
 
 float near = 0.1; 
-float far  = 100.0; 
+float far  = 50.0; 
   
 float LinearizeDepth(float depth) 
 {
     float z = depth * 2.0 - 1.0; // back to NDC 
-    return (2.0 * near * far) / (far + near - z * (far - near));	
+    return (2.0 * near) / (far + near - z * (far - near));	
 }
 
 	void CalculateFinalRender();
@@ -66,7 +68,7 @@ float LinearizeDepth(float depth)
 				FragColor.xyz = texture(gNormal, TexCoords).xyz;
 			else if(renderMode == 2)
 			{
-				FragColor.xyz = vec3(LinearizeDepth(texture(gDepth, TexCoords).x));
+				FragColor.xyz = vec3(LinearizeDepth(texture(gDepth, TexCoords).z));
 			}
 				
 			else if(renderMode == 3)
@@ -157,77 +159,89 @@ vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
 
 void CalculateFinalRender()
 {
-	float roughness = texture(gData, TexCoords).r;
-	WorldPos = texture(gPosition, TexCoords).xyz;
-	vec3 albedo =  pow(texture(gAlbedoSpec, TexCoords).xyz, vec3(2.2));
-	float metallic = texture(gData, TexCoords).g;
-	vec3 Normal =  texture(gNormal, TexCoords).xyz;
-	float ao = texture(gSSAO,TexCoords).r; 
-
-
-	vec3 N = Normal; 
-	vec3 V = normalize(camPos - WorldPos);
-	vec3 R = reflect(-V, N); 
-
-	vec3 F0 = vec3(0.04); 
-	F0      = mix(F0, albedo, metallic);
-
-	vec3 Lo = vec3(0.0);
-	for(int i = 0; i < numLights; ++i) 
+	vec3 color;
+	bool sky = texture(gAlbedoSpec, TexCoords).a == 0;
+	if(sky)
 	{
-		if(lights[i].type == 0)
-			continue;
-
-		vec3 L = normalize(lights[i].position - WorldPos);
-		vec3 H = normalize(V + L);
-		float distance    = length(lights[i].position - WorldPos);
-		float attenuation = 1.0 / (distance * distance);
-		vec3 radiance     = (lights[i].color * 255.0f) * attenuation; 
-
-		float NDF = DistributionGGX(N, H, roughness);       
-		float G   = GeometrySmith(N, V, L, roughness);     
-		vec3 F  = fresnelSchlick(max(dot(H, V), 0.0), F0);
-
-		vec3 numerator    = NDF * G * F;
-		 float denominator = 4 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001; // 0.001 to prevent divide by zero.
-		vec3 specular     = numerator / max(denominator, 0.001);  
-
-        vec3 kS = F;
-        vec3 kD = vec3(1.0) - kS;
-       	kD *= 1.0 - metallic;	  
-
-		// add to outgoing radiance Lo
-        float NdotL = max(dot(N, L), 0.0);                
-        Lo += (kD * albedo / PI + specular) * radiance * NdotL; 
-		
+		color = texture(gAlbedoSpec, TexCoords).xyz;
 	}
+	else
+	{
+		float roughness = texture(gData, TexCoords).r;
+		WorldPos = texture(gPosition, TexCoords).xyz;
+		vec3 albedo =  pow(texture(gAlbedoSpec, TexCoords).xyz, vec3(2.2));
+		float metallic = texture(gData, TexCoords).g;
+		vec3 Normal =  texture(gNormal, TexCoords).xyz;
+		float ao = smoothstep( 0.0, ssaoIntesity,  texture(gSSAO,TexCoords).r); 
 
-	// ambient lighting (we now use IBL as the ambient term)
-    vec3 F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
-    
-    vec3 kS = F;
-    vec3 kD = 1.0 - kS;
-    kD *= 1.0 - metallic;	  
-    
-    vec3 irradiance = texture(irradianceMap, N).rgb;
-    vec3 diffuse      = irradiance * albedo;
-    
-    // sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
-    const float MAX_REFLECTION_LOD = 4.0;
-    vec3 prefilteredColor = textureLod(prefilterMap, R,  roughness * MAX_REFLECTION_LOD).rgb;    
-    vec2 brdf  = texture(brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
-    vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
-	if(activeSSAO == 0)
-		ao = 1.0;
+		vec3 N = Normal; 
+		vec3 V = normalize(camPos - WorldPos);
+		vec3 R = reflect(-V, N); 
 
- 	vec3 ambient = (kD * diffuse + specular) * ao;
-    vec3 color = ambient + Lo;
+		vec3 F0 = vec3(0.04); 
+		F0      = mix(F0, albedo, metallic);
+
+		vec3 Lo = vec3(0.0);
+		for(int i = 0; i < numLights; ++i) 
+		{
+			if(lights[i].type == 0)
+				continue;
+
+			vec3 L = normalize(lights[i].position - WorldPos);
+			vec3 H = normalize(V + L);
+			float distance    = length(lights[i].position - WorldPos);
+			float attenuation = 1.0 / (distance * distance);
+			vec3 radiance     = (lights[i].color * 255.0f) * attenuation; 
+
+			float NDF = DistributionGGX(N, H, roughness);       
+			float G   = GeometrySmith(N, V, L, roughness);     
+			vec3 F  = fresnelSchlick(max(dot(H, V), 0.0), F0);
+
+			vec3 numerator    = NDF * G * F;
+			float denominator = 4 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001; // 0.001 to prevent divide by zero.
+			vec3 specular     = numerator / max(denominator, 0.001);  
+
+			vec3 kS = F;
+			vec3 kD = vec3(1.0) - kS;
+			kD *= 1.0 - metallic;	  
+
+			// add to outgoing radiance Lo
+			float NdotL = max(dot(N, L), 0.0);                
+			Lo += (kD * albedo / PI + specular) * radiance * NdotL; 
+			
+		}
+
+		// ambient lighting (we now use IBL as the ambient term)
+		vec3 F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+		
+		vec3 kS = F;
+		vec3 kD = 1.0 - kS;
+		kD *= 1.0 - metallic;	  
+		
+		vec3 irradiance = texture(irradianceMap, N).rgb;
+		vec3 diffuse      = irradiance * albedo;
+		
+		// sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
+		const float MAX_REFLECTION_LOD = 4.0;
+		vec3 prefilteredColor = textureLod(prefilterMap, R,  roughness * MAX_REFLECTION_LOD).rgb;    
+		vec2 brdf  = texture(brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
+		vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
+
+		if(activeSSAO == 0)
+			ao = 1.0;
+
+		vec3 ambient = (kD * diffuse + specular) * ao;
+		color = ambient + Lo;
+
+	}
+	
 
     FragColor = vec4(color, 1.0);
 
 	float brightness = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
-    if(brightness > 1.0)
+
+    if(brightness > bloomThreshold)
         BrightColor = vec4(FragColor.rgb, 1.0);
     else
         BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
