@@ -32,6 +32,7 @@ public:
 	virtual void UploadUniformFloat2(const std::string& name, const glm::vec2& value) {};
 	virtual void UploadUniformFloat3(const std::string& name, const glm::vec3& values) {};
 	virtual void UploadUniformFloat3(const std::string& name, std::vector<glm::vec3>& values) {};
+	virtual void UploadUniformBoolArray(const std::string& name, bool* value, int size) {};
 	virtual void UploadUniformFloat4(const std::string& name, const glm::vec4& values) {};
 	virtual void UploadUniformMat4(const std::string& name, const glm::mat4& matrix) {};
 	virtual void UploadUniformMat3(const std::string& name, const glm::mat3& matrix) {};

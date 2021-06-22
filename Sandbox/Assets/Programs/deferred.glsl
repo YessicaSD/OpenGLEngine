@@ -93,15 +93,19 @@ float LinearizeDepth(float depth)
 			{
 				FragColor.xyz = vec3(texture(gData, TexCoords).y);
 			}
-			else if(renderMode == 9)
+			else if (renderMode == 9)
+			{
+				FragColor.xyz = vec3(texture(gData, TexCoords).b);
+			}
+			else if(renderMode == 10)
 			{
 				FragColor.xyz = vec3(texture(brdfLUT, TexCoords).rg, 0.0);
 			}
-			else if (renderMode == 10)
+			else if (renderMode == 11)
 			{
 				FragColor.xyz = vec3(texture(irradianceMap, texture(gPosition, TexCoords).xyz).xyz);
 			}
-			else if (renderMode == 11)
+			else if (renderMode == 12)
 			{
 				FragColor.xyz = vec3(texture(prefilterMap, texture(gPosition, TexCoords).xyz).xyz);
 			}
@@ -172,8 +176,8 @@ void CalculateFinalRender()
 		vec3 albedo =  pow(texture(gAlbedoSpec, TexCoords).xyz, vec3(2.2));
 		float metallic = texture(gData, TexCoords).g;
 		vec3 Normal =  texture(gNormal, TexCoords).xyz;
-		float ao = smoothstep( 0.0, ssaoIntesity,  texture(gSSAO,TexCoords).r); 
-
+		float ao = texture(gData, TexCoords).b;
+		float ssao = smoothstep( 0.0, ssaoIntesity,  texture(gSSAO,TexCoords).r); 
 
 		vec3 N = Normal; 
 		vec3 V = normalize(camPos - WorldPos);
@@ -229,9 +233,9 @@ void CalculateFinalRender()
 		vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
 		if(activeSSAO == 0)
-			ao = 1.0;
-
-		vec3 ambient = (kD * diffuse + specular) * ao;
+			ssao = 1.0;
+			
+		vec3 ambient = (kD * diffuse + specular) * ao * ssao; 
 		color = ambient + Lo;
 
 	}

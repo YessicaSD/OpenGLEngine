@@ -11,7 +11,9 @@ namespace TextureType
 		NORMAL = 1, 
 		ROUGHNESS = 2,
 		METAL = 3,
-		MAX_TEXTURE = 4,
+		AO = 4,
+		MAX_TEXTURE = 5,
+		
 	};
 }
 

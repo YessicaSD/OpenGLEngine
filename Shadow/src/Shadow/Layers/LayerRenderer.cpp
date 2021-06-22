@@ -59,12 +59,14 @@ void Renderer::Init()
 	InitGeometrypass();
 
 	model.reset(Resources::LoadModel("Assets/backpack/backpack.obj"));
-	gunModel.reset(Resources::LoadModel("Assets/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX"));
-
 	material.reset(new Material());
+	material->SetTexture(TextureType::ROUGHNESS, Resources::LoadTexture("Assets/backpack/roughness.jpg"));
 	material->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/backpack/diffuse.jpg"));
 	material->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/backpack/normal.png"));
+	material->SetTexture(TextureType::METAL, Resources::LoadTexture("Assets/backpack/specular.jpg"));
+	material->SetTexture(TextureType::AO, Resources::LoadTexture("Assets/backpack/ao.jpg"));
 
+	gunModel.reset(Resources::LoadModel("Assets/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX"));
 	materialGun.reset(new Material());
 	materialGun->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_A.tga"));
 	materialGun->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_N.tga"));
@@ -73,17 +75,18 @@ void Renderer::Init()
 
 	Entity newEntity = Entity(gunModel, materialGun);
 	newEntity.SetScale(0.1);
-	newEntity.SetRotation(glm::vec3(360, 0.0, 180.0));
-
+	newEntity.SetRotation(glm::vec3(275, 0.0, 180.0));
 	entities.push_back(newEntity);
 
 	std::shared_ptr<Material> cubeMaterial = std::make_shared<Material>(Material());
 	newEntity = Entity(cube, cubeMaterial);
 	newEntity.SetScale(1.0);
 	newEntity.SetRotation(glm::vec3(360, 0.0, 180.0));
-
 	entities.push_back(newEntity);
 
+	newEntity = Entity(model, material);
+	newEntity.SetPosition(glm::vec3(-4.5, 0.0, 0.0));
+	entities.push_back(newEntity);
 
 	lights.push_back(new PointLight({ 5.0,0.0,5.0 }));
 	lights.push_back(new PointLight({ 5.0,1.0,5.0 }));
@@ -343,10 +346,6 @@ void Renderer::SSAOPass()
 	glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	//ssaoProgram->UploadUniformInt("gPosition", 0);
-	//ssaoProgram->UploadUniformInt("gNormal", 1);
-	//ssaoProgram->UploadUniformInt("texNoise", 2);
-
 	gPosition->Bind(0);
 	gNormal->Bind(1);
 	noiseTex->Bind(2);
@@ -394,7 +393,7 @@ void Renderer::GeometryPass()
 	{
 		std::shared_ptr<Material> currMat = var.GetMaterial();
 		currMat->UseMaterial();
-		geometryPassProgram->UploadUniformFloat4("activeTextures", currMat->GetActiveTextures());
+		geometryPassProgram->UploadUniformBoolArray("activeTextures", currMat->GetActiveTextures(), TextureType::MAX_TEXTURE);
 		geometryPassProgram->UploadUniformFloat3("color", currMat->GetColor());
 		geometryPassProgram->UploadUniformFloat2("rmValue", currMat->GetRoughnessMetalness());
 		geometryPassProgram->UploadUniformMat4("Model", var.GetModel());
@@ -576,21 +575,20 @@ void Renderer::EntitiesUI()
 			var.SetScale(aux);
 
 			std::shared_ptr<Material> currMaterial = var.GetMaterial();
-			glm::vec4 activeTex = currMaterial->GetActiveTextures();
-			bool value[4] = { activeTex.x, activeTex.y, activeTex.z, activeTex.w };
+			bool* activeTex = currMaterial->GetActiveTextures();
 
-			ImGui::Checkbox("Active Color texture ", &value[0]);
+			ImGui::Checkbox("Active Color texture ", &activeTex[0]);
 			ImGui::ColorPicker3("Color", &currMaterial->GetColor().x);
 
-			ImGui::Checkbox("Active Roughness Texture", &value[2]);
+			ImGui::Checkbox("Active Roughness Texture", &activeTex[2]);
 			ImGui::DragFloat("Roughness", &currMaterial->GetRoughnessMetalness().x, 0.1, 0.0, 1.0);
 
-			ImGui::Checkbox("Active Metal Texture", &value[3]);
+			ImGui::Checkbox("Active Metal Texture", &activeTex[3]);
 			ImGui::DragFloat("Metalness", &currMaterial->GetRoughnessMetalness().y, 0.1, 0.0, 1.0);
 
-			ImGui::Checkbox("Active Normal Texture", &value[1]);
+			ImGui::Checkbox("Active Normal Texture", &activeTex[1]);
 
-			currMaterial->SetActiveTextures(value);
+			ImGui::Checkbox("Active AO Texture", &activeTex[TextureType::AO]);
 		}
 
 	}
@@ -631,7 +629,7 @@ void Renderer::OnImGuiRender()
 	ImGui::Begin("Renderer");
 	camera.OnImGuiRender();
 
-	const char* items[] = { "Final", "Normal", "Depth", "Position", "Albedo", "SSAO", "SSAOBlur", "Roughness", "Metal", "brdf", "irradiance", "prefilterMap"};
+	const char* items[] = { "Final", "Normal", "Depth", "Position", "Albedo", "SSAO", "SSAOBlur", "Roughness", "Metal", "AO","brdf", "irradiance", "prefilterMap"};
 	ImGui::Combo("Render mode", &renderMode, items, IM_ARRAYSIZE(items));
 
 	const char* items2[] = { "Final", "Scene", "HightLight" };

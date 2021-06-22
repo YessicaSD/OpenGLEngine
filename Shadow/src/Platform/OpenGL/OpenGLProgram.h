@@ -14,6 +14,7 @@ public:
 	virtual void UploadUniformFloat2(const std::string& name, const glm::vec2& value) override;
 	virtual void UploadUniformFloat3(const std::string& name, const glm::vec3& values) override;
 	virtual void UploadUniformFloat3(const std::string& name, std::vector<glm::vec3>& values) override;
+	virtual void UploadUniformBoolArray(const std::string& name, bool* value, int size) override;
 	virtual void UploadUniformFloat4(const std::string& name, const glm::vec4& values) override;
 	virtual void UploadUniformMat3(const std::string& name, const glm::mat3& matrix) override;
 	virtual void UploadUniformMat4(const std::string& name, const glm::mat4& matrix) override;

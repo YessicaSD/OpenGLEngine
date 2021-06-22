@@ -181,6 +181,16 @@ void OpenGLProgram::UploadUniformFloat3(const std::string& name, std::vector<glm
 	glUniform3fv(location, values.size(), (GLfloat*)&values[0]);
 }
 
+void OpenGLProgram::UploadUniformBoolArray(const std::string& name, bool* value, int size)
+{
+	for (int i = 0; i < size; i++)
+	{
+		std::string aux = name + "[" + std::to_string(i) + "]";
+		GLint location = glGetUniformLocation(programID, aux.c_str());
+		glUniform1i(location, (int)value[i]);
+	}
+}
+
 void OpenGLProgram::UploadUniformMat4(const std::string& name, const glm::mat4& matrix)
 {
 	GLint location = glGetUniformLocation(programID, name.c_str());

@@ -15,7 +15,9 @@ public:
 	void UseMaterial();
 	std::shared_ptr<Program> GetProgram() { return program; };
 	void SetTexture(TextureType::TextureType textureType, Texture* texture);
-	glm::vec4& GetActiveTextures() { return texturesActive; };
+	bool* GetActiveTextures() {
+		return &texturesActive[0];
+	};
 	void SetActiveTextures(bool activeTex[4]);
 	glm::vec3& GetColor() { return color; };
 	glm::vec2& GetRoughnessMetalness() { return rmData; };
@@ -29,7 +31,7 @@ private:
 	std::string fs;
 	glm::vec3 color = {0,0,0};
 	glm::vec2 rmData = { 0.5,0.0 };
-	glm::vec4 texturesActive;
+	bool texturesActive[TextureType::MAX_TEXTURE];
 
 	friend class LayerRenderer;
 };

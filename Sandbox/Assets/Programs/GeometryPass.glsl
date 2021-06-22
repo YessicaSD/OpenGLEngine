@@ -56,8 +56,9 @@
 	uniform sampler2D normalTex;
 	uniform sampler2D roughnessTex;
 	uniform sampler2D metalTex;
+	uniform sampler2D aoTex;
 
-	uniform vec4 activeTextures;
+	uniform int activeTextures[5];
 	uniform vec3 color;
 	uniform vec2 rmValue;
 	
@@ -84,6 +85,11 @@
 		gData.g = rmValue.y;
 		if(activeTextures[3] == 1)	
 		gData.g = texture(metalTex,fs_in.TexCoords).g;
+
+		gData.b = 1.0;
+		if(activeTextures[4] == 1)
+			gData.b = texture(aoTex,fs_in.TexCoords).r;
+			
 		gPosition = fs_in.FragPos;
 	};
 #endif
