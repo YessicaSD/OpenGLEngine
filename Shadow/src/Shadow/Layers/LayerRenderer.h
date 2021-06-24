@@ -46,8 +46,8 @@ public:
 	static void SetViewPort(int x, int y, int width, int height);
 	static void Submit(const std::shared_ptr<VertexArray>& vertexArray);
 	virtual void OnImGuiRender() override;
-
-
+	static void PushEntity(Entity entity);
+	static void PushLight(Light* light);
 
 public:
 	virtual void Init() override;
@@ -100,8 +100,6 @@ private:
 	std::shared_ptr<Material> materialGun;
 	std::vector<glm::vec3> kernelsPoint;
 
-	std::shared_ptr<Model> model;
-	std::shared_ptr<Model> gunModel;
 	std::shared_ptr<Model> cube;
 	std::shared_ptr<Model> renderQuad;
 
@@ -147,6 +145,8 @@ private:
 	float bloomThreshold = 1.0;
 	bool ssaoRangeCheck = true;
 	float ssaoIntesity = 1.0;
+
+	static Renderer* instance;
 };
 
 

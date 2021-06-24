@@ -15,7 +15,7 @@
 
 NAMESPACE_BEGAN
 RendererAPI* Renderer::rendererAPI = new OpenGLRendererAPI;
-
+Renderer* Renderer::instance = new Renderer;
 
 Renderer::Renderer()
 {}
@@ -57,40 +57,6 @@ void Renderer::Init()
 	InitBlurSSAO();
 	InitHdrFBO();
 	InitGeometrypass();
-
-	model.reset(Resources::LoadModel("Assets/backpack/backpack.obj"));
-	material.reset(new Material());
-	material->SetTexture(TextureType::ROUGHNESS, Resources::LoadTexture("Assets/backpack/roughness.jpg"));
-	material->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/backpack/diffuse.jpg"));
-	material->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/backpack/normal.png"));
-	material->SetTexture(TextureType::METAL, Resources::LoadTexture("Assets/backpack/specular.jpg"));
-	material->SetTexture(TextureType::AO, Resources::LoadTexture("Assets/backpack/ao.jpg"));
-
-	gunModel.reset(Resources::LoadModel("Assets/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX"));
-	materialGun.reset(new Material());
-	materialGun->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_A.tga"));
-	materialGun->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_N.tga"));
-	materialGun->SetTexture(TextureType::ROUGHNESS, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_R.tga"));
-	materialGun->SetTexture(TextureType::METAL, Resources::LoadTexture("Assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_M.tga"));
-
-	Entity newEntity = Entity(gunModel, materialGun);
-	newEntity.SetScale(0.1);
-	newEntity.SetRotation(glm::vec3(275, 0.0, 180.0));
-	entities.push_back(newEntity);
-
-	std::shared_ptr<Material> cubeMaterial = std::make_shared<Material>(Material());
-	newEntity = Entity(cube, cubeMaterial);
-	newEntity.SetScale(1.0);
-	newEntity.SetRotation(glm::vec3(360, 0.0, 180.0));
-	entities.push_back(newEntity);
-
-	newEntity = Entity(model, material);
-	newEntity.SetPosition(glm::vec3(-4.5, 0.0, 0.0));
-	entities.push_back(newEntity);
-
-	lights.push_back(new PointLight({ 5.0,0.0,5.0 }));
-	lights.push_back(new PointLight({ 5.0,1.0,5.0 }));
-	lights.push_back(new PointLight({ 5.0,2.0,5.0 }));
 
 	InitBrdf();
 
@@ -389,7 +355,7 @@ void Renderer::GeometryPass()
 	geometryPassProgram->UploadUniformMat4("view", camera.GetViewMatrix());
 	geometryPassProgram->UploadUniformFloat3("viewPos", camera.GetPosition());
 
-	for each (Entity var in entities)
+	for each (Entity var in instance->entities)
 	{
 		std::shared_ptr<Material> currMat = var.GetMaterial();
 		currMat->UseMaterial();
@@ -489,10 +455,10 @@ void Renderer::BloomPass()
 
 void Renderer::SendLights(std::shared_ptr<Program> program)
 {
-	program->UploadUniformInt("numLights", lights.size());
-	for (int i = 0; i < lights.size(); i++)
+	program->UploadUniformInt("numLights", instance->lights.size());
+	for (int i = 0; i < instance->lights.size(); i++)
 	{
-		Light* clight = lights[i];
+		Light* clight = instance->lights[i];
 		program->UploadUniformInt("lights[" + std::to_string(i) + "].type", (int)clight->type);
 		program->UploadUniformFloat3("lights[" + std::to_string(i) + "].position", clight->position);
 		program->UploadUniformFloat3("lights[" + std::to_string(i) + "].color", clight->color);
@@ -553,9 +519,9 @@ std::vector<glm::vec3> Renderer::GenerateKernelPoints(int number)
 void Renderer::EntitiesUI()
 {
 	ImGui::Begin("Entities");
-	for (int i=0; i< entities.size(); i++)
+	for (int i=0; i< instance->entities.size(); i++)
 	{
-		Entity& var = entities[i];
+		Entity& var = instance->entities[i];
 		std::string name = "Entity" + std::to_string(i);
 		if (ImGui::CollapsingHeader(name.c_str()))
 		{
@@ -609,23 +575,6 @@ void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray)
 
 void Renderer::OnImGuiRender()
 {
-	ImGui::Begin("Scene Info");
-	std::vector<Mesh> meshes = model->GetMeshes();
-	if (ImGui::TreeNode("Model"))
-	{
-		for (int i = 0; i < meshes.size(); i++)
-		{
-			if (ImGui::TreeNode((void*)(intptr_t)i, meshes[i].GetName().c_str()))
-			{
-				//ImGui::Text(meshes[i].GetName().c_str());
-				ImGui::TreePop();
-			}
-		}
-		ImGui::TreePop();
-	}
-
-	ImGui::End();
-
 	ImGui::Begin("Renderer");
 	camera.OnImGuiRender();
 
@@ -655,7 +604,7 @@ void Renderer::OnImGuiRender()
 	ImGui::BeginGroup();
 	ImGui::PushItemWidth(100);
 	int i = 0;
-	for each (Light* light in lights)
+	for each (Light* light in instance->lights)
 	{
 		ImGui::Text("Position:");
 		std::string label = "##lightx"; label += std::to_string(i);
@@ -679,6 +628,16 @@ void Renderer::OnImGuiRender()
 	ImGui::End();
 
 	EntitiesUI();
+}
+
+void Renderer::PushEntity(Entity entity)
+{
+	instance->entities.push_back(entity);
+}
+
+void Renderer::PushLight(Light* light)
+{
+	instance->lights.push_back(light);
 }
 
 void Renderer::CameraUpdate()
