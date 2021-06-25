@@ -5,7 +5,8 @@
 
 NAMESPACE_BEGAN
 
-Entity::Entity(std::shared_ptr<Model> model, std::shared_ptr<Material> material) : model(model), material(material)
+Entity::Entity(std::shared_ptr<Model> model, std::shared_ptr<Material> material, std::string name) : 
+	model(model), material(material), name(name)
 {
 	
 }

@@ -88,7 +88,7 @@ void Environment::SetSkybox(std::shared_ptr<Cubemap> skybox)
 		}
 	}
 
-	brdfTex.reset(Resources::CreateEmptyTexture(512, 512, GL_RG16F, GL_RG, GL_FLOAT));
+	/*brdfTex.reset(Resources::CreateEmptyTexture(512, 512, GL_RG16F, GL_RG, GL_FLOAT));
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -98,7 +98,7 @@ void Environment::SetSkybox(std::shared_ptr<Cubemap> skybox)
 
 	glViewport(0, 0, 512, 512);
 	Resources::instance->brdfProgram->Bind();
-	Resources::instance->quadModel->Draw();
+	Resources::instance->quadModel->Draw();*/
 
 	Window& window = Application::Get().GetWindow();
 	Renderer::SetViewPort(0, 0, window.GetWidth(), window.GetHeight());

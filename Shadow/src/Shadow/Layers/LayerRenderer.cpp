@@ -23,7 +23,11 @@ Renderer::Renderer()
 
 Renderer::~Renderer()
 {
-	environment.reset();
+	for each (std::shared_ptr<Environment> var in environments)
+	{
+		var.reset();
+	}
+	environments.clear();
 	materialGun.reset();
 	gAlbedoSpec.reset();
 	gNormal.reset();
@@ -52,13 +56,14 @@ void Renderer::Init()
 	renderQuad.reset(Resources::GetQuad());
 
 	InitSkybox();
+	InitBrdf();
 	InitDeferredProgram();
 	InitSSAO();
 	InitBlurSSAO();
 	InitHdrFBO();
 	InitGeometrypass();
 
-	InitBrdf();
+
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
@@ -72,20 +77,31 @@ void Renderer::InitSkybox()
 	skyProgram.reset(Shadow::LoadProgram("Assets/Programs/skybox.glsl"));
 	skyProgram->UploadUniformInt("skybox", 0);
 
-	skybox = Resources::CreateCubemap();
-	skybox->SetPositiveX("Assets/skybox/right.jpg");
-	skybox->SetNegativeX("Assets/skybox/left.jpg");
-	skybox->SetPositiveY("Assets/skybox/top.jpg");
-	skybox->SetNegativeY("Assets/skybox/bottom.jpg");
-	skybox->SetPositiveZ("Assets/skybox/front.jpg");
-	skybox->SetNegativeZ("Assets/skybox/back.jpg");
+	std::shared_ptr<Texture> tex(Resources::LoadTexture("Assets/skybox/03-Ueno-Shrine_3k.hdr"));
+	std::shared_ptr<Cubemap> cube(Resources::CreateCubemapFromTexture(tex.get()));
+	std::shared_ptr<Environment> environment(new Environment());
+	environment->SetSkybox(cube);
+	environments.push_back(environment);
 
-	//hdrTexture.reset(Resources::LoadTexture("Assets/skybox/christmas_photo_studio_01_4k.hdr"));
+	std::shared_ptr<Texture> tex2(Resources::LoadTexture("Assets/skybox/Arches_E_PineTree_3k.hdr"));
+	std::shared_ptr<Cubemap> cube2(Resources::CreateCubemapFromTexture(tex2.get()));
+	std::shared_ptr<Environment> environment2(new Environment());
+	environment2->SetSkybox(cube2);
+	environments.push_back(environment2);
+
+
+	std::shared_ptr<Texture> tex3(Resources::LoadTexture("Assets/skybox/christmas_photo_studio_01_4k.hdr"));
+	std::shared_ptr<Cubemap> cube3(Resources::CreateCubemapFromTexture(tex2.get()));
+	std::shared_ptr<Environment> environment3(new Environment());
+	environment2->SetSkybox(cube3);
+	environments.push_back(environment3);
+
 	hdrTexture.reset(Resources::LoadTexture("Assets/skybox/kiara_1_dawn_1k.hdr"));
 	skyboxHDR.reset(Resources::CreateCubemapFromTexture(hdrTexture.get()));
+	std::shared_ptr<Environment> environment4(new Environment());
+	environment4->SetSkybox(skyboxHDR);
+	environments.push_back(environment4);
 
-	environment.reset(new Environment());
-	environment->SetSkybox(skyboxHDR);
 }
 
 void Renderer::InitBlurSSAO()
@@ -373,11 +389,12 @@ void Renderer::EnvironmentMap()
 	glDepthMask(GL_FALSE);
 	glDepthFunc(GL_LEQUAL);
 
+	std::shared_ptr<Environment> currEnvironment = environments[currentEnvironment];
 	switch (skyboxIndex)
 	{
-		case 0: environment->GetSkybox()->Bind();  break;
-		case 1: environment->GetIrradiance()->Bind(); break;
-		case 2: environment->GetPrefilter()->Bind(); break;
+		case 0: currEnvironment->GetSkybox()->Bind();  break;
+		case 1: currEnvironment->GetIrradiance()->Bind(); break;
+		case 2: currEnvironment->GetPrefilter()->Bind(); break;
 	}
 
 	skyProgram->Bind();
@@ -400,10 +417,11 @@ void Renderer::LightingPass()
 	ssaoTex->Bind(4);
 	ssaoBlurTex->Bind(5);
 	gData->Bind(6);
-	//brdfLutTexture->Bind(7);
-	environment->GetBRDF()->Bind(7);
-	environment->GetIrradiance()->Bind(8);
-	environment->GetPrefilter()->Bind(9);
+	brdfLutTexture->Bind(7);
+	std::shared_ptr<Environment> currEnvironment = environments[currentEnvironment];
+	//environment->GetBRDF()->Bind(7);
+	currEnvironment->GetIrradiance()->Bind(8);
+	currEnvironment->GetPrefilter()->Bind(9);
 
 	deferredProgram->Bind();
 	deferredProgram->UploadUniformInt("renderMode", renderMode);
@@ -523,6 +541,9 @@ void Renderer::EntitiesUI()
 	{
 		Entity& var = instance->entities[i];
 		std::string name = "Entity" + std::to_string(i);
+		if (var.name != "")
+			name = var.name;
+
 		if (ImGui::CollapsingHeader(name.c_str()))
 		{
 			name = "##position" + std::to_string(i);
@@ -544,7 +565,9 @@ void Renderer::EntitiesUI()
 			bool* activeTex = currMaterial->GetActiveTextures();
 
 			ImGui::Checkbox("Active Color texture ", &activeTex[0]);
-			ImGui::ColorPicker3("Color", &currMaterial->GetColor().x);
+			float color[3] = { currMaterial->GetColor().x, currMaterial->GetColor().y, currMaterial->GetColor().z };
+			ImGui::ColorPicker3("Color", color);
+			currMaterial->SetColor(color);
 
 			ImGui::Checkbox("Active Roughness Texture", &activeTex[2]);
 			ImGui::DragFloat("Roughness", &currMaterial->GetRoughnessMetalness().x, 0.1, 0.0, 1.0);
@@ -584,10 +607,15 @@ void Renderer::OnImGuiRender()
 	const char* items2[] = { "Final", "Scene", "HightLight" };
 	ImGui::Combo("Render mode Bloom", &finalMode, items2, IM_ARRAYSIZE(items2));
 
-	const char* items3[] = { "Skybox", "Irradiance", "Prefilter" };
-	ImGui::Combo("Change skybox", &skyboxIndex, items3, IM_ARRAYSIZE(items3));
+	const char* items4[] = { "Shrine", "PineTree", "Christmas", "Dessert" };
+	ImGui::Combo("Change skybox", &currentEnvironment, items4, IM_ARRAYSIZE(items4));
 
-	ImGui::SliderFloat("Bloom range", &bloomRange, 0, 50.0);
+	const char* items3[] = { "Skybox", "Irradiance", "Prefilter" };
+	ImGui::Combo("Skybox type", &skyboxIndex, items3, IM_ARRAYSIZE(items3));
+
+	
+
+	ImGui::SliderFloat("Expesure range", &bloomRange, 0, 50.0);
 
 	ImGui::SliderInt("Bloom Blur range", &bloomBlurRange, 0, 100);
 

@@ -104,7 +104,7 @@ private:
 	std::shared_ptr<Model> renderQuad;
 
 	Texture* tex = nullptr;
-	Cubemap* skybox = nullptr;
+	std::shared_ptr<Cubemap> skybox;
 	std::shared_ptr<Cubemap> skyboxHDR;
 	std::shared_ptr<Texture> hdrTexture;
 	std::unique_ptr<Texture> noiseTex;
@@ -120,8 +120,8 @@ private:
 
 	std::vector<Light*> lights;
 
-	std::shared_ptr<Environment> environment;
-
+	std::vector<std::shared_ptr<Environment>> environments;
+	int currentEnvironment = 0;
 	static RendererAPI* rendererAPI;
 
 	std::unique_ptr<FBO> gFBO;

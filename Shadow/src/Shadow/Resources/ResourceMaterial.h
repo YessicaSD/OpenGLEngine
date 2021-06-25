@@ -19,6 +19,8 @@ public:
 		return &texturesActive[0];
 	};
 	void SetActiveTextures(bool activeTex[4]);
+	void SetColor(float color[3]);
+
 	glm::vec3& GetColor() { return color; };
 	glm::vec2& GetRoughnessMetalness() { return rmData; };
 
