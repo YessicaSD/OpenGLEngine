@@ -52,6 +52,9 @@ void Material::SetTexture(TextureType::TextureType textureType, Texture* texture
 	case TextureType::METAL:
 		textures[TextureType::METAL].reset(texture);
 		break;
+	case TextureType::AO:
+		textures[TextureType::AO].reset(texture);
+		break;
 	default:
 		SW_LOG_WARN("Could not set the texture");
 		break;

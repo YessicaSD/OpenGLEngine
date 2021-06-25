@@ -26,11 +26,12 @@ public:
 	{
 		model.reset(Resources::LoadModel("Assets/backpack/backpack.obj"));
 		material.reset(new Material());
-		material->SetTexture(TextureType::ROUGHNESS, Resources::LoadTexture("Assets/backpack/roughness.jpg"));
+		
 		material->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/backpack/diffuse.jpg"));
 		material->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/backpack/normal.png"));
 		material->SetTexture(TextureType::METAL, Resources::LoadTexture("Assets/backpack/specular.jpg"));
 		material->SetTexture(TextureType::AO, Resources::LoadTexture("Assets/backpack/ao.jpg"));
+		material->SetTexture(TextureType::ROUGHNESS, Resources::LoadTexture("Assets/backpack/roughness.jpg"));
 
 		gunModel.reset(Resources::LoadModel("Assets/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX"));
 		materialGun.reset(new Material());
@@ -48,20 +49,20 @@ public:
 		newEntity.SetPosition(glm::vec3(-4.5, 0.0, 0.0));
 		Renderer::PushEntity(newEntity);
 
-		Renderer::PushLight(new PointLight({ 5.0,0.0,5.0 }));
-		Renderer::PushLight(new PointLight({ 5.0,1.0,5.0 }));
-		Renderer::PushLight(new PointLight({ 5.0,2.0,5.0 }));
+		Renderer::PushLight(new PointLight({ -13.0,0.0,5.0 }));
+		Renderer::PushLight(new PointLight({ 17.0,1.0,5.0 }));
+		Renderer::PushLight(new PointLight({ 5.0,23.0,5.0 }));
 
-		//sphere.reset(Resources::LoadModel("Assets/sphere/sphere.fbx"));		
-		//rustedMaterial.reset(new Material());
-		//rustedMaterial->SetTexture(TextureType::ROUGHNESS, Resources::LoadTexture("Assets/RustedIronMaterial/rustediron2_roughness.png"));
-		//rustedMaterial->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/RustedIronMaterial/rustediron2_basecolor.png"));
-		//rustedMaterial->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/RustedIronMaterial/rustediron2_normal.png"));
-		//rustedMaterial->SetTexture(TextureType::METAL, Resources::LoadTexture("Assets/RustedIronMaterial/rustediron2_metallic.png"));
+		sphere.reset(Resources::LoadModel("Assets/sphere/sphere.fbx"));		
+		rustedMaterial.reset(new Material());
+		rustedMaterial->SetTexture(TextureType::ROUGHNESS, Resources::LoadTexture("Assets/RustedIronMaterial/rustediron2_roughness.png"));
+		rustedMaterial->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/RustedIronMaterial/rustediron2_basecolor.png"));
+		rustedMaterial->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/RustedIronMaterial/rustediron2_normal.png"));
+		rustedMaterial->SetTexture(TextureType::METAL, Resources::LoadTexture("Assets/RustedIronMaterial/rustediron2_metallic.png"));
 
-		//newEntity = Entity(sphere, rustedMaterial, "rusted sphere");
-		//newEntity.SetPosition(glm::vec3(4.5, 0.0, 0.0));
-		//Renderer::PushEntity(newEntity);
+		newEntity = Entity(sphere, rustedMaterial, "rusted sphere");
+		newEntity.SetPosition(glm::vec3(4.5, 0.0, 0.0));
+		Renderer::PushEntity(newEntity);
 	};
 	~Sandbox() {};
 

@@ -91,9 +91,9 @@ void Renderer::InitSkybox()
 
 
 	std::shared_ptr<Texture> tex3(Resources::LoadTexture("Assets/skybox/christmas_photo_studio_01_4k.hdr"));
-	std::shared_ptr<Cubemap> cube3(Resources::CreateCubemapFromTexture(tex2.get()));
+	std::shared_ptr<Cubemap> cube3(Resources::CreateCubemapFromTexture(tex3.get()));
 	std::shared_ptr<Environment> environment3(new Environment());
-	environment2->SetSkybox(cube3);
+	environment3->SetSkybox(cube3);
 	environments.push_back(environment3);
 
 	hdrTexture.reset(Resources::LoadTexture("Assets/skybox/kiara_1_dawn_1k.hdr"));

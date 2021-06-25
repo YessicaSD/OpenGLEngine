@@ -141,7 +141,7 @@ private:
 	float bloomRange = 0.2;
 	int bloomBlurRange = 1;
 	bool SSAO = true;
-	int skyboxIndex = 0;
+	int skyboxIndex = 1;
 	float bloomThreshold = 1.0;
 	bool ssaoRangeCheck = true;
 	float ssaoIntesity = 1.0;

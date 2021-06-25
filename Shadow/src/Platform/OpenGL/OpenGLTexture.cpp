@@ -41,7 +41,7 @@ OpenGLTexture::OpenGLTexture(const std::string& path)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 
-	glTexImage2D(GL_TEXTURE_2D, 0, isHDR ? GL_RGB16F : GL_RGBA, width, height, 0, channels == 4 ? GL_RGBA : GL_RGB,
+	glTexImage2D(GL_TEXTURE_2D, 0, isHDR ? GL_RGB16F : GL_RGBA, width, height, 0, channels == 4 ? GL_RGBA : channels == 1 ? GL_RED : GL_RGB,
 				 isHDR ? GL_FLOAT : GL_UNSIGNED_BYTE, data);
 
 	glGenerateMipmap(GL_TEXTURE_2D);

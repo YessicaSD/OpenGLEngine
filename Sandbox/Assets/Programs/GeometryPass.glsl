@@ -84,7 +84,7 @@
 
 		gData.g = rmValue.y;
 		if(activeTextures[3] == 1)	
-		gData.g = texture(metalTex,fs_in.TexCoords).g;
+		gData.g = texture(metalTex,fs_in.TexCoords).r;
 
 		gData.b = 1.0;
 		if(activeTextures[4] == 1)
