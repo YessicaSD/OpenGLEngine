@@ -25,6 +25,10 @@ void LayerImGui::Begin()
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+
+    ImGui::DockSpaceOverViewport();
+    //ImGui::ShowDemoWindow();
+
 }
 
 void LayerImGui::End()

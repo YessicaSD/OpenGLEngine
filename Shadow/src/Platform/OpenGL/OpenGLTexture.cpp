@@ -104,6 +104,8 @@ OpenGLTexture::OpenGLTexture(std::vector<glm::vec3>& array, int width, int heigh
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	this->width = width;
+	this->height = height;
 }
 
 OpenGLTexture::~OpenGLTexture()
@@ -113,12 +115,12 @@ OpenGLTexture::~OpenGLTexture()
 
 uint32_t OpenGLTexture::GetWidth()
 {
-	return uint32_t();
+	return width;
 }
 
 uint32_t OpenGLTexture::GetHeight()
 {
-	return uint32_t();
+	return height;
 }
 
 void OpenGLTexture::Bind(uint32_t slot)

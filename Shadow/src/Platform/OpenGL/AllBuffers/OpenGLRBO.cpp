@@ -30,5 +30,10 @@ void OpenGLRBO::DefineDepthStorageSize(int size)
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, size, size);
 }
 
+void OpenGLRBO::DefineDepthStorageSize(int w, int h)
+{
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, w, h);
+}
+
 NAMESPACE_END
 

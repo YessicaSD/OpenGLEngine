@@ -130,7 +130,7 @@ void Renderer::InitBrdf()
 
 	Resources::instance->bakeFBO->Bind();
 	Resources::instance->bakeRBO->Bind();
-	Resources::instance->bakeRBO->BindDepthToFrameBuffer();
+	//Resources::instance->bakeRBO->BindDepthToFrameBuffer();
 	Resources::instance->bakeRBO->DefineDepthStorageSize(512);
 
 
@@ -304,6 +304,13 @@ void Renderer::InitDeferredProgram()
 		SW_LOG_TRACE("Framebuffer not complete!");
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	finalRender.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA, GL_RGBA, GL_FLOAT, false));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	
 }
 #pragma endregion
 
@@ -373,6 +380,9 @@ void Renderer::GeometryPass()
 
 	for each (Entity var in instance->entities)
 	{
+		if (!var.enabled)
+			continue;
+
 		std::shared_ptr<Material> currMat = var.GetMaterial();
 		currMat->UseMaterial();
 		geometryPassProgram->UploadUniformBoolArray("activeTextures", currMat->GetActiveTextures(), TextureType::MAX_TEXTURE);
@@ -436,6 +446,8 @@ void Renderer::LightingPass()
 
 void Renderer::BloomPass()
 {
+
+
 	bool horizontal = true, first_iteration = true;
 	blurBloomProgram->Bind();
 	for (unsigned int i = 0; i < bloomBlurRange; i++)
@@ -449,8 +461,18 @@ void Renderer::BloomPass()
 			first_iteration = false;
 	}
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	
+	Resources::instance->bakeFBO->Bind();
+	Resources::instance->bakeRBO->Bind();
+	Resources::instance->bakeRBO->BindDepthToFrameBuffer();
+	float w = Application::Get().GetWindow().GetWidth();
+	float h = Application::Get().GetWindow().GetHeight();
+
+	Resources::instance->bakeRBO->DefineDepthStorageSize(w, h);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, finalRender->GetHandle(), 0);
 
 	finalBloom->Bind();
 
@@ -463,11 +485,16 @@ void Renderer::BloomPass()
 	{
 		highlightsTex->Bind(1);
 	}
-	
+
 	finalBloom->UploadUniformFloat("exposure", bloomRange);
 	finalBloom->UploadUniformInt("mode", finalMode);
 
 	renderQuad->Draw();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
 }
 #pragma endregion
 
@@ -546,6 +573,8 @@ void Renderer::EntitiesUI()
 
 		if (ImGui::CollapsingHeader(name.c_str()))
 		{
+			ImGui::Checkbox("Enabled", &var.enabled);
+
 			name = "##position" + std::to_string(i);
 			glm::vec3 aux = var.GetPosition();
 			ImGui::DragFloat3(name.c_str(), &aux.x, 0.1);
@@ -563,21 +592,47 @@ void Renderer::EntitiesUI()
 
 			std::shared_ptr<Material> currMaterial = var.GetMaterial();
 			bool* activeTex = currMaterial->GetActiveTextures();
-
+			name = "##colorText" + std::to_string(i);
+			ImGui::PushID(name.c_str());
 			ImGui::Checkbox("Active Color texture ", &activeTex[0]);
+			ImGui::PopID();
+
+			name = "##colorPicker" + std::to_string(i);
+			ImGui::PushID(name.c_str());
 			float color[3] = { currMaterial->GetColor().x, currMaterial->GetColor().y, currMaterial->GetColor().z };
 			ImGui::ColorPicker3("Color", color);
 			currMaterial->SetColor(color);
+			ImGui::PopID();
 
+			name = "##roughnessTex" + std::to_string(i);
+			ImGui::PushID(name.c_str());
 			ImGui::Checkbox("Active Roughness Texture", &activeTex[2]);
+			ImGui::PopID();
+			
+			name = "##roughness" + std::to_string(i);
+			ImGui::PushID(name.c_str());
 			ImGui::DragFloat("Roughness", &currMaterial->GetRoughnessMetalness().x, 0.1, 0.0, 1.0);
+			ImGui::PopID();
 
+			name = "##MetalnessTex" + std::to_string(i);
+			ImGui::PushID(name.c_str());
 			ImGui::Checkbox("Active Metal Texture", &activeTex[3]);
+			ImGui::PopID();
+			
+			name = "##Metalness" + std::to_string(i);
+			ImGui::PushID(name.c_str());
 			ImGui::DragFloat("Metalness", &currMaterial->GetRoughnessMetalness().y, 0.1, 0.0, 1.0);
+			ImGui::PopID();
 
+			name = "##NormalTex" + std::to_string(i);
+			ImGui::PushID(name.c_str());
 			ImGui::Checkbox("Active Normal Texture", &activeTex[1]);
+			ImGui::PopID();
 
+			name = "##AoTex" + std::to_string(i);
+			ImGui::PushID(name.c_str());
 			ImGui::Checkbox("Active AO Texture", &activeTex[TextureType::AO]);
+			ImGui::PopID();
 		}
 
 	}
@@ -598,6 +653,19 @@ void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray)
 
 void Renderer::OnImGuiRender()
 {
+	ImGui::Begin("Scene");
+	ImVec2 wsize = ImGui::GetWindowSize();
+	float w = Application::Get().GetWindow().GetWidth();
+	float h = Application::Get().GetWindow().GetHeight();
+	ImVec2 windowSize = ImVec2(w, h);
+
+	//ImGui::GetWindowDrawList()->AddImage(
+	//	(void*)(intptr_t)finalRender->GetHandle(), ImVec2(ImGui::GetItemRectMin().x,
+	//		ImGui::GetItemRectMin().y),
+	//	ImVec2(finalRender->GetWidth(), finalRender->GetHeight()), ImVec2(0, 1), ImVec2(1, 0));
+
+	ImGui::Image((void*)(intptr_t)finalRender->GetHandle(), ImVec2(finalRender->GetWidth(), finalRender->GetHeight()), ImVec2(0,1), ImVec2(1, 0));
+	ImGui::End();
 	ImGui::Begin("Renderer");
 	camera.OnImGuiRender();
 

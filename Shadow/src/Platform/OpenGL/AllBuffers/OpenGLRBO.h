@@ -13,6 +13,7 @@ public:
 	/// </summary>
 	virtual void Bind() override;
 	virtual void DefineDepthStorageSize(int size) override;
+	virtual void DefineDepthStorageSize(int w, int h) override;
 	virtual void BindDepthToFrameBuffer() override;
 private:
 	unsigned int handle;

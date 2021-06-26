@@ -117,6 +117,7 @@ private:
 	std::unique_ptr<Texture> depthbrdf;
 	std::unique_ptr<Texture> ssaoTex;
 	std::unique_ptr<Texture> ssaoBlurTex;
+	std::unique_ptr<Texture> finalRender;
 
 	std::vector<Light*> lights;
 

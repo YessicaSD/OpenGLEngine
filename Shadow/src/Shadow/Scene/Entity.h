@@ -23,6 +23,7 @@ public:
 	void Draw();
 public:
 	std::string name;
+	bool enabled = true;
 
 private:
 	void UpdateMatrix();
