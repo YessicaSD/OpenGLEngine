@@ -18,6 +18,10 @@ public:
 	bool* GetActiveTextures() {
 		return &texturesActive[0];
 	};
+
+	void SetRoughness(float r);
+	void SetMetalness(float m);
+
 	void SetActiveTextures(bool activeTex[4]);
 	void SetColor(float color[3]);
 
@@ -31,7 +35,7 @@ private:
 	std::shared_ptr<Program> program;
 	std::string vs;
 	std::string fs;
-	glm::vec3 color = {0,0,0};
+	glm::vec3 color = {1,1,1};
 	glm::vec2 rmData = { 0.5,0.0 };
 	bool texturesActive[TextureType::MAX_TEXTURE];
 

@@ -64,6 +64,14 @@ void Material::SetTexture(TextureType::TextureType textureType, Texture* texture
 		texturesActive[textureType] = true;
 
 }
+void Material::SetRoughness(float r)
+{
+	rmData.x = r;
+}
+void Material::SetMetalness(float m)
+{
+	rmData.y = m;
+}
 void Material::SetActiveTextures(bool activeTex[4])
 {
 	//texturesActive = glm::vec4(activeTex[0], activeTex[1], activeTex[2], activeTex[3]);

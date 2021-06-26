@@ -10,6 +10,7 @@
 #include "Shadow/Resources/ResourceMaterial.h"
 #include "Shadow/Renderer/Environment.h"
 #include "Shadow/Renderer/FrameBufferObject.h"
+#include "Shadow/Renderer/RenderBufferObjects.h"
 #include "Shadow/Renderer/Light.h"
 #include "Shadow/Scene/Entity.h"
 
@@ -117,7 +118,11 @@ private:
 	std::unique_ptr<Texture> depthbrdf;
 	std::unique_ptr<Texture> ssaoTex;
 	std::unique_ptr<Texture> ssaoBlurTex;
+	
 	std::unique_ptr<Texture> finalRender;
+	std::unique_ptr<FBO> FBO_FinalRender;
+	std::unique_ptr<RBO> RBO_FinalRender;
+
 
 	std::vector<Light*> lights;
 

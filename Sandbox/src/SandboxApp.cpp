@@ -55,14 +55,63 @@ public:
 
 		sphere.reset(Resources::LoadModel("Assets/sphere/sphere.fbx"));		
 		rustedMaterial.reset(new Material());
-		rustedMaterial->SetTexture(TextureType::ROUGHNESS, Resources::LoadTexture("Assets/RustedIronMaterial/rustediron2_roughness.png"));
-		rustedMaterial->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/RustedIronMaterial/rustediron2_basecolor.png"));
-		rustedMaterial->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/RustedIronMaterial/rustediron2_normal.png"));
-		rustedMaterial->SetTexture(TextureType::METAL, Resources::LoadTexture("Assets/RustedIronMaterial/rustediron2_metallic.png"));
-
-		newEntity = Entity(sphere, rustedMaterial, "rusted sphere");
-		newEntity.SetPosition(glm::vec3(4.5, 0.0, 0.0));
+		rustedMaterial->SetRoughness(0);
+		rustedMaterial->SetMetalness(1.0);
+		newEntity = Entity(sphere, rustedMaterial, "metal sphere");
+		newEntity.SetPosition(glm::vec3(4, 0.0, 0.0));
 		Renderer::PushEntity(newEntity);
+
+		std::shared_ptr<Material>  material1(new Material);
+		material1->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/PBRMaterials/antique-grate1-unity/antique-grate1-albedo.png"));
+		material1->SetTexture(TextureType::AO, Resources::LoadTexture("Assets/PBRMaterials/antique-grate1-unity/antique-grate1-ao.png"));
+		material1->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/PBRMaterials/antique-grate1-unity/antique-grate1-normal-ogl.png"));
+		material1->SetRoughness(0.4);
+		material1->SetMetalness(1.0);
+		newEntity = Entity(sphere, material1, "antique sphere");
+		newEntity.SetPosition(glm::vec3(6, 0.0, 0.0));
+		Renderer::PushEntity(newEntity);
+
+		std::shared_ptr<Material>  material2(new Material);
+		material2->SetRoughness(0.3);
+		material2->SetMetalness(0.1);
+		material2->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/PBRMaterials/dirty-wicker/dirty-wicker-weave1-albedo.png"));
+		material2->SetTexture(TextureType::AO, Resources::LoadTexture("Assets/PBRMaterials/dirty-wicker/dirty-wicker-weave1-ao.png"));
+		material2->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/PBRMaterials/dirty-wicker/dirty-wicker-weave1-normal-dx.png"));
+		//material2->SetTexture(TextureType::ROUGHNESS, Resources::LoadTexture("Assets/PBRMaterials/dirty-wicker/dirty-wicker-weave1-roughness.png"));
+		newEntity = Entity(sphere, material2, "dirty wicker sphere");
+		newEntity.SetPosition(glm::vec3(8, 0.0, 0.0));
+		Renderer::PushEntity(newEntity);
+
+		std::shared_ptr<Material>  material3(new Material);
+		material3->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/PBRMaterials/ornate-celtic-gold-bl/ornate-celtic-gold-albedo.png"));
+		material3->SetTexture(TextureType::AO, Resources::LoadTexture("Assets/PBRMaterials/ornate-celtic-gold-bl/ornate-celtic-gold-ao.png"));
+		material3->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/PBRMaterials/ornate-celtic-gold-bl/ornate-celtic-gold-normal-ogl.png"));
+		material3->SetTexture(TextureType::ROUGHNESS, Resources::LoadTexture("Assets/PBRMaterials/ornate-celtic-gold-bl/ornate-celtic-gold-roughness.png"));
+		material3->SetTexture(TextureType::METAL, Resources::LoadTexture("Assets/PBRMaterials/ornate-celtic-gold-bl/ornate-celtic-gold-metallic.png"));
+		newEntity = Entity(sphere, material3, "ornate-celtic sphere");
+		newEntity.SetPosition(glm::vec3(10, 0.0, 0.0));
+		Renderer::PushEntity(newEntity);
+
+		std::shared_ptr<Material>  material4(new Material);
+		material4->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/PBRMaterials/plasticpattern/plasticpattern1-albedo.png"));
+		material4->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/PBRMaterials/plasticpattern/plasticpattern1-normal2-unity2b.png"));
+		material4->SetRoughness(0.6);
+		material4->SetMetalness(0.0);
+		newEntity = Entity(sphere, material4, "plastic sphere");
+		newEntity.SetPosition(glm::vec3(12, 0.0, 0.0));
+		Renderer::PushEntity(newEntity);
+
+		std::shared_ptr<Material>  material5(new Material);
+		material5->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/PBRMaterials/rock/rock_vstreaks_Base_Color.png"));
+		material5->SetTexture(TextureType::AO, Resources::LoadTexture("Assets/PBRMaterials/rock/rock_vstreaks_Ambient_Occlusion.png"));
+		material5->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/PBRMaterials/rock/rock_vstreaks_Normal-unity.png"));
+		material5->SetRoughness(1.0);
+		material5->SetMetalness(0.0);
+		newEntity = Entity(sphere, material5, "rock sphere");
+		newEntity.SetPosition(glm::vec3(14, 0.0, 0.0));
+		Renderer::PushEntity(newEntity);
+
+
 	};
 	~Sandbox() {};
 

@@ -130,7 +130,7 @@ void Renderer::InitBrdf()
 
 	Resources::instance->bakeFBO->Bind();
 	Resources::instance->bakeRBO->Bind();
-	//Resources::instance->bakeRBO->BindDepthToFrameBuffer();
+	Resources::instance->bakeRBO->BindDepthToFrameBuffer();
 	Resources::instance->bakeRBO->DefineDepthStorageSize(512);
 
 
@@ -305,11 +305,17 @@ void Renderer::InitDeferredProgram()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	FBO_FinalRender.reset(Resources::CreateFBO());
+	RBO_FinalRender.reset(Resources::CreateRBO());
+	FBO_FinalRender->Bind();
+
 	finalRender.reset(Resources::CreateEmptyTexture(w, h, GL_RGBA, GL_RGBA, GL_FLOAT, false));
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, finalRender->GetHandle(), 0);
 	
 }
 #pragma endregion
@@ -462,13 +468,13 @@ void Renderer::BloomPass()
 	}
 
 	
-	Resources::instance->bakeFBO->Bind();
-	Resources::instance->bakeRBO->Bind();
-	Resources::instance->bakeRBO->BindDepthToFrameBuffer();
+	FBO_FinalRender->Bind();
+	RBO_FinalRender->Bind();
+	RBO_FinalRender->BindDepthToFrameBuffer();
 	float w = Application::Get().GetWindow().GetWidth();
 	float h = Application::Get().GetWindow().GetHeight();
 
-	Resources::instance->bakeRBO->DefineDepthStorageSize(w, h);
+	RBO_FinalRender->DefineDepthStorageSize(w, h);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
