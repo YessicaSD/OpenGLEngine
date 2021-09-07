@@ -74,7 +74,8 @@ std::shared_ptr<Material> Entity::GetMaterial()
 
 void Entity::Draw()
 {
-	model->Draw();
+	if(model)
+		model->Draw();
 }
 
 void Entity::UpdateMatrix()

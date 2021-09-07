@@ -103,7 +103,7 @@ public:
 		material4->SetMetalness(0.0);
 		newEntity = Entity(sphere, material4, "plastic sphere");
 		newEntity.SetPosition(glm::vec3(12, 0.0, 0.0));
-		Renderer::PushEntity(newEntity);
+		//Renderer::PushEntity(newEntity);
 
 		std::shared_ptr<Material>  material5(new Material);
 		material5->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/PBRMaterials/RustedIronMaterial/rustediron2_basecolor.png"));
@@ -114,7 +114,7 @@ public:
 		//material5->SetMetalness(0.0);
 		newEntity = Entity(sphere, material5, "rusted iron sphere");
 		newEntity.SetPosition(glm::vec3(14, 0.0, 0.0));
-		Renderer::PushEntity(newEntity);
+		//Renderer::PushEntity(newEntity);
 
 		std::shared_ptr<Material>  material6(new Material);
 		material6->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/mona/Body/Body_Base_Color.png"));
@@ -124,7 +124,7 @@ public:
 		material6->SetTexture(TextureType::AO, Resources::LoadTexture("Assets/mona/Body/body_Ambient_occlusion.png"));
 		newEntity = Entity(mona, material6, "Mona");
 		newEntity.SetPosition(glm::vec3(0.0, 0.0, 0.0));
-		Renderer::PushEntity(newEntity);
+		//Renderer::PushEntity(newEntity);
 
 		std::shared_ptr<Material>  material7(new Material);
 		material7->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/mona/Hat/TopPart_Base_Color.png"));
@@ -133,7 +133,7 @@ public:
 		material7->SetTexture(TextureType::METAL, Resources::LoadTexture("Assets/mona/Hat/TopPart_Metallic.png"));
 		newEntity = Entity(monaHat, material7, "MonaHat");
 		newEntity.SetPosition(glm::vec3(0.0, 0.0, 0.0));
-		Renderer::PushEntity(newEntity);
+		//Renderer::PushEntity(newEntity);
 
 		float roughness = 0;
 		float metalness = 0;
