@@ -109,6 +109,21 @@ float LinearizeDepth(float depth)
 			{
 				FragColor.xyz = vec3(texture(prefilterMap, texture(gPosition, TexCoords).xyz).xyz);
 			}
+			else if (renderMode == 13)
+			{
+				if(TexCoords.x < 0.25)
+					FragColor.xyz = texture(gAlbedoSpec, TexCoords).xyz;
+					
+				else if (TexCoords.x < 0.5)
+					FragColor.xyz = texture(gNormal, TexCoords).xyz;
+					
+				else if (TexCoords.x < 0.75)
+					FragColor.xyz = vec3(LinearizeDepth(texture(gDepth, TexCoords).z));
+					
+				else
+					FragColor.xyz = texture(gPosition, TexCoords).xyz;
+			}
+
 			else
 			{
 				CalculateFinalRender();
@@ -177,7 +192,7 @@ void CalculateFinalRender()
 		float metallic = texture(gData, TexCoords).g;
 		vec3 Normal =  texture(gNormal, TexCoords).xyz;
 		float ao = texture(gData, TexCoords).b;
-		float ssao = smoothstep( 0.0, ssaoIntesity,  texture(gSSAO,TexCoords).r); 
+		float ssao = smoothstep( 0.0, ssaoIntesity,  texture(gSSAOBlur,TexCoords).r); 
 
 		vec3 N = Normal; 
 		vec3 V = normalize(camPos - WorldPos);

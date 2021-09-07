@@ -25,6 +25,9 @@ public:
 	Sandbox() 
 	{
 		model.reset(Resources::LoadModel("Assets/backpack/backpack.obj"));
+		mona.reset(Resources::LoadModel("Assets/mona/MonaInPoseBody.fbx"));
+		monaHat.reset(Resources::LoadModel("Assets/mona/MonaInPoseHead.fbx"));
+
 		material.reset(new Material());
 		
 		material->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/backpack/diffuse.jpg"));
@@ -42,6 +45,7 @@ public:
 
 		Entity newEntity = Entity(gunModel, materialGun, "Gun");
 		newEntity.SetScale(0.1);
+		newEntity.SetPosition(glm::vec3(93, 0.0, 0.0));
 		newEntity.SetRotation(glm::vec3(275, 0.0, 180.0));
 		Renderer::PushEntity(newEntity);
 
@@ -102,14 +106,61 @@ public:
 		Renderer::PushEntity(newEntity);
 
 		std::shared_ptr<Material>  material5(new Material);
-		material5->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/PBRMaterials/rock/rock_vstreaks_Base_Color.png"));
-		material5->SetTexture(TextureType::AO, Resources::LoadTexture("Assets/PBRMaterials/rock/rock_vstreaks_Ambient_Occlusion.png"));
-		material5->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/PBRMaterials/rock/rock_vstreaks_Normal-unity.png"));
-		material5->SetRoughness(1.0);
-		material5->SetMetalness(0.0);
-		newEntity = Entity(sphere, material5, "rock sphere");
+		material5->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/PBRMaterials/RustedIronMaterial/rustediron2_basecolor.png"));
+		material5->SetTexture(TextureType::ROUGHNESS, Resources::LoadTexture("Assets/PBRMaterials/RustedIronMaterial/rustediron2_roughness.png"));
+		material5->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/PBRMaterials/RustedIronMaterial/rustediron2_normal.png"));
+		material5->SetTexture(TextureType::METAL, Resources::LoadTexture("Assets/PBRMaterials/RustedIronMaterial/rustediron2_metallic.png"));
+		//material5->SetRoughness(1.0);
+		//material5->SetMetalness(0.0);
+		newEntity = Entity(sphere, material5, "rusted iron sphere");
 		newEntity.SetPosition(glm::vec3(14, 0.0, 0.0));
 		Renderer::PushEntity(newEntity);
+
+		std::shared_ptr<Material>  material6(new Material);
+		material6->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/mona/Body/Body_Base_Color.png"));
+		material6->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/mona/Body/body_Normal_OpenGL.png"));
+		material6->SetTexture(TextureType::ROUGHNESS, Resources::LoadTexture("Assets/mona/Body/body_Roughness.png"));
+		material6->SetTexture(TextureType::METAL, Resources::LoadTexture("Assets/mona/Body/body_Metallic.png"));
+		material6->SetTexture(TextureType::AO, Resources::LoadTexture("Assets/mona/Body/body_Ambient_occlusion.png"));
+		newEntity = Entity(mona, material6, "Mona");
+		newEntity.SetPosition(glm::vec3(0.0, 0.0, 0.0));
+		Renderer::PushEntity(newEntity);
+
+		std::shared_ptr<Material>  material7(new Material);
+		material7->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/mona/Hat/TopPart_Base_Color.png"));
+		material7->SetTexture(TextureType::ROUGHNESS, Resources::LoadTexture("Assets/mona/Hat/TopPart_Roughness.png"));
+		material7->SetTexture(TextureType::NORMAL, Resources::LoadTexture("Assets/mona/Hat/TopPart_Normal_OpenGL.png"));
+		material7->SetTexture(TextureType::METAL, Resources::LoadTexture("Assets/mona/Hat/TopPart_Metallic.png"));
+		newEntity = Entity(monaHat, material7, "MonaHat");
+		newEntity.SetPosition(glm::vec3(0.0, 0.0, 0.0));
+		Renderer::PushEntity(newEntity);
+
+		float roughness = 0;
+		float metalness = 0;
+		int x = 0;
+		int y = 0;
+		while (metalness <= 1)
+		{
+			while (roughness <= 1)
+			{
+				std::shared_ptr<Material> aux(new Material());
+				aux->SetRoughness(roughness);
+				aux->SetMetalness(metalness);
+				float color[3] = { 0.5,0.5,0.5 };
+				aux->SetColor(color);
+				std::string ename = "sphere" +std::to_string(x + y * 6);
+				newEntity = Entity(sphere, aux, ename.c_str());
+				newEntity.SetPosition(glm::vec3(x * 2.5, y * 2.5, -10.0));
+				Renderer::PushEntity(newEntity);
+				x ++;
+				roughness += 0.2;
+			}
+			y++;
+			x = 0;
+			roughness = 0;
+			metalness += 0.2;
+		}
+		
 
 
 	};
@@ -119,6 +170,8 @@ private:
 
 	std::shared_ptr<Model> model;
 	std::shared_ptr<Model> gunModel;
+	std::shared_ptr<Model> mona;
+	std::shared_ptr<Model> monaHat;
 	std::shared_ptr<Model> sphere;
 	
 	std::shared_ptr<Material> material;

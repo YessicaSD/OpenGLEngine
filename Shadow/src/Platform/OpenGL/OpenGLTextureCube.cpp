@@ -93,8 +93,11 @@ OpenGLTextureCube::OpenGLTextureCube(Texture* texture)
 
 		Resources::instance->cubeModel->Draw();
 	}
-	this->Bind(0);
+
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
+	this->Bind(0);
+	
 
 	Window& window = Application::Get().GetWindow();
 

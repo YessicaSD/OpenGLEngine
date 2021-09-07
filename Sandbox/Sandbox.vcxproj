@@ -148,6 +148,7 @@
     <None Include="Assets\Programs\Irradiance.glsl" />
     <None Include="Assets\Programs\Prefilter.glsl" />
     <None Include="Assets\Programs\skybox.glsl" />
+    <None Include="Assets\Programs\ssao.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

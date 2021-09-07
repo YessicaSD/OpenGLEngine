@@ -144,8 +144,8 @@ private:
 	unsigned int ssaoBlurFBO;
 	int renderMode = 0;
 	int finalMode = 0;
-	float bloomRange = 0.2;
-	int bloomBlurRange = 1;
+	float bloomRange = 2.0;
+	int bloomBlurRange = 0;
 	bool SSAO = true;
 	int skyboxIndex = 1;
 	float bloomThreshold = 1.0;

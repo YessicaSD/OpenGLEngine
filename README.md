@@ -17,3 +17,13 @@ Shadow is an open source library as a final degree project by Yessica Servin Dom
         - Layers/Events
     - Skybox
     - Implementation of Deferred shading
+- 1.0 Version
+     - PBR
+     - SSAO
+     - Bloom
+     - Normal mapping
+
+# Camera Controls
+    - Right click to look around
+    - WASD to move around
+

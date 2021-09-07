@@ -25,6 +25,9 @@ public:
 	glm::mat4 GetProjectionMatrix() const;
 
 	void OnImGuiRender();
+
+	void CameraUpdatedInput();
+
 private:
 	void UpdateViewTransformation();
 	void UpdateViewTransformOrbit();

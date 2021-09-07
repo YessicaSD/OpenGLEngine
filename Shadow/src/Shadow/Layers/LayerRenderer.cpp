@@ -90,7 +90,7 @@ void Renderer::InitSkybox()
 	environments.push_back(environment2);
 
 
-	std::shared_ptr<Texture> tex3(Resources::LoadTexture("Assets/skybox/christmas_photo_studio_01_4k.hdr"));
+	std::shared_ptr<Texture> tex3(Resources::LoadTexture("Assets/skybox/reinforced_concrete_02_1k.hdr"));
 	std::shared_ptr<Cubemap> cube3(Resources::CreateCubemapFromTexture(tex3.get()));
 	std::shared_ptr<Environment> environment3(new Environment());
 	environment3->SetSkybox(cube3);
@@ -346,6 +346,7 @@ void Renderer::SSAOPass()
 	noiseTex->Bind(2);
 	ssaoProgram->Bind();
 	ssaoProgram->UploadUniformInt("rangeCheckActive", ssaoRangeCheck);
+	ssaoProgram->UploadUniformFloat("power", ssaoIntesity);
 	ssaoProgram->UploadUniformMat4("view", camera.GetViewMatrix());
 	renderQuad->Draw();
 
@@ -444,7 +445,7 @@ void Renderer::LightingPass()
 	deferredProgram->UploadUniformFloat3("camPos", camera.GetPosition());
 	deferredProgram->UploadUniformInt("activeSSAO", SSAO);
 	deferredProgram->UploadUniformFloat("bloomThreshold", bloomThreshold);
-	deferredProgram->UploadUniformFloat("ssaoIntesity", ssaoIntesity);
+	deferredProgram->UploadUniformFloat("ssaoIntesity", 1);
 	SendLights(deferredProgram);
 	renderQuad->Draw();
 }
@@ -452,8 +453,6 @@ void Renderer::LightingPass()
 
 void Renderer::BloomPass()
 {
-
-
 	bool horizontal = true, first_iteration = true;
 	blurBloomProgram->Bind();
 	for (unsigned int i = 0; i < bloomBlurRange; i++)
@@ -579,7 +578,10 @@ void Renderer::EntitiesUI()
 
 		if (ImGui::CollapsingHeader(name.c_str()))
 		{
+			name = "##enabled" + std::to_string(i);
+			ImGui::PushID(name.c_str());
 			ImGui::Checkbox("Enabled", &var.enabled);
+			ImGui::PopID();
 
 			name = "##position" + std::to_string(i);
 			glm::vec3 aux = var.GetPosition();
@@ -669,13 +671,19 @@ void Renderer::OnImGuiRender()
 	//	(void*)(intptr_t)finalRender->GetHandle(), ImVec2(ImGui::GetItemRectMin().x,
 	//		ImGui::GetItemRectMin().y),
 	//	ImVec2(finalRender->GetWidth(), finalRender->GetHeight()), ImVec2(0, 1), ImVec2(1, 0));
+	float height = (ImGui::GetWindowWidth() / finalRender->GetWidth()) * finalRender->GetHeight();
+	float heightCursor = ImGui::GetWindowHeight() * 0.5f - height * 0.5f;
+	if (heightCursor < 0) heightCursor = 0;
+	ImGui::SetCursorPosY(heightCursor);
+	ImGui::Image((void*)(intptr_t)finalRender->GetHandle(), ImVec2(ImGui::GetWindowWidth(), height), ImVec2(0, 1), ImVec2(1, 0));
 
-	ImGui::Image((void*)(intptr_t)finalRender->GetHandle(), ImVec2(finalRender->GetWidth(), finalRender->GetHeight()), ImVec2(0,1), ImVec2(1, 0));
+	
+	
 	ImGui::End();
 	ImGui::Begin("Renderer");
 	camera.OnImGuiRender();
 
-	const char* items[] = { "Final", "Normal", "Depth", "Position", "Albedo", "SSAO", "SSAOBlur", "Roughness", "Metal", "AO","brdf", "irradiance", "prefilterMap"};
+	const char* items[] = { "Final", "Normal", "Depth", "Position", "Albedo", "SSAO", "SSAOBlur", "Roughness", "Metal", "AO","brdf", "irradiance", "prefilterMap", "All At Ones"};
 	ImGui::Combo("Render mode", &renderMode, items, IM_ARRAYSIZE(items));
 
 	const char* items2[] = { "Final", "Scene", "HightLight" };
@@ -744,48 +752,7 @@ void Renderer::PushLight(Light* light)
 
 void Renderer::CameraUpdate()
 {
-	float speed = 0.5;
-	glm::vec3 cameraPos = camera.GetPosition();
-	glm::vec3 cameraRotation = camera.GetRotation();
-
-	std::pair<float, float> mousePos = Input::GetMousePosition();
-	glm::vec2 mousePosv = glm::vec2(mousePos.first, mousePos.second);
-	static glm::vec2 lastMousePos = mousePosv;
-
-	if (Input::IsMouseButtonPressed(SW_MOUSE_BUTTON_2))
-	{
-		glm::vec2 offset = mousePosv - lastMousePos;
-		cameraRotation.x -= offset.y;
-		cameraRotation.y += offset.x;
-
-		if (cameraRotation.x > 89.0f)
-			cameraRotation.x = 89.0f;
-		if (cameraRotation.x < -89.0f)
-			cameraRotation.x = -89.0f;
-
-	}
-	if (Input::IsKeyPressed(SW_KEY_A))
-	{
-		cameraPos += camera.GetRight() * speed;
-	}
-	if (Input::IsKeyPressed(SW_KEY_D))
-	{
-		cameraPos -= camera.GetRight() * speed;
-	}
-	if (Input::IsKeyPressed(SW_KEY_W))
-	{
-		cameraPos += camera.GetForward() * speed;
-	}
-	if (Input::IsKeyPressed(SW_KEY_S))
-	{
-		cameraPos -= camera.GetForward() * speed;
-	}
-
-	camera.SetRotation(cameraRotation);
-	camera.SetPosition(cameraPos);
-
-
-	lastMousePos = mousePosv;
+	camera.CameraUpdatedInput();
 }
 
 NAMESPACE_END
