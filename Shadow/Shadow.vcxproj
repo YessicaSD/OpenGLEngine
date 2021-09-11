@@ -154,14 +154,15 @@
     <ClInclude Include="src\Platform\Window\WindowsInput.h" />
     <ClInclude Include="src\Shadow.h" />
     <ClInclude Include="src\Shadow\Application.h" />
-    <ClInclude Include="src\Shadow\Core.h" />
+    <ClInclude Include="src\Shadow\Core\Core.h" />
+    <ClInclude Include="src\Shadow\Core\Time.h" />
     <ClInclude Include="src\Shadow\EntryPoint.h" />
     <ClInclude Include="src\Shadow\Event\Event.h" />
     <ClInclude Include="src\Shadow\Event\EventApplication.h" />
     <ClInclude Include="src\Shadow\Event\EventKey.h" />
     <ClInclude Include="src\Shadow\Event\EventMouse.h" />
-    <ClInclude Include="src\Shadow\Input.h" />
-    <ClInclude Include="src\Shadow\KeyCodes.h" />
+    <ClInclude Include="src\Shadow\Layers\Input.h" />
+    <ClInclude Include="src\Shadow\Core\KeyCodes.h" />
     <ClInclude Include="src\Shadow\Layers\Layer.h" />
     <ClInclude Include="src\Shadow\Layers\LayerImGui.h" />
     <ClInclude Include="src\Shadow\Layers\LayerManager.h" />
@@ -169,7 +170,7 @@
     <ClInclude Include="src\Shadow\Layers\LayerRenderer.h" />
     <ClInclude Include="src\Shadow\Layers\LayerResourceManager.h" />
     <ClInclude Include="src\Shadow\Log.h" />
-    <ClInclude Include="src\Shadow\MouseButtonCodes.h" />
+    <ClInclude Include="src\Shadow\Core\MouseButtonCodes.h" />
     <ClInclude Include="src\Shadow\Nodes\Node.h" />
     <ClInclude Include="src\Shadow\Random.h" />
     <ClInclude Include="src\Shadow\Renderer\Buffer.h" />
@@ -210,7 +211,9 @@
     <ClCompile Include="src\Platform\Window\WindowWindows.cpp" />
     <ClCompile Include="src\Platform\Window\WindowsInput.cpp" />
     <ClCompile Include="src\Shadow\Application.cpp" />
+    <ClCompile Include="src\Shadow\Core\Time.cpp" />
     <ClCompile Include="src\Shadow\ImGuiBuild.cpp" />
+    <ClCompile Include="src\Shadow\Layers\Input.cpp" />
     <ClCompile Include="src\Shadow\Layers\Layer.cpp" />
     <ClCompile Include="src\Shadow\Layers\LayerImGui.cpp" />
     <ClCompile Include="src\Shadow\Layers\LayerManager.cpp" />

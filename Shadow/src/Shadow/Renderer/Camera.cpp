@@ -1,6 +1,6 @@
 #include "swpch.h"
 #include "Camera.h"
-#include "Shadow/Input.h"
+#include "Shadow/Layers/Input.h"
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
@@ -9,6 +9,8 @@
 
 #include  <imgui.h>
 #include "Shadow/Window.h"
+#include "Shadow/Core/Time.h"
+
 
 NAMESPACE_BEGAN
 
@@ -147,7 +149,7 @@ void Camera::CameraUpdatedInput()
 	static glm::vec2 lastMousePos = mousePosv;
 	glm::vec2 offset = mousePosv - lastMousePos;
 
-	float speed = 0.5;
+	float speed = 0.5 * Time::GetDeltaTime();
 	
 
 	//if (Input::IsMouseButtonPressed(SW_MOUSE_BUTTON_1))
@@ -159,7 +161,14 @@ void Camera::CameraUpdatedInput()
 	//		//lookPosition = position + forward * radiusToLookPoint;
 	//	}
 	//}
-		
+	if (Input::IsMouseButtonPressed(SW_MOUSE_BUTTON_3))
+	{
+		cameraPos -= right * offset.x * speed;
+		cameraPos -= up * offset.y * speed;
+	}
+
+	cameraPos += Input::GetScrollY() * forward;
+
 	if (Input::IsMouseButtonPressed(SW_MOUSE_BUTTON_2))
 		orbit = false;
 

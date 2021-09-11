@@ -2,9 +2,12 @@
 
 #include "Shadow/Application.h"
 #include "Shadow/Log.h"
-#include "Shadow/Input.h"
-#include "Shadow/KeyCodes.h"
-#include "Shadow/MouseButtonCodes.h"
+#include "Shadow/Layers/Input.h"
+#include "Shadow/Core/KeyCodes.h"
+#include "Shadow/Core/MouseButtonCodes.h"
+
+//Tools =======================================
+#include "Shadow/Core/Time.h"
 
 // Layers =====================================
 #include "Shadow/Layers/Layer.h"

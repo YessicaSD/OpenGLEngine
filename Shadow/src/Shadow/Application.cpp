@@ -5,11 +5,12 @@
 
 #include "glad/glad.h"
 
-#include "Input.h"
+#include "Layers/Input.h"
 
 #include "glm/glm.hpp"
 #include "Shadow/Layers/LayerRenderer.h"
 #include "Shadow/Layers/LayerMaterialEditor.h"
+#include "Platform/Window/WindowsInput.h"
 
 NAMESPACE_BEGAN
 
@@ -21,9 +22,11 @@ Application::Application()
 	app = this;
 	window = std::unique_ptr<Window>(Window::Create());
 	window->SetEventCallback(SW_BIND_FN(Application::OnEvent));
+	
 
 	imguiLayer = new Shadow::LayerImGui();
 	PushOverlay(imguiLayer);
+	PushOverlay(new WindowsInput());
 	PushOverlay(resourceManager = new Shadow::Resources());
 	PushOverlay(new Shadow::Renderer());
 	PushOverlay(new Shadow::MaterialEditor());
@@ -38,11 +41,16 @@ void Application::Run()
 
 	while (running)
 	{
+		time.CalculateDeltaTime();
+
 		Renderer::BeginScene();
 		Renderer::ClearScreen();
 
 		for (auto& layer : layerManager)
 			layer->OnUpdate();
+
+		for (auto& layer : layerManager)
+			layer->EndFrame();
 
 		Renderer::EndScene();
 

@@ -24,10 +24,6 @@ class Sandbox : public Shadow::Application
 public:
 	Sandbox() 
 	{
-		model.reset(Resources::LoadModel("Assets/backpack/backpack.obj"));
-		mona.reset(Resources::LoadModel("Assets/mona/MonaInPoseBody.fbx"));
-		monaHat.reset(Resources::LoadModel("Assets/mona/MonaInPoseHead.fbx"));
-
 		material.reset(new Material());
 		
 		material->SetTexture(TextureType::ALBEDO, Resources::LoadTexture("Assets/backpack/diffuse.jpg"));

@@ -8,6 +8,9 @@
 
 #include "Shadow/Layers/LayerImGui.h"
 #include "Shadow/Layers/LayerResourceManager.h"
+
+#include "Shadow/Core/Time.h"
+
 NAMESPACE_BEGAN
 
 class SHADOW_API Application
@@ -34,7 +37,7 @@ class SHADOW_API Application
 		std::unique_ptr<Window> window;
 		LayerImGui* imguiLayer = nullptr;
 		Resources* resourceManager = nullptr;
-
+		Shadow::Time time;
 
 
 

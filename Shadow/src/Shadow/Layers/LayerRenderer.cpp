@@ -3,7 +3,7 @@
 #include <memory>
 #include "glad/glad.h"
 #include "Platform/OpenGL/OpenGLRendererAPI.h"
-#include "Shadow/Input.h"
+#include "Shadow/Layers/Input.h"
 #include "Shadow/Log.h"
 #include "LayerResourceManager.h"
 
@@ -76,25 +76,6 @@ void Renderer::InitSkybox()
 {
 	skyProgram.reset(Shadow::LoadProgram("Assets/Programs/skybox.glsl"));
 	skyProgram->UploadUniformInt("skybox", 0);
-
-	std::shared_ptr<Texture> tex(Resources::LoadTexture("Assets/skybox/03-Ueno-Shrine_3k.hdr"));
-	std::shared_ptr<Cubemap> cube(Resources::CreateCubemapFromTexture(tex.get()));
-	std::shared_ptr<Environment> environment(new Environment());
-	environment->SetSkybox(cube);
-	environments.push_back(environment);
-
-	std::shared_ptr<Texture> tex2(Resources::LoadTexture("Assets/skybox/Arches_E_PineTree_3k.hdr"));
-	std::shared_ptr<Cubemap> cube2(Resources::CreateCubemapFromTexture(tex2.get()));
-	std::shared_ptr<Environment> environment2(new Environment());
-	environment2->SetSkybox(cube2);
-	environments.push_back(environment2);
-
-
-	std::shared_ptr<Texture> tex3(Resources::LoadTexture("Assets/skybox/reinforced_concrete_02_1k.hdr"));
-	std::shared_ptr<Cubemap> cube3(Resources::CreateCubemapFromTexture(tex3.get()));
-	std::shared_ptr<Environment> environment3(new Environment());
-	environment3->SetSkybox(cube3);
-	environments.push_back(environment3);
 
 	hdrTexture.reset(Resources::LoadTexture("Assets/skybox/kiara_1_dawn_1k.hdr"));
 	skyboxHDR.reset(Resources::CreateCubemapFromTexture(hdrTexture.get()));
@@ -688,9 +669,6 @@ void Renderer::OnImGuiRender()
 
 	const char* items2[] = { "Final", "Scene", "HightLight" };
 	ImGui::Combo("Render mode Bloom", &finalMode, items2, IM_ARRAYSIZE(items2));
-
-	const char* items4[] = { "Shrine", "PineTree", "Christmas", "Dessert" };
-	ImGui::Combo("Change skybox", &currentEnvironment, items4, IM_ARRAYSIZE(items4));
 
 	const char* items3[] = { "Skybox", "Irradiance", "Prefilter" };
 	ImGui::Combo("Skybox type", &skyboxIndex, items3, IM_ARRAYSIZE(items3));

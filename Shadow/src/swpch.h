@@ -13,10 +13,11 @@
 #include <unordered_set>
 #include <random>
 #include <cmath>
-#include "Shadow/Core.h"
-#include "glm/glm.hpp"
-#include "glm/ext/matrix_transform.hpp"
-#include "glm/ext/matrix_clip_space.hpp"
+#include "Shadow/Core/Core.h"
+#include <glm/glm.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
+#include "Shadow/Log.h"
 
 #ifdef  SW_PLATFORM_WINDOWS
 #include <Windows.h>
