@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="src">
@@ -10,11 +10,17 @@
     <Filter Include="src\Platform\OpenGL">
       <UniqueIdentifier>{35A49437-A105-7245-2A73-B8F796D3A804}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Platform\OpenGL\AllBuffers">
+      <UniqueIdentifier>{EABE2021-D6E4-EA87-BF2A-7053ABEF0F54}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Platform\Window">
       <UniqueIdentifier>{E807C449-5469-A157-DDD6-E7094937D816}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Shadow">
       <UniqueIdentifier>{82E76A2E-6E9F-AC7B-D7A6-85D7C37D476C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Shadow\Core">
+      <UniqueIdentifier>{1A0D0BCB-8698-788F-8FA9-FB83FBB3D48F}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Shadow\Event">
       <UniqueIdentifier>{5382942C-3F7B-B37E-68AD-98035405938A}</UniqueIdentifier>
@@ -31,6 +37,9 @@
     <Filter Include="src\Shadow\Resources">
       <UniqueIdentifier>{6CD72CFF-5866-B6C8-0185-CAC3EDF2C66E}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Shadow\Scene">
+      <UniqueIdentifier>{1F6E872D-0B67-A67F-3499-8B0420F1858B}</UniqueIdentifier>
+    </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
     </Filter>
@@ -40,11 +49,14 @@
     <Filter Include="vendor\stb">
       <UniqueIdentifier>{8BD3C5A8-778B-07F6-E092-E051CC69A2E6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Shadow\NewFilter1">
-      <UniqueIdentifier>{d841f903-1ebd-4969-a6a2-1f42d6fc9216}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Platform\OpenGL\AllBuffers\OpenGLFBO.h">
+      <Filter>src\Platform\OpenGL\AllBuffers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\AllBuffers\OpenGLRBO.h">
+      <Filter>src\Platform\OpenGL\AllBuffers</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
@@ -63,6 +75,9 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLTextureCube.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
@@ -79,7 +94,16 @@
       <Filter>src\Shadow</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Core\Core.h">
-      <Filter>src\Shadow</Filter>
+      <Filter>src\Shadow\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shadow\Core\KeyCodes.h">
+      <Filter>src\Shadow\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shadow\Core\MouseButtonCodes.h">
+      <Filter>src\Shadow\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shadow\Core\Time.h">
+      <Filter>src\Shadow\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\EntryPoint.h">
       <Filter>src\Shadow</Filter>
@@ -97,10 +121,7 @@
       <Filter>src\Shadow\Event</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Layers\Input.h">
-      <Filter>src\Shadow</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Shadow\Core\KeyCodes.h">
-      <Filter>src\Shadow</Filter>
+      <Filter>src\Shadow\Layers</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Layers\Layer.h">
       <Filter>src\Shadow\Layers</Filter>
@@ -123,9 +144,6 @@
     <ClInclude Include="src\Shadow\Log.h">
       <Filter>src\Shadow</Filter>
     </ClInclude>
-    <ClInclude Include="src\Shadow\Core\MouseButtonCodes.h">
-      <Filter>src\Shadow</Filter>
-    </ClInclude>
     <ClInclude Include="src\Shadow\Nodes\Node.h">
       <Filter>src\Shadow\Nodes</Filter>
     </ClInclude>
@@ -136,6 +154,18 @@
       <Filter>src\Shadow\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Renderer\Camera.h">
+      <Filter>src\Shadow\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shadow\Renderer\Environment.h">
+      <Filter>src\Shadow\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shadow\Renderer\FrameBufferObject.h">
+      <Filter>src\Shadow\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shadow\Renderer\Light.h">
+      <Filter>src\Shadow\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shadow\Renderer\RenderBufferObjects.h">
       <Filter>src\Shadow\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Shadow\Renderer\RendererAPI.h">
@@ -168,6 +198,9 @@
     <ClInclude Include="src\Shadow\Resources\ResourceTexture.h">
       <Filter>src\Shadow\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="src\Shadow\Scene\Entity.h">
+      <Filter>src\Shadow\Scene</Filter>
+    </ClInclude>
     <ClInclude Include="src\Shadow\Window.h">
       <Filter>src\Shadow</Filter>
     </ClInclude>
@@ -186,17 +219,14 @@
     <ClInclude Include="vendor\stb\stb_image.h">
       <Filter>vendor\stb</Filter>
     </ClInclude>
-    <ClInclude Include="src\Shadow\Renderer\Environment.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLTextureCube.h" />
-    <ClInclude Include="src\Shadow\Renderer\FrameBufferObject.h" />
-    <ClInclude Include="src\Platform\OpenGL\AllBuffers\OpenGLFBO.h" />
-    <ClInclude Include="src\Platform\OpenGL\AllBuffers\OpenGLRBO.h" />
-    <ClInclude Include="src\Shadow\Renderer\RenderBufferObjects.h" />
-    <ClInclude Include="src\Shadow\Renderer\Light.h" />
-    <ClInclude Include="src\Shadow\Scene\Entity.h" />
-    <ClInclude Include="src\Shadow\Core\Time.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Platform\OpenGL\AllBuffers\OpenGLFBO.cpp">
+      <Filter>src\Platform\OpenGL\AllBuffers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\AllBuffers\OpenGLRBO.cpp">
+      <Filter>src\Platform\OpenGL\AllBuffers</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
@@ -215,6 +245,9 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLTextureCube.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
@@ -227,8 +260,14 @@
     <ClCompile Include="src\Shadow\Application.cpp">
       <Filter>src\Shadow</Filter>
     </ClCompile>
+    <ClCompile Include="src\Shadow\Core\Time.cpp">
+      <Filter>src\Shadow\Core</Filter>
+    </ClCompile>
     <ClCompile Include="src\Shadow\ImGuiBuild.cpp">
       <Filter>src\Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shadow\Layers\Input.cpp">
+      <Filter>src\Shadow\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\Shadow\Layers\Layer.cpp">
       <Filter>src\Shadow\Layers</Filter>
@@ -260,6 +299,12 @@
     <ClCompile Include="src\Shadow\Renderer\Camera.cpp">
       <Filter>src\Shadow\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Shadow\Renderer\Environment.cpp">
+      <Filter>src\Shadow\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shadow\Renderer\Light.cpp">
+      <Filter>src\Shadow\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Shadow\Renderer\RendererAPI.cpp">
       <Filter>src\Shadow\Renderer</Filter>
     </ClCompile>
@@ -287,19 +332,14 @@
     <ClCompile Include="src\Shadow\Resources\ResourceTexture.cpp">
       <Filter>src\Shadow\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="src\Shadow\Scene\Entity.cpp">
+      <Filter>src\Shadow\Scene</Filter>
+    </ClCompile>
     <ClCompile Include="src\swpch.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="vendor\stb\stb_image.cpp">
       <Filter>vendor\stb</Filter>
     </ClCompile>
-    <ClCompile Include="src\Shadow\Renderer\Environment.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLTextureCube.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\AllBuffers\OpenGLFBO.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\AllBuffers\OpenGLRBO.cpp" />
-    <ClCompile Include="src\Shadow\Renderer\Light.cpp" />
-    <ClCompile Include="src\Shadow\Scene\Entity.cpp" />
-    <ClCompile Include="src\Shadow\Core\Time.cpp" />
-    <ClCompile Include="src\Shadow\Layers\Input.cpp" />
   </ItemGroup>
 </Project>
